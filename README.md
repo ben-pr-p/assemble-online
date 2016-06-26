@@ -24,3 +24,5 @@ npm run bs
 `npm start` -> `node server/app.js`, just start the server
 
 For development, I have one tab open running `gulp` and one running `npm start`.
+
+You'll also need to set `export DEBUG=assemble*` to see server side logs.
