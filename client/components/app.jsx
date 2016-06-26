@@ -47,6 +47,16 @@ export default class App extends React.Component {
     this.announceMe()
   }
 
+  onMouseMove (ev) {
+    let newX = ev.nativeEvent.clientX
+    let newY = ev.nativeEvent.clientY
+
+    let me = this.state.users.filter(u => u.id == this.state.me.id)[0]
+    me.x = newX
+    me.y = newY
+    this.forceUpdate()
+  }
+
   render () {
     let {users, me} = this.state
 
@@ -61,7 +71,7 @@ export default class App extends React.Component {
     return (
       <MuiThemeProvider>
         <div id='main-app'>
-          <svg id='plaza'>
+          <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} >
             {blobs}
           </svg>
           {newUserModal}
