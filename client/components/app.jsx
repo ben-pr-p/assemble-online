@@ -3,7 +3,10 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import UserBlob from './user-blob/user-blob'
 import NewUserModal from './new-user-modal/new-user-modal'
 import store from 'store'
+import KeyManager from '../lib/key-manager.js'
 import io from 'socket.io-client'
+
+const pixelsPerKey = 10
 
 export default class App extends React.Component {
   constructor () {

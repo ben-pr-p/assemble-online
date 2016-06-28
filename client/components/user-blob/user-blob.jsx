@@ -39,6 +39,9 @@ export default class UserBlob extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    this.state.x = nextProps.user.x
+    this.state.y = nextProps.user.y
+    /*
     let currentX, currentY
     if (this.refs.circle) {
       currentX = this.refs.circle.cx.baseVal.value
@@ -47,6 +50,7 @@ export default class UserBlob extends React.Component {
 
     glide(currentX, nextProps.user.x, x => this.setState({x: x}))
     glide(currentY, nextProps.user.y, y => this.setState({y: y}))
+    */
   }
 
   render () {
