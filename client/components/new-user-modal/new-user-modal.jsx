@@ -21,6 +21,12 @@ export default class NewUserModal extends React.Component {
     this.forceUpdate()
   }
 
+ componentWillMount () {
+  if (this.props.me) {
+    this.state.name = this.props.me.name
+  }
+  }
+
   submit () {
     let user = {}
     for (let attr in this.state) {

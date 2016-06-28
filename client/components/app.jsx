@@ -99,7 +99,7 @@ export default class App extends React.Component {
     return (
       <MuiThemeProvider>
         <div id='main-app'>
-          <AppBarIconMenu setEditUserState={this.setEditUserState.bind(this)} />
+          <AppBarIconMenu setEditUserState={this.setEditUserState.bind(this)} me={me}/>
           <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} ref='plaza' >
             <g id='viewport'>
               <Grid dimensions={dimensions} />
