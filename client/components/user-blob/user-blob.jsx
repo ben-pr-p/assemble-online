@@ -51,10 +51,16 @@ export default class UserBlob extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    if (this.t.t) {
+      this.state.x = this.t.x
+      this.state.y = this.t.y
+      this.t = {x: null, y: null, t: null}
+    }
+
     const next = {x: nextProps.user.x, y: nextProps.user.y}
     const prev = {x: this.state.x, y: this.state.y}
 
-    this.selectedCircle.transition()
+    this.selectedCircle.transition().ease('linear')
      .attrTween('transform', (d, i, a) => {
 
        var movement = {
@@ -70,6 +76,7 @@ export default class UserBlob extends React.Component {
        }
      })
      .each('end', () => {
+       this.t = {x: null, y: null, t: null}
        this.setState({x: next.x, y: next.y})
      })
   }

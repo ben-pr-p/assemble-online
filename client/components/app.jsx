@@ -91,7 +91,7 @@ export default class App extends React.Component {
     return (
       <MuiThemeProvider>
         <div id='main-app'>
-          <AppBarIconMenu/>
+          <AppBarIconMenu />
           <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} >
             {blobs}
           </svg>
