@@ -47,6 +47,10 @@ export default class App extends React.Component {
     this.socket.emit('newuser', this.state.me, this.handleUsers.bind(this))
   }
 
+  announceLocation (user) {
+    this.socket.emit('movement', user, this.handleUsers.bind(this))
+  }
+
   closeNewUserModal () {
     this.findMe()
     this.announceMe()
@@ -60,7 +64,7 @@ export default class App extends React.Component {
       let me = this.state.users.filter(u => u.id == this.state.me.id)[0]
       me.x = newX
       me.y = newY
-      this.forceUpdate()
+      this.announceLocation(me)
     }
   }
 

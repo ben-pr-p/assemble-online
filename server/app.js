@@ -39,6 +39,16 @@ io.on('connection', function (socket) {
     socket.emit('users', users)
   })
 
+  socket.on('movement', function(user) {
+    log('User %s moved', user.id)
+
+    var moved = users.filter(u => u.id == user.id)[0]
+    moved.x = user.x
+    moved.y = user.y
+
+    socket.emit('users', users)
+  })
+
   socket.on('disconnect', function () {
     var user = users.filter(u => sockets[u.id] == socket)
     log('User %s disconnected', user.id)
