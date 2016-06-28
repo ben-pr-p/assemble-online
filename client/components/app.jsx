@@ -3,8 +3,9 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import UserBlob from './user-blob/user-blob'
 import NewUserModal from './new-user-modal/new-user-modal'
 import store from 'store'
-import KeyManager from '../lib/key-manager.js'
+import KeyManager from '../lib/key-manager'
 import io from 'socket.io-client'
+import AppBarIconMenu from './app-bar/app-bar'
 
 const pixelsPerKey = 10
 
@@ -90,6 +91,7 @@ export default class App extends React.Component {
     return (
       <MuiThemeProvider>
         <div id='main-app'>
+          <AppBarIconMenu/>
           <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} >
             {blobs}
           </svg>
