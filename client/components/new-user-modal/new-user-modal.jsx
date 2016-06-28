@@ -38,7 +38,7 @@ export default class NewUserModal extends React.Component {
     }
 
     let plaza = document.querySelector('svg#plaza')
-    if (plaza) {
+    if (plaza && !this.state.id) {
       user.x = plaza.width.baseVal.value / 2,
       user.y = plaza.height.baseVal.value / 2
     }
