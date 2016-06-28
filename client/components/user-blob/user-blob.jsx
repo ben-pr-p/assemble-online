@@ -35,7 +35,7 @@ export default class UserBlob extends React.Component {
     this.state.x = this.props.user.x
     this.state.y = this.props.user.y
 
-    this.fill = d3.scale.category20(this.props.idx)
+    this.fill = d3.scale.category20()(this.props.idx)
   }
 
   componentWillReceiveProps (nextProps) {

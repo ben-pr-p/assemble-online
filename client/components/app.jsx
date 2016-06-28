@@ -15,6 +15,8 @@ export default class App extends React.Component {
       users: [],
       me: null
     }
+
+    this.mouseDown = false
   }
 
   componentWillMount () {
@@ -51,13 +53,23 @@ export default class App extends React.Component {
   }
 
   onMouseMove (ev) {
-    let newX = ev.nativeEvent.clientX
-    let newY = ev.nativeEvent.clientY
+    if (this.mouseDown) {
+      let newX = ev.nativeEvent.clientX
+      let newY = ev.nativeEvent.clientY
 
-    let me = this.state.users.filter(u => u.id == this.state.me.id)[0]
-    me.x = newX
-    me.y = newY
-    this.forceUpdate()
+      let me = this.state.users.filter(u => u.id == this.state.me.id)[0]
+      me.x = newX
+      me.y = newY
+      this.forceUpdate()
+    }
+  }
+
+  onMouseDown () {
+    this.mouseDown = true
+  }
+
+  onMouseUp () {
+    this.mouseDown = false
   }
 
   render () {
@@ -74,7 +86,7 @@ export default class App extends React.Component {
     return (
       <MuiThemeProvider>
         <div id='main-app'>
-          <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} >
+          <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} >
             {blobs}
           </svg>
           {newUserModal}
