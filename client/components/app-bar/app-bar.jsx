@@ -12,7 +12,7 @@ export default class AppBarIconMenu extends React.Component {
   }
 
   editUser () {
-    // byrne to write
+    this.props.setEditUserState(true)
   }
 
   render () {

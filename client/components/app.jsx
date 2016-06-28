@@ -14,7 +14,8 @@ export default class App extends React.Component {
     super()
     this.state = {
       users: [],
-      me: null
+      me: null,
+      editingUser: false
     }
 
     this.mouseDown = false
@@ -55,6 +56,7 @@ export default class App extends React.Component {
   closeNewUserModal () {
     this.findMe()
     this.announceMe()
+    this.setEditUserState(false)
   }
 
   onMouseMove (ev) {
@@ -77,21 +79,25 @@ export default class App extends React.Component {
     this.mouseDown = false
   }
 
+  setEditUserState (value) {
+    this.setState({editingUser: value})
+  }
+
   render () {
-    let {users, me} = this.state
+    let {users, me, editingUser} = this.state
 
     let blobs = users.map((u, i) => {
       return (<UserBlob user={u} idx={i} key={i} />)
     })
 
     let newUserModal
-    if (!me)
+    if (!me || editingUser)
       newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} />)
 
     return (
       <MuiThemeProvider>
         <div id='main-app'>
-          <AppBarIconMenu/>
+          <AppBarIconMenu setEditUserState={this.setEditUserState.bind(this)}/>
           <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} >
             {blobs}
           </svg>
