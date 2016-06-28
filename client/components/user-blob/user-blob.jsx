@@ -29,6 +29,14 @@ export default class UserBlob extends React.Component {
       x: null,
       y: null
     }
+
+    this.t = {
+      x: null,
+      y: null,
+      t: null
+    }
+
+    this.selectedCircle = null
   }
 
   componentWillMount () {
@@ -38,19 +46,32 @@ export default class UserBlob extends React.Component {
     this.fill = d3.scale.category20()(this.props.idx)
   }
 
-  componentWillReceiveProps (nextProps) {
-    this.state.x = nextProps.user.x
-    this.state.y = nextProps.user.y
-    /*
-    let currentX, currentY
-    if (this.refs.circle) {
-      currentX = this.refs.circle.cx.baseVal.value
-      currentY = this.refs.circle.cx.baseVal.value
-    }
+  componentDidMount () {
+    this.selectedCircle = d3.select(this.refs.circle)
+  }
 
-    glide(currentX, nextProps.user.x, x => this.setState({x: x}))
-    glide(currentY, nextProps.user.y, y => this.setState({y: y}))
-    */
+  componentWillReceiveProps (nextProps) {
+    const next = {x: nextProps.user.x, y: nextProps.user.y}
+    const prev = {x: this.state.x, y: this.state.y}
+
+    this.selectedCircle.transition()
+     .attrTween('transform', (d, i, a) => {
+
+       var movement = {
+         x: next.x - prev.x,
+         y: next.y - prev.y
+       }
+
+       return (t) => {
+         this.t.x = prev.x + movement.x * t
+         this.t.y = prev.y + movement.y * t
+         this.t.t = t
+         return `translate(${this.t.x}, ${this.t.y})`
+       }
+     })
+     .each('end', () => {
+       this.setState({x: next.x, y: next.y})
+     })
   }
 
   render () {
@@ -59,7 +80,7 @@ export default class UserBlob extends React.Component {
 
     return (
       <g className='user-blob' id={user.id}>
-        <circle cx={x} cy={y} r='50' fill={this.fill} ref='circle' />
+        <circle transform={`translate(${x},${y})`} r='50' fill={this.fill} ref='circle' />
       </g>
     )
   }
