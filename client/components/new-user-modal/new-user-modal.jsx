@@ -12,7 +12,8 @@ export default class NewUserModal extends React.Component {
   constructor () {
     super()
     this.state = {
-      name: ''
+      name: '',
+      id: null
     }
   }
 
@@ -21,10 +22,13 @@ export default class NewUserModal extends React.Component {
     this.forceUpdate()
   }
 
- componentWillMount () {
-  if (this.props.me) {
-    this.state.name = this.props.me.name
-  }
+  componentWillMount () {
+    if (this.props.me) {
+      for (let attr in this.state) {
+        if (this.props.me[attr])
+          this.state[attr] = this.props.me[attr]
+      }
+    }
   }
 
   submit () {
@@ -39,7 +43,8 @@ export default class NewUserModal extends React.Component {
       user.y = plaza.height.baseVal.value / 2
     }
 
-    user.id = Math.random()
+    if (!this.state.id)
+      user.id = Math.random()
 
     store.set('me', user)
     this.props.closeNewUserModal()
@@ -48,6 +53,8 @@ export default class NewUserModal extends React.Component {
   render () {
     let fields = []
     for (let attr in this.state) {
+      if (attr == 'id') continue
+
       fields.push((
         <TextField id={attr} key={attr}
           value={this.state[attr]}
