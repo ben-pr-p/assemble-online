@@ -6,6 +6,7 @@ import store from 'store'
 import KeyManager from '../lib/key-manager'
 import io from 'socket.io-client'
 import AppBarIconMenu from './app-bar/app-bar'
+import Grid from './grid/grid'
 
 const pixelsPerKey = 10
 
@@ -14,7 +15,8 @@ export default class App extends React.Component {
     super()
     this.state = {
       users: [],
-      me: null
+      me: null,
+      dimensions: null
     }
 
     this.mouseDown = false
@@ -78,9 +80,9 @@ export default class App extends React.Component {
   }
 
   render () {
-    let {users, me} = this.state
+    const {users, me, dimensions} = this.state
 
-    let blobs = users.map((u, i) => {
+    const blobs = users.map((u, i) => {
       return (<UserBlob user={u} idx={i} key={i} />)
     })
 
@@ -92,8 +94,11 @@ export default class App extends React.Component {
       <MuiThemeProvider>
         <div id='main-app'>
           <AppBarIconMenu />
-          <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} >
-            {blobs}
+          <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} ref='plaza' >
+            <g id='viewport'>
+              <Grid dimensions={dimensions} />
+              {blobs}
+            </g>
           </svg>
           {newUserModal}
         </div>
