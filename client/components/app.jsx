@@ -94,12 +94,12 @@ export default class App extends React.Component {
 
     let newUserModal
     if (!me || editingUser)
-      newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} />)
+      newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} me={me}/>)
 
     return (
       <MuiThemeProvider>
         <div id='main-app'>
-          <AppBarIconMenu setEditUserState={this.setEditUserState.bind(this)} me={me}/>
+          <AppBarIconMenu setEditUserState={this.setEditUserState.bind(this)} />
           <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} ref='plaza' >
             <g id='viewport'>
               <Grid dimensions={dimensions} />
