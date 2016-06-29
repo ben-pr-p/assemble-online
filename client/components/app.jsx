@@ -29,10 +29,30 @@ export default class App extends React.Component {
     this.socket = io()
     this.socket.on('connect', this.handleUsers.bind(this))
     this.socket.on('users', this.handleUsers.bind(this))
+    this.socket.on('movement-update', this.handleMovement.bind(this))
 
     if (this.state.me) {
       this.announceMe()
     }
+  }
+
+  componentDidMount () {
+    if (this.state.me) this.announceScreenSize()
+  }
+
+  findMe () {
+    this.state.me = store.get('me')
+  }
+
+  announceMe () {
+    if (this.refs.plaza) {
+      this.state.me.screenSize = {
+        x: this.refs.plaza.width.baseVal.value,
+        y: this.refs.plaza.height.baseVal.value
+      }
+    }
+
+    this.socket.emit('newuser', this.state.me, this.handleUsers.bind(this))
   }
 
   handleUsers (users) {
@@ -43,16 +63,21 @@ export default class App extends React.Component {
     }
   }
 
-  findMe () {
-    this.state.me = store.get('me')
-  }
-
-  announceMe () {
-    this.socket.emit('newuser', this.state.me, this.handleUsers.bind(this))
-  }
-
   announceLocation (user) {
-    this.socket.emit('movement', user, this.handleUsers.bind(this))
+    this.socket.emit('movement', user, this.handleMovement.bind(this))
+  }
+
+  announceScreenSize () {
+    this.state.me.screenSize = {
+      x: this.refs.plaza.clientWidth,
+      y: this.refs.plaza.clientHeight
+    }
+
+    this.announceMe()
+  }
+
+  handleMovement (data) {
+    this.setState({users: data.users, dimensions: data.dimensions})
   }
 
   closeNewUserModal () {
@@ -94,14 +119,14 @@ export default class App extends React.Component {
 
     let newUserModal
     if (!me || editingUser)
-      newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} me={me}/>)
+      newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} me={me} />)
 
     return (
       <MuiThemeProvider>
         <div id='main-app'>
           <AppBarIconMenu setEditUserState={this.setEditUserState.bind(this)} />
           <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} ref='plaza' >
-            <g id='viewport'>
+            <g id='viewport' >
               <Grid dimensions={dimensions} />
               {blobs}
             </g>

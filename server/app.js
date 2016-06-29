@@ -22,6 +22,7 @@ http.listen(process.env.PORT || 3000)
 
 var users = []
 var sockets = {}
+var dimensions = {}
 
 io.on('connection', function (socket) {
 
@@ -58,11 +59,13 @@ io.on('connection', function (socket) {
     moved.x = user.x
     moved.y = user.y
 
-    socket.emit('users', users)
+    setDimensions(users)
+
+    socket.emit('movement-update', {users, dimensions})
   })
 
   socket.on('disconnect', function () {
-    var user = users.filter(u => sockets[u.id] == socket)
+    var user = users.filter(u => sockets[u.id] == socket)[0]
     log('User %s disconnected', user.id)
 
     users.splice(users.indexOf(user), 1)
@@ -77,3 +80,22 @@ function sendUpdates () {
   })
   log('Sent updates to %d users', users.length)
 }
+
+function setDimensions (users) {
+  var maxPosX = maxPosY = maxScreenX = maxScreenY = 0
+
+  users.forEach(u => {
+    if (u.x > maxPosX) maxPosX = u.x
+    if (u.y > maxPosY) maxPosY = u.y
+    if (u.screenSize.x > maxScreenX) maxScreenX = u.screenSize.x
+    if (u.screenSize.y > maxScreenY) maxScreenY = u.screenSize.y
+  })
+
+  dimensions = {
+    x: Math.max(maxScreenX, maxPosX + (maxScreenX / 2)),
+    y: Math.max(maxScreenY, maxPosY + (maxScreenY / 2))
+  }
+
+  log('New dimensions -> %j', dimensions)
+}
+
