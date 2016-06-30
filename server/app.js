@@ -6,7 +6,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 var staticDir = path.resolve(__dirname + '/../build')
-app.use(express.static(staticDir))
+app.use('/', express.static(staticDir))
 
 // require('./models', app)
 // var db = require('db')
