@@ -86,8 +86,9 @@ export default class UserBlob extends React.Component {
     const { x, y } = this.state
 
     return (
-      <g className='user-blob' id={user.id}>
+      <g className='user-blob'  id={user.id}>
         <circle transform={`translate(${x},${y})`} r='50' fill={this.fill} ref='circle' />
+        <text x="0" y="0" text-anchor="middle" transform={`translate(${x},${y})`} stroke="#51c5cf" stroke-width="2px" dy=".3em">{user.name}</text>
       </g>
     )
   }
