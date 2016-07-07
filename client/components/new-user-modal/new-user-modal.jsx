@@ -2,16 +2,19 @@ import React from 'react'
 import Dialog from 'material-ui/Dialog'
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
+import Avatar from 'material-ui/Avatar'
 import store from 'store'
 
 const labelMap = {
-  name: "What's your name?"
+  avatar: 'Paste a Image Address to be your Avatar',
+  name: 'What\'s your name?'
 }
 
 export default class NewUserModal extends React.Component {
   constructor () {
     super()
     this.state = {
+      avatar: '',
       name: '',
       id: null
     }
@@ -54,15 +57,7 @@ export default class NewUserModal extends React.Component {
     let fields = []
     for (let attr in this.state) {
       if (attr == 'id') continue
-
-      fields.push((
-        <TextField id={attr} key={attr}
-          value={this.state[attr]}
-          onChange={this.onChange.bind(this)}
-          floatingLabelText={labelMap[attr]}
-          floatingLabelFixed={true}
-        />
-      ))
+      fields.push((this.renderField(attr)))
     }
 
     let actions = [(
@@ -78,9 +73,38 @@ export default class NewUserModal extends React.Component {
         open={true}
         onRequestClose={this.submit.bind(this)}
       >
-        {fields}
+        <div className='fields-container'>
+          {fields}
+        </div>
       </Dialog>
     )
+  }
+
+  renderField (attr) {
+    if (attr == 'avatar') {
+      return (
+        <div className='avatar-field-container' key={attr}>
+          <Avatar src={this.state.avatar} style={{minHeight: '60px', minWidth: '60px'}} />
+          <TextField id={attr} 
+            value={this.state[attr]}
+            onChange={this.onChange.bind(this)}
+            floatingLabelText={labelMap[attr]}
+            floatingLabelFixed={true}
+            className='full-width-text-field'
+          />
+        </div>
+      )
+    } else {
+      return (
+        <TextField id={attr} key={attr}
+          value={this.state[attr]}
+          onChange={this.onChange.bind(this)}
+          floatingLabelText={labelMap[attr]}
+          floatingLabelFixed={true}
+          className='full-width-text-field'
+        />
+      )
+    }
   }
 }
 

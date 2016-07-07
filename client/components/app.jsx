@@ -1,12 +1,15 @@
 import React from 'react'
+import store from 'store'
+import io from 'socket.io-client'
+import Peer from 'peerjs'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme'
+import KeyManager from '../lib/key-manager'
+import Grid from './grid/grid'
+import AppBarIconMenu from './app-bar/app-bar'
 import UserBlob from './user-blob/user-blob'
 import NewUserModal from './new-user-modal/new-user-modal'
-import store from 'store'
-import KeyManager from '../lib/key-manager'
-import io from 'socket.io-client'
-import AppBarIconMenu from './app-bar/app-bar'
-import Grid from './grid/grid'
 
 const pixelsPerKey = 10
 
@@ -17,9 +20,12 @@ export default class App extends React.Component {
       users: [],
       me: null,
       dimensions: null,
-      editingUser: false
+      editingUser: false,
+      audioStreams: []
     }
 
+    this.outgoingCalls = {}
+    this.incomingCalls = {}
     this.mouseDown = false
   }
 
@@ -33,6 +39,7 @@ export default class App extends React.Component {
 
     if (this.state.me) {
       this.announceMe()
+      this.peer = new Peer(this.state.me.id, {key: 'k4r0b5lpfn1m7vi'})
     }
   }
 
@@ -98,14 +105,6 @@ export default class App extends React.Component {
     }
   }
 
-  onMouseDown () {
-    this.mouseDown = true
-  }
-
-  onMouseUp () {
-    this.mouseDown = false
-  }
-
   setEditUserState (value) {
     this.setState({editingUser: value})
   }
@@ -122,10 +121,10 @@ export default class App extends React.Component {
       newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} me={me} />)
 
     return (
-      <MuiThemeProvider>
+      <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
         <div id='main-app'>
           <AppBarIconMenu setEditUserState={this.setEditUserState.bind(this)} />
-          <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} ref='plaza' >
+          <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={() => this.mouseDown = true} onMouseUp={() => this.mouseDown = false} ref='plaza' >
             <g id='viewport' >
               <Grid dimensions={dimensions} />
               {blobs}

@@ -53,8 +53,6 @@ io.on('connection', function (socket) {
   })
 
   socket.on('movement', function(user) {
-    log('User %s moved', user.id)
-
     var moved = users.filter(u => u.id == user.id)[0]
     moved.x = user.x
     moved.y = user.y
@@ -66,9 +64,12 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', function () {
     var user = users.filter(u => sockets[u.id] == socket)[0]
-    log('User %s disconnected', user.id)
-
-    users.splice(users.indexOf(user), 1)
+    if (!user) {
+      log('Unknown user disconnect')
+    } else {
+      log('User %s disconnected', user.id)
+      users.splice(users.indexOf(user), 1)
+    }
   })
 })
 
@@ -95,7 +96,5 @@ function setDimensions (users) {
     x: Math.max(maxScreenX, maxPosX + (maxScreenX / 2)),
     y: Math.max(maxScreenY, maxPosY + (maxScreenY / 2))
   }
-
-  log('New dimensions -> %j', dimensions)
 }
 
