@@ -11,8 +11,6 @@ import AppBarIconMenu from './app-bar/app-bar'
 import UserBlob from './user-blob/user-blob'
 import NewUserModal from './new-user-modal/new-user-modal'
 
-const pixelsPerKey = 10
-
 export default class App extends React.Component {
   constructor () {
     super()
@@ -39,7 +37,6 @@ export default class App extends React.Component {
 
     if (this.state.me) {
       this.announceMe()
-      this.peer = new Peer(this.state.me.id, {key: 'k4r0b5lpfn1m7vi'})
     }
   }
 
