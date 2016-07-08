@@ -1,8 +1,10 @@
 import React from 'react'
 import Peer from 'peerjs'
 
-export default class AudioConnection extends React.Component {
+export default class AudioController extends React.Component {
   constructor () {
+    super()
+
     this.state = {
       audioStreams: [],
       myAudio: null
@@ -15,18 +17,17 @@ export default class AudioConnection extends React.Component {
 
   componentWillMount () {
     const { users, me } = this.props
-
-    this.peer = new Peer(me.id, {key: 'k4r0b5lpfn1m7vi'})
-
     this.users = users.slice()
+    this.initializeMyStream()
   }
 
   initializeMyStream () {
     let { myAudio, audioStreams } = this.state
     let { incomingCalls } = this
+    const { users, me } = this.props
 
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
-    navigator.getUserMedia({audio: true}, function (stream) {
+    navigator.getUserMedia({audio: true}, stream => {
 
       myAudio = stream
       this.peer = new Peer(me.id, {key: ''})
@@ -41,7 +42,8 @@ export default class AudioConnection extends React.Component {
         // Add this call to incomingCalls
         incomingCalls[call.id] = call
       })
-
+    }, function (err) {
+      console.log('Failed to get user\'s media stream:', err)
     })
   }
 
@@ -50,7 +52,7 @@ export default class AudioConnection extends React.Component {
    */
   handleNewUser (user) {
     let { incomingCalls, outgoingCalls } = this
-    let { myAudio, audioStreams } this.state
+    let { myAudio, audioStreams } = this.state
 
     // Are they already calling me? If so, do nothing
     if (incomingCalls[user.id]) {
@@ -102,7 +104,7 @@ export default class AudioConnection extends React.Component {
     let departedUsers = this.users.slice()
 
     // Call appropriate methods
-    newUsers.forEach(u => this.handeNewUser(u))
+    newUsers.forEach(u => this.handleNewUser(u))
     departedUsers.forEach(u => this.handleDepartedUser(u))
   }
 

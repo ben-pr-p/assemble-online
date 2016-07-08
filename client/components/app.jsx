@@ -10,6 +10,7 @@ import Grid from './grid/grid'
 import AppBarIconMenu from './app-bar/app-bar'
 import UserBlob from './user-blob/user-blob'
 import NewUserModal from './new-user-modal/new-user-modal'
+import AudioController from './audio-controller'
 
 export default class App extends React.Component {
   constructor () {
@@ -120,6 +121,7 @@ export default class App extends React.Component {
     return (
       <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
         <div id='main-app'>
+          <AudioController users={users} me={me} />
           <AppBarIconMenu setEditUserState={this.setEditUserState.bind(this)} />
           <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={() => this.mouseDown = true} onMouseUp={() => this.mouseDown = false} ref='plaza' >
             <g id='viewport' >
