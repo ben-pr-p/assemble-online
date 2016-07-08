@@ -30,18 +30,21 @@ export default class AudioController extends React.Component {
     navigator.getUserMedia({audio: true}, stream => {
 
       myAudio = stream
-      this.peer = new Peer(me.id, {key: ''})
+      this.peer = new Peer(me.id, {key: 'k4r0b5lpfn1m7vi'})
       this.peer.on('call', call => {
+        console.log('Recieved call ', call)
         // Send them myAudio
         call.answer(myAudio)
         // Add their stream to state's audioStreams
         call.on('stream', remoteStream => {
           audioStreams.push(remoteStream)
-        }) 
+        })
         debugger
         // Add this call to incomingCalls
         incomingCalls[call.id] = call
       })
+      users.forEach(u => this.handleNewUser(u))
+
     }, function (err) {
       console.log('Failed to get user\'s media stream:', err)
     })
@@ -65,6 +68,7 @@ export default class AudioController extends React.Component {
     }
 
     // Call them!
+    console.log('Calling %s...', user.id)
     let call = this.peer.call(user.id, myAudio)
     call.on('stream', stream => {
       // Record this as an outgoingCall
