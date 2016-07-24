@@ -1,0 +1,35 @@
+.announcement-container
+  position fixed
+  width 100%
+  height 50px
+  flexbox(flex)
+  justify-content(center)
+  align-items(center)
+  margin-top 0px
+  transition margin-top .25s ease-out
+  -moz-transition margin-top .25s ease-out
+  -o-transition margin-top .25s ease-out
+  -webkit-transition margin-top .25s ease-out
+
+  &.hidden
+    margin-top -80px
+
+  .announcement
+    opacity .2
+    color white
+    background-color rgba(black, .9)
+    border-radius 5px
+    width 98%
+    height 100%
+    margin-top 2%
+    flexbox(flex)
+    justify-content(center)
+    align-items(center)
+    transition opacity 10s ease-in-out
+    -moz-transition opacity 10s ease-in-out
+    -o-transition opacity 10s ease-in-out
+    -webkit-transition opacity 10s ease-in-out
+
+    &.opaque
+      opacity 1
+

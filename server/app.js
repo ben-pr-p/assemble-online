@@ -8,9 +8,6 @@ var io = require('socket.io')(http);
 var staticDir = path.resolve(__dirname + '/../build')
 app.use('/', express.static(staticDir))
 
-// require('./models', app)
-// var db = require('db')
-
 var PORT = process.env.PORT
 if (!PORT) {
   log('Missing env var PORT, using 3000')

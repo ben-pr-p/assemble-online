@@ -22,28 +22,38 @@ export default class AudioController extends React.Component {
   }
 
   initializeMyStream () {
-    let { myAudio, audioStreams } = this.state
+    let { audioStreams } = this.state
     let { incomingCalls } = this
     const { users, me } = this.props
 
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
     navigator.getUserMedia({audio: true}, stream => {
 
-      myAudio = stream
+      this.state.myAudio = stream
       this.peer = new Peer(me.id, {key: 'k4r0b5lpfn1m7vi'})
+
+      /**
+       * Call handler
+       */
       this.peer.on('call', call => {
         console.log('Recieved call ', call)
         // Send them myAudio
-        call.answer(myAudio)
+        call.answer(this.state.myAudio)
         // Add their stream to state's audioStreams
         call.on('stream', remoteStream => {
           audioStreams.push(remoteStream)
         })
-        debugger
         // Add this call to incomingCalls
         incomingCalls[call.id] = call
       })
-      users.forEach(u => this.handleNewUser(u))
+
+      /**
+       * Error handler
+       */
+      this.peer.on('error', err => {
+        let txt = `${err.type}: ${err}`
+        alert(txt)
+      })
 
     }, function (err) {
       console.log('Failed to get user\'s media stream:', err)
@@ -102,9 +112,11 @@ export default class AudioController extends React.Component {
         oldUsers.push(u)
         prevUsers.splice(prevIdx, 1)
       } else {
-        newUsers.push(u)
+        if (u.id != me.id)
+          newUsers.push(u)
       }
     })
+
     let departedUsers = this.users.slice()
 
     // Call appropriate methods
@@ -113,7 +125,8 @@ export default class AudioController extends React.Component {
   }
 
   componentWillUnmount () {
-    this.peer.destroy()
+    if (this.peer)
+      this.peer.destroy()
   }
 
   render () {

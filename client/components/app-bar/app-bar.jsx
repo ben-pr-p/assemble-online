@@ -5,10 +5,8 @@ import IconMenu from 'material-ui/IconMenu'
 import MenuItem from 'material-ui/MenuItem'
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import NavigationClose from 'material-ui/svg-icons/navigation/close'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme'
-import { teal900 } from 'material-ui/styles/colors'
+import DeleteIcon from 'material-ui/svg-icons/action/delete'
+import { blueGrey400 } from 'material-ui/styles/colors'
 
 export default class AppBarIconMenu extends React.Component {
   constructor () {
@@ -21,34 +19,30 @@ export default class AppBarIconMenu extends React.Component {
 
   render () {
     const style = {
-      backgroundColor: teal900,
+      backgroundColor: blueGrey400,
       position: 'fixed'
     }
 
-    const titleStyle= {
-      color: 'white'
-    }
-
     return (
-      <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-        <AppBar
-          className='app-bar'
-          style={style}
-          titleStyle={titleStyle}
-          title='Plaza'
-          iconElementRight={
-            <IconMenu
-              iconButtonElement={
-                <IconButton><MoreVertIcon /></IconButton>
-              }
-              targetOrigin={{horizontal: 'right', vertical: 'top'}}
-              anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-            >
-              <MenuItem primaryText='Edit User' onClick={this.editUser.bind(this)} />
-            </IconMenu>
-          }
-        />
-      </MuiThemeProvider>
+      <AppBar
+        className='app-bar'
+        style={style}
+        title='Plaza'
+        iconElementLeft={
+          <IconButton onClick={this.props.clearLocal} >
+            <DeleteIcon />
+          </IconButton>
+        }
+        iconElementRight={
+          <IconMenu
+            iconButtonElement={ <IconButton><MoreVertIcon /></IconButton> }
+            targetOrigin={{horizontal: 'right', vertical: 'top'}}
+            anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+          >
+            <MenuItem primaryText='Edit User' onClick={this.editUser.bind(this)} />
+          </IconMenu>
+        }
+      />
     )
   }
 }

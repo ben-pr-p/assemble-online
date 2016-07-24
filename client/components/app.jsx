@@ -8,6 +8,7 @@ import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme'
 import KeyManager from '../lib/key-manager'
 import Grid from './grid/grid'
 import AppBarIconMenu from './app-bar/app-bar'
+import Announcement from './announcement/announcement'
 import UserBlob from './user-blob/user-blob'
 import NewUserModal from './new-user-modal/new-user-modal'
 import AudioController from './audio-controller'
@@ -107,6 +108,12 @@ export default class App extends React.Component {
     this.setState({editingUser: value})
   }
 
+  clearLocal () {
+    store.clear()
+    this.state.me = null
+    this.forceUpdate()
+  }
+
   render () {
     const {users, me, dimensions, editingUser} = this.state
 
@@ -118,11 +125,18 @@ export default class App extends React.Component {
     if (!me || editingUser)
       newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} me={me} />)
 
+    let requiresMe = []
+    if (me)
+      requiresMe.push(( <AudioController key='audio-controller' users={users} me={me} /> ))
+
     return (
       <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
         <div id='main-app'>
-          <AudioController users={users} me={me} />
-          <AppBarIconMenu setEditUserState={this.setEditUserState.bind(this)} />
+          {requiresMe}
+          <AppBarIconMenu 
+            clearLocal={this.clearLocal.bind(this)}
+            setEditUserState={this.setEditUserState.bind(this)} />
+          <Announcement text='Welcome to Assemble Live!' />
           <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={() => this.mouseDown = true} onMouseUp={() => this.mouseDown = false} ref='plaza' >
             <g id='viewport' >
               <Grid dimensions={dimensions} />

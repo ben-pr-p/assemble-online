@@ -4,6 +4,7 @@ import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
 import Avatar from 'material-ui/Avatar'
 import store from 'store'
+import randomString from 'random-string'
 
 const labelMap = {
   avatar: 'Paste a Image Address to be your Avatar',
@@ -47,7 +48,7 @@ export default class NewUserModal extends React.Component {
     }
 
     if (!this.state.id)
-      user.id = Math.random()
+      user.id = randomString()
 
     store.set('me', user)
     this.props.closeNewUserModal()
