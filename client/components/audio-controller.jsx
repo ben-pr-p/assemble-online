@@ -1,139 +1,87 @@
 import React from 'react'
-import Peer from 'peerjs'
+import ConnectionStatus from './connection-status/connection-status'
+import clientLib from '../../node_modules/easyrtc/api/easyrtc'
 
 export default class AudioController extends React.Component {
   constructor () {
     super()
 
     this.state = {
-      audioStreams: [],
-      myAudio: null
+      audioStreams: {},
+      msg: null
     }
 
-    this.users = []
-    this.outgoingCalls = {}
-    this.incomingCalls = {}
+    this.easyrtc = window.easyrtc
   }
 
   componentWillMount () {
-    const { users, me } = this.props
-    this.users = users.slice()
-    this.initializeMyStream()
+    this.initialize()
   }
 
-  initializeMyStream () {
-    let { audioStreams } = this.state
-    let { incomingCalls } = this
-    const { users, me } = this.props
+  initialize () {
+    const { easyrtc } = this
 
-    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
-    navigator.getUserMedia({audio: true}, stream => {
+    this.setState({msg: 'Initializing audio connection to room...'})
 
-      this.state.myAudio = stream
-      this.peer = new Peer(me.id, {key: 'k4r0b5lpfn1m7vi'})
+    easyrtc.enableAudio(true)
+    easyrtc.enableAudioReceive(true)
+    easyrtc.enableVideo(false)
+    easyrtc.enableVideoReceive(false)
+    easyrtc.enableMicrophone(true)
+    easyrtc.enableCamera(false)
 
-      /**
-       * Call handler
-       */
-      this.peer.on('call', call => {
-        console.log('Recieved call ', call)
-        // Send them myAudio
-        call.answer(this.state.myAudio)
-        // Add their stream to state's audioStreams
-        call.on('stream', remoteStream => {
-          audioStreams.push(remoteStream)
-        })
-        // Add this call to incomingCalls
-        incomingCalls[call.id] = call
-      })
+    easyrtc.setRoomOccupantListener(this.occupantListener.bind(this))
 
-      /**
-       * Error handler
-       */
-      this.peer.on('error', err => {
-        let txt = `${err.type}: ${err}`
-        alert(txt)
-      })
-
-    }, function (err) {
-      console.log('Failed to get user\'s media stream:', err)
-    })
-  }
-
-  /**
-   * If they are not already calling me, call them
-   */
-  handleNewUser (user) {
-    let { incomingCalls, outgoingCalls } = this
-    let { myAudio, audioStreams } = this.state
-
-    // Are they already calling me? If so, do nothing
-    if (incomingCalls[user.id]) {
-      return true
+    const onConnectSuccess = (easyrtcid) => {
+      this.setState({msg: `...connected with easyrtcid ${easyrtcid}`})
     }
 
-    // If I don't have an audio stream yet, we're not ready to make calls
-    if (!myAudio) {
-      return false
+    const handleError = (errCode, errMsg) => {
+      this.setState({msg: `Error ${errCode}: ${errMsg}`})
     }
 
-    // Call them!
-    console.log('Calling %s...', user.id)
-    let call = this.peer.call(user.id, myAudio)
-    call.on('stream', stream => {
-      // Record this as an outgoingCall
-      outgoingCalls[user.id] = call
-      // Add its stream to list of audioStreams
-      audioStreams.push(stream)
-    })
+    const onMediaSuccess = () =>  {
+      this.setState({msg: `Successfully retrieved user media`})
+      easyrtc.connect('easyrtc.audioOnly', onConnectSuccess, handleError)
+    }
+
+    easyrtc.initMediaSource(onMediaSuccess, handleError)
+
+    easyrtc.setStreamAcceptor(this.acceptStream.bind(this))
   }
 
-  /**
-   * Remove the user from the audio stream
-   */
-  handleDepartedUser (user) {
-    const { incomingCalls, outgoingCalls } = this
-
-    let call = incomingCalls[user.id] || outgoingCalls[user.id]
-    call.destroy()
+  acceptStream (easyrtcid, stream) {
+    this.state.audioStreams.push(stream)
+    this.setState({msg: `Now receiving audio from ${easyrtcid}`})
   }
 
-  componentWillReceiveProps (nextProps) {
-    const { users, me } = nextProps
+  onStreamClose (easyrtcid) {
+    delete this.state.audioStreams[easyrtcid]
+    this.setState({msg: `${easyrtcId} has disconnected`})
+  }
 
-    let prevUsers = this.users.slice()
-    let newUsers = []
-    let oldUsers = []
-
-    // Filter the users according whether we've seen them before
-    users.forEach(u => {
-      let prevIdx = oldUsers.indexOf(u)
-      if (oldUsers.indexOf(u) > -1) {
-        oldUsers.push(u)
-        prevUsers.splice(prevIdx, 1)
-      } else {
-        if (u.id != me.id)
-          newUsers.push(u)
-      }
-    })
-
-    let departedUsers = this.users.slice()
-
-    // Call appropriate methods
-    newUsers.forEach(u => this.handleNewUser(u))
-    departedUsers.forEach(u => this.handleDepartedUser(u))
+  occupantListener (roomName, occupantList) {
+    for (let o in occupantList) {
+      this.setState({msg: `${o} has joined the room`})
+    }
   }
 
   componentWillUnmount () {
-    if (this.peer)
-      this.peer.destroy()
+    easyrtc.hangupAll()
+    easyrtc.disconnect()
   }
 
   render () {
-    const audioEls = this.state.audioStreams.map(s => (<audio src={URL.createObjectURL(s)} />))
+    const { audioStreams, msg } = this.state
+
+    let audioEls = []
+    for (let m in audioStreams) {
+      audioEls.push(<audio key={m} src={URL.createObjectUrl(audioStreams[m])} />)
+    }
 
     return (
       <div className='audio-container'>
+        <ConnectionStatus msg={msg} />
         {audioEls}
       </div>
     )

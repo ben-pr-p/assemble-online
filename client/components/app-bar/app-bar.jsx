@@ -18,6 +18,8 @@ export default class AppBarIconMenu extends React.Component {
   }
 
   render () {
+    const { roomName } = this.props
+
     const style = {
       backgroundColor: blueGrey400,
       position: 'fixed'
@@ -27,7 +29,7 @@ export default class AppBarIconMenu extends React.Component {
       <AppBar
         className='app-bar'
         style={style}
-        title='Plaza'
+        title={roomName}
         iconElementLeft={
           <IconButton onClick={this.props.clearLocal} >
             <DeleteIcon />

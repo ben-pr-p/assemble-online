@@ -1,0 +1,13 @@
+.connection-status
+  flexbox(flex)
+  align-items(center)
+  transition opacity .25s ease-in-out
+
+  &.shown
+    opacity 1
+
+  &.hidden
+    opacity 0
+
+  .connection-msg-container
+    text-align left

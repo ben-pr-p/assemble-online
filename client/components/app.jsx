@@ -1,7 +1,6 @@
 import React from 'react'
 import store from 'store'
 import io from 'socket.io-client'
-import Peer from 'peerjs'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme'
@@ -19,6 +18,7 @@ export default class App extends React.Component {
     this.state = {
       users: [],
       me: null,
+      roomName: 'plaza',
       dimensions: null,
       editingUser: false,
       audioStreams: []
@@ -115,7 +115,7 @@ export default class App extends React.Component {
   }
 
   render () {
-    const {users, me, dimensions, editingUser} = this.state
+    const {users, me, dimensions, roomName, editingUser} = this.state
 
     const blobs = users.map((u, i) => {
       return (<UserBlob user={u} idx={i} key={i} />)
@@ -134,6 +134,7 @@ export default class App extends React.Component {
         <div id='main-app'>
           {requiresMe}
           <AppBarIconMenu 
+            roomName={roomName}
             clearLocal={this.clearLocal.bind(this)}
             setEditUserState={this.setEditUserState.bind(this)} />
           <Announcement text='Welcome to Assemble Live!' />
