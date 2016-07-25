@@ -19,7 +19,11 @@ export default class extends React.Component {
     let { msg } = nextProps
     this.state.queue.push(msg)
     if (this.state.queue.length == 1)
-      this.tick()
+      this.timeoutTick()
+  }
+
+  timeoutTick () {
+    setTimeout(this.tick.bind(this), 1000)
   }
 
   tick () {
@@ -27,7 +31,7 @@ export default class extends React.Component {
     this.setState({msg})
 
     if (this.state.queue.length > 1) {
-      setTimeout(this.tick.bind(this), 1000)
+      this.timeoutTick()
     }
   }
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import ConnectionStatus from './connection-status/connection-status'
-import clientLib from '../../node_modules/easyrtc/api/easyrtc'
+import easyrtcClient from '../../node_modules/easyrtc/api/easyrtc'
+import io from 'socket.io-client'
 
 export default class AudioController extends React.Component {
   constructor () {
@@ -8,20 +9,19 @@ export default class AudioController extends React.Component {
 
     this.state = {
       audioStreams: {},
-      msg: null
+      msg: 'Initializing audio connection to room...'
     }
 
     this.easyrtc = window.easyrtc
+    window.io = io
   }
 
-  componentWillMount () {
+  componentDidMount () {
     this.initialize()
   }
 
   initialize () {
     const { easyrtc } = this
-
-    this.setState({msg: 'Initializing audio connection to room...'})
 
     easyrtc.enableAudio(true)
     easyrtc.enableAudioReceive(true)
@@ -29,8 +29,6 @@ export default class AudioController extends React.Component {
     easyrtc.enableVideoReceive(false)
     easyrtc.enableMicrophone(true)
     easyrtc.enableCamera(false)
-
-    easyrtc.setRoomOccupantListener(this.occupantListener.bind(this))
 
     const onConnectSuccess = (easyrtcid) => {
       this.setState({msg: `...connected with easyrtcid ${easyrtcid}`})
@@ -45,9 +43,12 @@ export default class AudioController extends React.Component {
       easyrtc.connect('easyrtc.audioOnly', onConnectSuccess, handleError)
     }
 
-    easyrtc.initMediaSource(onMediaSuccess, handleError)
-
+    easyrtc.setRoomOccupantListener(this.occupantListener.bind(this))
     easyrtc.setStreamAcceptor(this.acceptStream.bind(this))
+    easyrtc.setAcceptChecker(this.shouldAccept.bind(this))
+
+    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
+    navigator.getUserMedia({audio: true}, onMediaSuccess, handleError)
   }
 
   acceptStream (easyrtcid, stream) {
@@ -66,7 +67,13 @@ export default class AudioController extends React.Component {
     }
   }
 
+  shouldAccept (easyrtcid, fn) {
+    fn(true)
+  }
+
   componentWillUnmount () {
+    const { easyrtc } = this
+
     easyrtc.hangupAll()
     easyrtc.disconnect()
   }
