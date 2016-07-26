@@ -28,12 +28,12 @@ export default class extends React.Component {
 
       this.state.queue.push(msg)
       if (this.state.queue.length == 1)
-        this.timeoutTick()
+        this.timeoutTick(200)
     }
   }
 
-  timeoutTick () {
-    setTimeout(this.tick.bind(this), 1000)
+  timeoutTick (duration) {
+    setTimeout(this.tick.bind(this), duration)
   }
 
   timeoutFade () {
@@ -49,8 +49,10 @@ export default class extends React.Component {
     let msg = this.state.queue.shift()
     this.setState({msg})
 
-    if (this.state.queue.length > 0) {
-      this.timeoutTick()
+    if (this.state.queue.length > 1) {
+      this.timeoutTick(200)
+    } else if (this.state.queue.length > 0) {
+      this.timeoutTick(1000)
     } else {
       this.timeoutFade()
     }

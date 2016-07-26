@@ -8,8 +8,7 @@ export default class AudioController extends React.Component {
     super()
 
     this.state = {
-      audioStreams: {},
-      msg: 'Initializing audio connection to room...'
+      audioStreams: {}, msg: 'Initializing audio connection to room...'
     }
 
     this.myAudio = null
@@ -50,12 +49,12 @@ export default class AudioController extends React.Component {
     easyrtc.setStreamAcceptor(this.acceptStream.bind(this))
     easyrtc.setAcceptChecker(this.shouldAccept.bind(this))
 
-    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
-    navigator.getUserMedia({audio: true}, onMediaSuccess, handleError)
+    //navigator.getUserMedia({audio: true}, onMediaSuccess, handleError)
+    easyrtc.initMediaSource(onMediaSuccess, handleError)
   }
 
   acceptStream (easyrtcid, stream) {
-    this.state.audioStreams.push(stream)
+    this.state.audioStreams[easyrtcid] = {stream: stream, src: URL.createObjectURL(stream)}
     this.setState({msg: {code: 'audio_from', text: `Now receiving audio from ${easyrtcid}`}})
   }
 
@@ -64,9 +63,24 @@ export default class AudioController extends React.Component {
     this.setState({msg: {code: 'audio_disconnect', text: `${easyrtcId} has disconnected`}})
   }
 
-  occupantListener (roomName, occupantList) {
-    for (let o in occupantList) {
+  occupantListener (roomName, occupants) {
+    const { easyrtc } = this
+
+    const onCallSuccess = (easyrtcid, mediaType) => {
+      this.setState({msg: {code: 'call_success', text: `successfully called ${easyrtcid}`}})
+    }
+
+    const onCallFailure = (easyrtcid, errMsg) => {
+      this.setState({msg: {code: 'call_failure', text: `failed to established audio connection with ${easyrtcid}: ${errMsg}`}})
+    }
+
+    const onCallAnswer = (wasAccepted, easyrtcid) => {
+      this.setState({msg: {code: 'call_answer', text: `${easyrtcid} answered and accepted the call`}})
+    }
+
+    for (let o in occupants) {
       this.setState({msg: {code: 'room_join', text: `${o} has joined the room`}})
+      easyrtc.call(o, onCallSuccess, onCallFailure, onCallAnswer)
     }
   }
 
@@ -86,7 +100,7 @@ export default class AudioController extends React.Component {
 
     let audioEls = []
     for (let m in audioStreams) {
-      audioEls.push(<audio key={m} src={URL.createObjectUrl(audioStreams[m])} />)
+      audioEls.push(<audio key={m} src={audioStreams[m].src} />)
     }
 
     return (
