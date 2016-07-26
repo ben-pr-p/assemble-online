@@ -32,7 +32,7 @@ export default class App extends React.Component {
   componentWillMount () {
     this.findMe()
 
-    this.socket = io()
+    this.socket = io.connect()
     this.socket.on('connect', this.handleUsers.bind(this))
     this.socket.on('users', this.handleUsers.bind(this))
     this.socket.on('movement-update', this.handleMovement.bind(this))

@@ -1,10 +1,14 @@
 .connection-status
   flexbox(flex)
   align-items(center)
-  transition opacity .25s ease-in-out
-  background transparent
+  background-color rgba(white, .5)
   position fixed
   bottom 80px
+  height 50px
+  margin-left 20px
+  padding-left 10px
+  padding-right 10px
+  transition opacity 1s ease-in-out
 
   &.shown
     opacity 1
@@ -13,4 +17,5 @@
     opacity 0
 
   .connection-msg-container
-    text-align left
+    padding-left 20px
+    text-shadow .5px .5px #444

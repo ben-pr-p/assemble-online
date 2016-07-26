@@ -12,19 +12,22 @@ app.use('/', express.static(staticDir))
 var server = http.createServer(app)
 var socketServer = io.listen(server, {'log level':1})
 
+var mySocket = require('./configure-socket')
+mySocket.configure(socketServer)
+
 easyrtc.setOption('logLevel', 'debug')
 
 /*
  * Overriding default listener to get logs
  */
-easyrtc.events.on('easyrtcAuth', function(socket, easyrtcid, msg, socketCb, cb) {
-  easyrtc.events.defaultListeners.easyrtcAuth(socket, easyrtcid, msg, socketCb, function(err, connectionObj){
+easyrtc.events.on('easyrtcAuth', function (socket, easyrtcid, msg, socketCb, cb) {
+  easyrtc.events.defaultListeners.easyrtcAuth(socket, easyrtcid, msg, socketCb, function (err, connectionObj) {
     if (err || !msg.msgData || !msg.msgData.credential || !connectionObj) {
       return cb(err, connectionObj)
     }
 
     connectionObj.setField('credential', msg.msgData.credential, {'isShared': false})
-    log(`${easyrtcid} credential saved`, connectionObj.getFieldValueSync('credential'))
+    log('%s credential saved', connectionObj.getFieldValueSync('credential'))
     cb(err, connectionObj)
   })
 })
@@ -32,7 +35,7 @@ easyrtc.events.on('easyrtcAuth', function(socket, easyrtcid, msg, socketCb, cb) 
 /*
  * Print out the credneitals for every room join
  */
-easyrtc.events.on('roomJoin', function(connectionObj, roomName, roomParameter, cb) {
+easyrtc.events.on('roomJoin', function (connectionObj, roomName, roomParameter, cb) {
   log(`${connectionObj.getEasyrtcid()} credential retrieved`, connectionObj.getFieldValueSync('credential'))
   easyrtc.events.defaultListeners.roomJoin(connectionObj, roomName, roomParameter, cb)
 })
@@ -43,8 +46,8 @@ easyrtc.events.on('roomJoin', function(connectionObj, roomName, roomParameter, c
 var rtc = easyrtc.listen(app, socketServer, null, function(err, rtcRef) {
   log('initated easyrtc')
 
-  rtcRef.events.on('roomCreate', function(appObj, creatorConnectionObj, roomName, roomOptions, cb) {
-    log(`roomCreate fired! creating: ${roomName}`)
+  rtcRef.events.on('roomCreate', function (appObj, creatorConnectionObj, roomName, roomOptions, cb) {
+    log('roomCreate fired! creating: %s', roomName)
 
     appObj.events.defaultListeners.roomCreate(appObj, creatorConnectionObj, roomName, roomOptions, cb)
   })

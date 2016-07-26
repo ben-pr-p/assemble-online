@@ -12,6 +12,8 @@ export default class AudioController extends React.Component {
       msg: 'Initializing audio connection to room...'
     }
 
+    this.myAudio = null
+    this.isConnected = false
     this.easyrtc = window.easyrtc
     window.io = io
   }
@@ -31,15 +33,16 @@ export default class AudioController extends React.Component {
     easyrtc.enableCamera(false)
 
     const onConnectSuccess = (easyrtcid) => {
-      this.setState({msg: `...connected with easyrtcid ${easyrtcid}`})
+      this.setState({msg: {code: 'conn_sucess', text: `...connected with easyrtcid ${easyrtcid}`}})
     }
 
     const handleError = (errCode, errMsg) => {
       this.setState({msg: `Error ${errCode}: ${errMsg}`})
     }
 
-    const onMediaSuccess = () =>  {
-      this.setState({msg: `Successfully retrieved user media`})
+    const onMediaSuccess = (stream) =>  {
+      this.setState({msg: {code: 'media_success', text: `Successfully retrieved user media` }})
+      this.myAudio = stream
       easyrtc.connect('easyrtc.audioOnly', onConnectSuccess, handleError)
     }
 
@@ -53,17 +56,17 @@ export default class AudioController extends React.Component {
 
   acceptStream (easyrtcid, stream) {
     this.state.audioStreams.push(stream)
-    this.setState({msg: `Now receiving audio from ${easyrtcid}`})
+    this.setState({msg: {code: 'audio_from', text: `Now receiving audio from ${easyrtcid}`}})
   }
 
   onStreamClose (easyrtcid) {
     delete this.state.audioStreams[easyrtcid]
-    this.setState({msg: `${easyrtcId} has disconnected`})
+    this.setState({msg: {code: 'audio_disconnect', text: `${easyrtcId} has disconnected`}})
   }
 
   occupantListener (roomName, occupantList) {
     for (let o in occupantList) {
-      this.setState({msg: `${o} has joined the room`})
+      this.setState({msg: {code: 'room_join', text: `${o} has joined the room`}})
     }
   }
 

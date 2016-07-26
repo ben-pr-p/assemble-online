@@ -4,7 +4,21 @@ var users = []
 var sockets = {}
 var dimensions = {}
 
-module.exports = function (io) {
+function addressOf (socket) {
+  return socket.handshake.address
+}
+
+exports.getUserWithSocket = function (socket) {
+  var userIp = addressOf(socket)
+
+  for (var uid in sockets) {
+    if (userIp == addressOf(sockets[uid])) {
+      return users.filter(u => u.id == u.id)[0]
+    }
+  }
+}
+
+exports.configure = function (io) {
   io.on('connection', function (socket) {
 
     socket.on('connect', function () {
