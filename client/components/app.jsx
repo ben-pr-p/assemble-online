@@ -104,6 +104,11 @@ export default class App extends React.Component {
     }
   }
 
+  setEasyRTCId (easyrtcid) {
+    this.state.me.easyrtcid = easyrtcid
+    this.announceMe()
+  }
+
   setEditUserState (value) {
     this.setState({editingUser: value})
   }
@@ -127,7 +132,7 @@ export default class App extends React.Component {
 
     let requiresMe = []
     if (me)
-      requiresMe.push(( <AudioController key='audio-controller' users={users} me={me} /> ))
+      requiresMe.push(( <AudioController key='audio-controller' users={users} me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} /> ))
 
     return (
       <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>

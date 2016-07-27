@@ -1,6 +1,7 @@
 import React from 'react'
 import ConnectionStatus from './connection-status/connection-status'
 import easyrtcClient from '../../node_modules/easyrtc/api/easyrtc'
+import dom from 'component-dom'
 import io from 'socket.io-client'
 
 export default class AudioController extends React.Component {
@@ -32,6 +33,7 @@ export default class AudioController extends React.Component {
     easyrtc.enableCamera(false)
 
     const onConnectSuccess = (easyrtcid) => {
+      this.props.setEasyRTCId(easyrtcid)
       this.setState({msg: {code: 'conn_sucess', text: `...connected with easyrtcid ${easyrtcid}`}})
     }
 
@@ -49,7 +51,6 @@ export default class AudioController extends React.Component {
     easyrtc.setStreamAcceptor(this.acceptStream.bind(this))
     easyrtc.setAcceptChecker(this.shouldAccept.bind(this))
 
-    //navigator.getUserMedia({audio: true}, onMediaSuccess, handleError)
     easyrtc.initMediaSource(onMediaSuccess, handleError)
   }
 
@@ -98,16 +99,39 @@ export default class AudioController extends React.Component {
   render () {
     const { audioStreams, msg } = this.state
 
-    let audioEls = []
+    let videoEls = []
     for (let m in audioStreams) {
-      audioEls.push(<audio key={m} src={audioStreams[m].src} />)
+      videoEls.push(<video key={m} data={`stream-${m}`} autoplay='' width='0' height='0' />)
     }
 
     return (
-      <div className='audio-container'>
+      <div className='video-container' style={{height: '0px', width: '0px'}} >
         <ConnectionStatus msg={msg} />
-        {audioEls}
+        {videoEls}
       </div>
     )
+  }
+
+  componentDidUpdate () {
+    const { easyrtc } = this
+    const { audioStreams } = this.state
+    const { users, me } = this.props
+
+    const otherMe = users.filter(u => u.id == me.id)
+    const withoutMe = users.filter(u => u.id != me.id)
+    let distances = {}
+    withoutMe.forEach(u => {
+      distances[u.easyrtcid] = Math.sqrt(Math.pow(otherMe.x - u.x, 2) + Math.pow(otherMe.y - u.y, 2))
+    })
+
+    const videoEls = dom('video')
+    videoEls.forEach(el => {
+      if (dom(el).attr('src') == null) {
+        let mId = dom(el).attr('data').split('-')[1]
+        easyrtc.setVideoObjectSrc(el, audioStreams[mId].stream)
+      }
+
+      el.volume = distances[mId]
+    })
   }
 }
