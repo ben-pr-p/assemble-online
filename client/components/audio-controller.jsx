@@ -1,6 +1,6 @@
 import React from 'react'
 import ConnectionStatus from './connection-status/connection-status'
-import easyrtcClient from '../../node_modules/easyrtc/api/easyrtc'
+import easyrtcClient from '../lib/easyrtc'
 import dom from 'component-dom'
 import io from 'socket.io-client'
 
