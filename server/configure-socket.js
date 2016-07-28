@@ -1,21 +1,46 @@
 var log = require('debug')('assemble:socket')
 
+var UPDATE_INTERVAL = 100
+var BASE_DIMENSIONS = {x: 2700, y: 1700} // mostly arbitrary, but a little bit smaller than macbook pro 15 inch screen
+var USERS_PER_SCREEN = 4
+
 var users = []
 var sockets = {}
-var dimensions = {}
+var dimGrowth = 1
+var dimensions = Object.assign({}, BASE_DIMENSIONS)
+var updateIntervalId = null
 
-function addressOf (socket) {
-  return socket.handshake.address
+function sendUpdates () {
+  users.forEach(u => {
+    if (sockets[u.id]) {
+      sockets[u.id].emit('movement-update', {users, dimensions})
+    }
+  })
+  log('Sent updates to %d users', users.length)
 }
 
-exports.getUserWithSocket = function (socket) {
-  var userIp = addressOf(socket)
+function setDimensions (users) {
+  dimGrowth = (users.length > 0) ? Math.floor(users.length / 4) : 1
 
-  for (var uid in sockets) {
-    if (userIp == addressOf(sockets[uid])) {
-      return users.filter(u => u.id == u.id)[0]
-    }
+  dimensions = {
+    x: BASE_DIMENSIONS.x * dimGrowth,
+    y: BASE_DIMENSIONS.y * dimGrowth
   }
+}
+
+function startUpdates () {
+  if (!updateIntervalId) {
+    updateIntervalId = setInterval(sendUpdates, UPDATE_INTERVAL)
+  }
+}
+
+function stopUpdates () {
+  clearInterval(updateIntervalId)
+  updateIntervalId = null
+}
+
+function areUpdatesRunning () {
+  return !!updateIntervalId
 }
 
 exports.configure = function (io) {
@@ -26,7 +51,12 @@ exports.configure = function (io) {
       socket.emit('users', users)
     })
 
+    /*
+     * Handle new user
+     */
     socket.on('newuser', function (user) {
+      var firstUser = users.length == 0
+
       var existing = users.filter(u => u.id == user.id)[0]
       if (existing) {
         log('Got existing user %s update', user.id)
@@ -45,18 +75,24 @@ exports.configure = function (io) {
       sockets[user.id] = socket
 
       socket.emit('users', users)
+
+      if (firstUser) startUpdates()
     })
 
+    /*
+     * Handle user movement
+     */
     socket.on('movement', function(user) {
       var moved = users.filter(u => u.id == user.id)[0]
       moved.x = user.x
       moved.y = user.y
 
       setDimensions(users)
-
-      socket.emit('movement-update', {users, dimensions})
     })
 
+    /*
+     * Handle user disconnect
+     */
     socket.on('disconnect', function () {
       var user = users.filter(u => sockets[u.id] == socket)[0]
       if (!user) {
@@ -65,31 +101,14 @@ exports.configure = function (io) {
         log('User %s disconnected', user.id)
         users.splice(users.indexOf(user), 1)
       }
-    })
-  })
 
-  function sendUpdates () {
-    users.forEach(u => {
-      if (sockets[u.id]) {
-        sockets[u.id].emit('users', users)
+      /*
+       * Stop sending updates
+       */
+      if (users.length == 0) {
+        log('No users left - cancelling updates')
+        stopUpdates()
       }
     })
-    log('Sent updates to %d users', users.length)
-  }
-
-  function setDimensions (users) {
-    var maxPosX = maxPosY = maxScreenX = maxScreenY = 0
-
-    users.forEach(u => {
-      if (u.x > maxPosX) maxPosX = u.x
-      if (u.y > maxPosY) maxPosY = u.y
-      if (u.screenSize.x > maxScreenX) maxScreenX = u.screenSize.x
-      if (u.screenSize.y > maxScreenY) maxScreenY = u.screenSize.y
-    })
-
-    dimensions = {
-      x: Math.max(maxScreenX, maxPosX + (maxScreenX / 2)),
-      y: Math.max(maxScreenY, maxPosY + (maxScreenY / 2))
-    }
-  }
+  })
 }
