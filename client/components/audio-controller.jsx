@@ -101,7 +101,7 @@ export default class AudioController extends React.Component {
 
     let videoEls = []
     for (let m in audioStreams) {
-      videoEls.push(<video key={m} data={`stream-${m}`} autoplay='' width='0' height='0' />)
+      videoEls.push(<video key={m} data={m} autoplay='' width='0' height='0' />)
     }
 
     return (
@@ -126,9 +126,7 @@ export default class AudioController extends React.Component {
 
     const videoEls = dom('video')
     videoEls.forEach(el => {
-      console.log(el)
-      let mId = dom(el).attr('data').split('-')[1]
-      console.log(mId)
+      let mId = dom(el).attr('data')
       if (dom(el).attr('src') == null) {
         easyrtc.setVideoObjectSrc(el, audioStreams[mId].stream)
       }
