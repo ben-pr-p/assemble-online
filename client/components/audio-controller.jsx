@@ -117,7 +117,7 @@ export default class AudioController extends React.Component {
     const { audioStreams } = this.state
     const { users, me } = this.props
 
-    const otherMe = users.filter(u => u.id == me.id)
+    const otherMe = users.filter(u => u.id == me.id)[0]
     const withoutMe = users.filter(u => u.id != me.id)
     let distances = {}
     withoutMe.forEach(u => {
