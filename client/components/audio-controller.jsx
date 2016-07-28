@@ -126,8 +126,9 @@ export default class AudioController extends React.Component {
 
     const videoEls = dom('video')
     videoEls.forEach(el => {
+      let mId = dom(el).attr('data').split('-')[1]
+
       if (dom(el).attr('src') == null) {
-        let mId = dom(el).attr('data').split('-')[1]
         easyrtc.setVideoObjectSrc(el, audioStreams[mId].stream)
       }
 
