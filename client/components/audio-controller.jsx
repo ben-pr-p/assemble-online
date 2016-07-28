@@ -131,11 +131,14 @@ export default class AudioController extends React.Component {
         easyrtc.setVideoObjectSrc(el, audioStreams[mId].stream)
       }
 
+      let v
       if (distances[mId] < 70) {
-        el.volume = 1
+        v = 1
       } else {
-        el.volume = 1 / (Math.pow(distances[mId] - 70, 2) / 5000)
+        v = 1 / (Math.pow(distances[mId] - 70, 2) / 5000)
       }
+      console.log(v)
+      el.volume = v
     })
   }
 }
