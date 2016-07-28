@@ -38,3 +38,8 @@ jspm_packages
 
 # Built static content
 build/
+
+# SSL Stuff
+server.pass.key
+server.key
+server.csr
