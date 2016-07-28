@@ -16,7 +16,6 @@ function sendUpdates () {
       sockets[u.id].emit('movement-update', {users, dimensions})
     }
   })
-  log('Sent updates to %d users', users.length)
 }
 
 function setDimensions (users) {
