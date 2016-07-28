@@ -121,6 +121,10 @@ export default class AudioController extends React.Component {
     const withoutMe = users.filter(u => u.id != me.id)
     let distances = {}
     withoutMe.forEach(u => {
+      console.log(otherMe.x)
+      console.log(otherMe.y)
+      console.log(u.x)
+      console.log(u.y)
       distances[u.easyrtcid] = Math.sqrt(Math.pow(otherMe.x - u.x, 2) + Math.pow(otherMe.y - u.y, 2))
     })
 
