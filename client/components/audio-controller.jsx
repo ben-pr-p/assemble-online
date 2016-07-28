@@ -126,6 +126,7 @@ export default class AudioController extends React.Component {
       console.log(u.x)
       console.log(u.y)
       distances[u.easyrtcid] = Math.sqrt(Math.pow(otherMe.x - u.x, 2) + Math.pow(otherMe.y - u.y, 2))
+      console.log(u.easyrtcid)
     })
 
     const videoEls = dom('video')
@@ -143,6 +144,7 @@ export default class AudioController extends React.Component {
       }
       console.log(v)
       console.log(distances[mId])
+      console.log(mId)
       el.volume = v
     })
   }
