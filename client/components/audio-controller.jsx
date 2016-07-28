@@ -121,12 +121,7 @@ export default class AudioController extends React.Component {
     const withoutMe = users.filter(u => u.id != me.id)
     let distances = {}
     withoutMe.forEach(u => {
-      console.log(otherMe.x)
-      console.log(otherMe.y)
-      console.log(u.x)
-      console.log(u.y)
       distances[u.easyrtcid] = Math.sqrt(Math.pow(otherMe.x - u.x, 2) + Math.pow(otherMe.y - u.y, 2))
-      console.log(u.easyrtcid)
     })
 
     const videoEls = dom('video')
@@ -136,16 +131,7 @@ export default class AudioController extends React.Component {
         easyrtc.setVideoObjectSrc(el, audioStreams[mId].stream)
       }
 
-      let v
-      if (distances[mId] < 70) {
-        v = 1
-      } else {
-        v = 1 / (Math.pow(distances[mId] - 70, 2) / 5000)
-      }
-      console.log(v)
-      console.log(distances[mId])
-      console.log(mId)
-      el.volume = v
+      el.volume = Math.min(1 / (Math.pow(distances[mId] - 70, 2) / 5000), 1)
     })
   }
 }
