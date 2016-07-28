@@ -138,6 +138,7 @@ export default class AudioController extends React.Component {
         v = 1 / (Math.pow(distances[mId] - 70, 2) / 5000)
       }
       console.log(v)
+      console.log(distances[mId])
       el.volume = v
     })
   }
