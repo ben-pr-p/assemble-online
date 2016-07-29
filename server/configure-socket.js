@@ -19,7 +19,7 @@ function sendUpdates () {
 }
 
 function setDimensions (users) {
-  dimGrowth = (users.length > 0) ? Math.floor(users.length / 4) : 1
+  dimGrowth = (users.length > 0) ? Math.ceil(users.length / 4) : 1
 
   dimensions = {
     x: BASE_DIMENSIONS.x * dimGrowth,

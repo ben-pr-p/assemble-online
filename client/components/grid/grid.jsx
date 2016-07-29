@@ -10,8 +10,6 @@ export default class Grid extends React.Component {
 
     let w = dimensions ? dimensions.x : '100%'
     let h = dimensions ? dimensions.y : '100%'
-    w = '100%'
-    h = '100%'
 
     return (
       <g id='grid-container' width={w} height={h} >

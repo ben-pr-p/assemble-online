@@ -48,7 +48,7 @@ export default class NewUserModal extends React.Component {
     }
 
     if (!this.state.id)
-      user.id = randomString()
+      user.id = randomString({numeric: false})
 
     store.set('me', user)
     this.props.closeNewUserModal()

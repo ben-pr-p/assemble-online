@@ -31,7 +31,7 @@ export default class UserBlob extends React.Component {
         style={{x: spring(x), y: spring(y)}}
       >
         {pos => 
-          <g className='user-blob'  id={user.id}>
+          <g className='user-blob'  id={user.id} >
             <defs>
               <pattern id={`avatar-${user.id}`} x='0' y='0' height='100%' width='100%' height='1' width='1' viewBox={`0 0 ${d} ${d}`}>
                 <image x='0' y='0' width={d} height={d} xlinkHref={user.avatar}></image>

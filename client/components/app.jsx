@@ -1,6 +1,8 @@
 import React from 'react'
 import store from 'store'
 import io from 'socket.io-client'
+import dom from 'component-dom'
+import { Motion, spring } from 'react-motion'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme'
@@ -12,6 +14,9 @@ import UserBlob from './user-blob/user-blob'
 import NewUserModal from './new-user-modal/new-user-modal'
 import AudioController from './audio-controller'
 
+// movement attenuation constant
+const MAC = .05
+
 export default class App extends React.Component {
   constructor () {
     super()
@@ -21,12 +26,17 @@ export default class App extends React.Component {
       roomName: 'plaza',
       dimensions: null,
       editingUser: false,
-      audioStreams: []
+      audioStreams: [],
+      translate: {x: 0, y: 0}
     }
 
     this.outgoingCalls = {}
     this.incomingCalls = {}
-    this.mouseDown = false
+    this.updateIntervalId = null
+    this.mousePos = {}
+    this.myBlob = null
+
+    window.onresize = this.handleWindowResize.bind(this)
   }
 
   componentWillMount () {
@@ -42,23 +52,17 @@ export default class App extends React.Component {
     }
   }
 
-  componentDidMount () {
-    if (this.state.me) this.announceScreenSize()
-  }
-
   findMe () {
     this.state.me = store.get('me')
   }
 
   announceMe () {
-    if (this.refs.plaza) {
-      this.state.me.screenSize = {
-        x: this.refs.plaza.width.baseVal.value,
-        y: this.refs.plaza.height.baseVal.value
-      }
-    }
-
     this.socket.emit('newuser', this.state.me, this.handleUsers.bind(this))
+  }
+
+  setMeBlobRef () {
+    const query = '#' + this.state.me.id
+    this.myBlob = document.querySelector(query)
   }
 
   handleUsers (users) {
@@ -73,15 +77,6 @@ export default class App extends React.Component {
     this.socket.emit('movement', user, this.handleMovement.bind(this))
   }
 
-  announceScreenSize () {
-    this.state.me.screenSize = {
-      x: this.refs.plaza.clientWidth,
-      y: this.refs.plaza.clientHeight
-    }
-
-    this.announceMe()
-  }
-
   handleMovement (data) {
     this.setState({users: data.users, dimensions: data.dimensions})
   }
@@ -92,16 +87,47 @@ export default class App extends React.Component {
     this.setEditUserState(false)
   }
 
-  onMouseMove (ev) {
-    if (this.mouseDown) {
-      let newX = ev.nativeEvent.clientX
-      let newY = ev.nativeEvent.clientY
+  onMouseDown () {
+    this.moveUser()
+    this.updateIntervalId = window.setInterval(this.moveUser.bind(this), 10)
+  }
 
-      let me = this.state.users.filter(u => u.id == this.state.me.id)[0]
-      me.x = newX
-      me.y = newY
-      this.announceLocation(me)
+  onMouseUp () {
+    window.clearInterval(this.updateIntervalId)
+    this.updateIntervalId = null
+  }
+
+  onMouseMove (ev) {
+    this.mousePos = {
+      x: ev.nativeEvent.clientX,
+      y: ev.nativeEvent.clientY
     }
+  }
+
+  moveUser () {
+    if (!this.myBlob) this.setMeBlobRef()
+
+    const posOfMe = this.myBlob.getBoundingClientRect()
+    const dx = (this.mousePos.x - posOfMe.x) * MAC
+    const dy = (this.mousePos.y - posOfMe.y) * MAC
+
+    const me = this.state.users.filter(u => u.id == this.state.me.id)[0]
+    const newX = constrain(me.x + dx, 0, this.state.dimensions.x)
+    const newY = constrain(me.y + dy, 0, this.state.dimensions.y)
+    me.x = newX
+    me.y = newY
+
+    this.setTranslate({x: newX, y: newY})
+    this.announceLocation(me)
+  }
+
+  setTranslate (location) {
+    this.setState({
+      translate: {
+        x: (-1) * location.x + (window.screen.width / 2),
+        y: (-1) * location.y + (window.screen.height / 2)
+      }
+    })
   }
 
   setEasyRTCId (easyrtcid) {
@@ -119,8 +145,14 @@ export default class App extends React.Component {
     this.forceUpdate()
   }
 
+  handleWindowResize () {
+    this.setState({
+      screenDims: {x: window.screen.width, y: window.screen.height}
+    })
+  }
+
   render () {
-    const {users, me, dimensions, roomName, editingUser} = this.state
+    const {users, me, dimensions, roomName, editingUser, translate} = this.state
 
     const blobs = users.map((u, i) => {
       return (<UserBlob user={u} idx={i} key={i} />)
@@ -131,8 +163,9 @@ export default class App extends React.Component {
       newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} me={me} />)
 
     let requiresMe = []
-    if (me)
+    if (me) {
       requiresMe.push(( <AudioController key='audio-controller' users={users} me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} /> ))
+    }
 
     return (
       <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
@@ -143,15 +176,26 @@ export default class App extends React.Component {
             clearLocal={this.clearLocal.bind(this)}
             setEditUserState={this.setEditUserState.bind(this)} />
           <Announcement text='Welcome to Assemble Live!' />
-          <svg id='plaza' onMouseMove={this.onMouseMove.bind(this)} onMouseDown={() => this.mouseDown = true} onMouseUp={() => this.mouseDown = false} ref='plaza' >
-            <g id='viewport' >
-              <Grid dimensions={dimensions} />
-              {blobs}
-            </g>
+          <svg id='plaza' onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} onMouseMove={this.onMouseMove.bind(this)} >
+            <Motion
+              defaultStyle={{x: translate.x, y: translate.y}}
+              style={{x: spring(translate.x), y: spring(translate.y)}}
+            >
+              {trans => 
+                <g id='viewport' transform={`translate(${trans.x}, ${trans.y})`} >
+                  <Grid dimensions={dimensions} />
+                  {blobs}
+                </g>
+              }
+            </Motion>
           </svg>
           {newUserModal}
         </div>
       </MuiThemeProvider>
     )
   }
+}
+
+function constrain (x, min, max) {
+  return Math.min(Math.max(x, min), max)
 }
