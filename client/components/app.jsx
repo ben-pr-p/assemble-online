@@ -78,7 +78,12 @@ export default class App extends React.Component {
   }
 
   handleMovement (data) {
-    this.setState({users: data.users, dimensions: data.dimensions})
+    const me = data.users.filter(u => u.id == this.state.me.id)[0]
+    this.setState({
+      users: data.users,
+      dimensions: data.dimensions,
+      translate: this.calcTranslate({x: me.x, y: me.y})
+    })
   }
 
   closeNewUserModal () {
@@ -117,17 +122,14 @@ export default class App extends React.Component {
     me.x = newX
     me.y = newY
 
-    this.setTranslate({x: newX, y: newY})
     this.announceLocation(me)
   }
 
-  setTranslate (location) {
-    this.setState({
-      translate: {
-        x: (-1) * location.x + (window.screen.width / 2),
-        y: (-1) * location.y + (window.screen.height / 2)
-      }
-    })
+  calcTranslate (location) {
+    return {
+      x: (-1) * location.x + (window.screen.width / 2),
+      y: (-1) * location.y + (window.screen.height / 2)
+    }
   }
 
   setEasyRTCId (easyrtcid) {
