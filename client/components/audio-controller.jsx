@@ -44,6 +44,7 @@ export default class AudioController extends React.Component {
     const onMediaSuccess = (stream) =>  {
       this.setState({msg: {code: 'media_success', text: `Successfully retrieved user media` }})
       this.myAudio = stream
+      this.initializeAudioContext()
       easyrtc.connect('easyrtc.audioOnly', onConnectSuccess, handleError)
     }
 
@@ -89,6 +90,20 @@ export default class AudioController extends React.Component {
     fn(true)
   }
 
+  initializeAudioContext () {
+    let audioContext = window.AudioContext || window.webkitAudioContext
+    this.ac = new audioContext()
+    this.inputNode = this.ac.createMediaStreamSource(this.myAudio)
+    this.processor = this.ac.createScriptProcessor(4096,2,2)
+    this.processor.onaudioprocess = function (e) {
+      let sum = e.inputBuffer.getChannelData(0).reduce((a,b) => a + Math.pow(b,2), 0)
+      let rms = Math.sqrt(sum)
+      this.props.announceVolume(rms)
+    }
+    this.inputNode.connect(this.processor)
+    this.processor.connect(this.ac.destination)
+  }
+
   componentWillUnmount () {
     const { easyrtc } = this
 
@@ -121,7 +136,8 @@ export default class AudioController extends React.Component {
     const withoutMe = users.filter(u => u.id != me.id)
     let distances = {}
     withoutMe.forEach(u => {
-      distances[u.easyrtcid] = Math.sqrt(Math.pow(otherMe.x - u.x, 2) + Math.pow(otherMe.y - u.y, 2))
+      if (u.x && u.y)
+        distances[u.easyrtcid] = Math.sqrt(Math.pow(otherMe.x - u.x, 2) + Math.pow(otherMe.y - u.y, 2))
     })
 
     const videoEls = dom('video')
@@ -132,7 +148,12 @@ export default class AudioController extends React.Component {
       }
 
       let v = Math.min(1 / (Math.pow(distances[mId] - 70, 2) / 5000), 1)
-      el.volume = v
+      if (typeof v == 'number' && !isNaN(v)) {
+        el.volume = v
+      } else {
+        console.log('Cannot assign volume %d', v)
+        el.volume = 0
+      }
     })
   }
 }

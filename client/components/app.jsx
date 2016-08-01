@@ -22,6 +22,7 @@ export default class App extends React.Component {
     super()
     this.state = {
       users: [],
+      volumes: {},
       me: null,
       roomName: 'plaza',
       dimensions: null,
@@ -46,6 +47,7 @@ export default class App extends React.Component {
     this.socket.on('connect', this.handleUsers.bind(this))
     this.socket.on('users', this.handleUsers.bind(this))
     this.socket.on('movement-update', this.handleMovement.bind(this))
+    this.socket.on('volume-update', this.handleVolumes.bind(this))
 
     if (this.state.me) {
       this.announceMe()
@@ -86,6 +88,16 @@ export default class App extends React.Component {
     })
   }
 
+  handleVolumes (data) {
+    this.setState({
+      volumes: data
+    })
+  }
+
+  announceVolume (rms) {
+    this.socket.emit('my-volume', rms, this.handleVolumes.bind(this))
+  }
+
   closeNewUserModal () {
     this.findMe()
     this.announceMe()
@@ -113,8 +125,8 @@ export default class App extends React.Component {
     if (!this.myBlob) this.setMeBlobRef()
 
     const posOfMe = this.myBlob.getBoundingClientRect()
-    const dx = (this.mousePos.x - posOfMe.x) * MAC
-    const dy = (this.mousePos.y - posOfMe.y) * MAC
+    const dx = (this.mousePos.x - posOfMe.left) * MAC
+    const dy = (this.mousePos.y - posOfMe.top) * MAC
 
     const me = this.state.users.filter(u => u.id == this.state.me.id)[0]
     const newX = constrain(me.x + dx, 0, this.state.dimensions.x)
@@ -166,7 +178,7 @@ export default class App extends React.Component {
 
     let requiresMe = []
     if (me) {
-      requiresMe.push(( <AudioController key='audio-controller' users={users} me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} /> ))
+      requiresMe.push(( <AudioController key='audio-controller' users={users} me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} announceVolume={this.announceVolume.bind(this)} /> ))
     }
 
     return (
