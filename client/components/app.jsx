@@ -22,7 +22,6 @@ export default class App extends React.Component {
     super()
     this.state = {
       users: [],
-      volumes: {},
       me: null,
       roomName: 'plaza',
       dimensions: null,
@@ -47,7 +46,6 @@ export default class App extends React.Component {
     this.socket.on('connect', this.handleUsers.bind(this))
     this.socket.on('users', this.handleUsers.bind(this))
     this.socket.on('movement-update', this.handleMovement.bind(this))
-    this.socket.on('volume-update', this.handleVolumes.bind(this))
 
     if (this.state.me) {
       this.announceMe()
@@ -88,14 +86,8 @@ export default class App extends React.Component {
     })
   }
 
-  handleVolumes (data) {
-    this.setState({
-      volumes: data
-    })
-  }
-
   announceVolume (rms) {
-    this.socket.emit('my-volume', rms, this.handleVolumes.bind(this))
+    this.socket.emit('my-volume', {userId: this.state.me.id, rms: rms})
   }
 
   closeNewUserModal () {

@@ -81,12 +81,21 @@ exports.configure = function (io) {
     /*
      * Handle user movement
      */
-    socket.on('movement', function(user) {
+    socket.on('movement', function (user) {
       var moved = users.filter(u => u.id == user.id)[0]
       moved.x = user.x
       moved.y = user.y
 
       setDimensions(users)
+    })
+
+    /**
+     * Handle user volume broadcast
+     */
+    socket.on('my-volume', function (data) {
+      var user = users.filter(u => u.id == data.userId)[0]
+      if (user)
+        user.volume = data.rms
     })
 
     /*

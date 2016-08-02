@@ -4,6 +4,8 @@ import easyrtcClient from '../lib/easyrtc'
 import dom from 'component-dom'
 import io from 'socket.io-client'
 
+const UPDATE_INTERVAL = 100
+
 export default class AudioController extends React.Component {
   constructor () {
     super()
@@ -15,6 +17,8 @@ export default class AudioController extends React.Component {
     this.myAudio = null
     this.isConnected = false
     this.easyrtc = window.easyrtc
+    this.rms = null
+    this.rmsIntervalId = null
     window.io = io
   }
 
@@ -95,13 +99,18 @@ export default class AudioController extends React.Component {
     this.ac = new audioContext()
     this.inputNode = this.ac.createMediaStreamSource(this.myAudio)
     this.processor = this.ac.createScriptProcessor(4096,2,2)
-    this.processor.onaudioprocess = function (e) {
+
+    this.processor.onaudioprocess = (e) => {
       let sum = e.inputBuffer.getChannelData(0).reduce((a,b) => a + Math.pow(b,2), 0)
-      let rms = Math.sqrt(sum)
-      this.props.announceVolume(rms)
+      this.rms = Math.sqrt(sum)
     }
+
     this.inputNode.connect(this.processor)
     this.processor.connect(this.ac.destination)
+
+    this.updateIntervalId = window.setInterval(() => {
+      this.props.announceVolume(this.rms)
+    }, UPDATE_INTERVAL)
   }
 
   componentWillUnmount () {
