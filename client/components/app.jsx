@@ -117,8 +117,9 @@ export default class App extends React.Component {
     if (!this.myBlob) this.setMeBlobRef()
 
     const posOfMe = this.myBlob.getBoundingClientRect()
-    const dx = (this.mousePos.x - posOfMe.left) * MAC
-    const dy = (this.mousePos.y - posOfMe.top) * MAC
+    // need to subtract radius
+    const dx = (this.mousePos.x - 50 - posOfMe.left) * MAC
+    const dy = (this.mousePos.y - 50 - posOfMe.top) * MAC
 
     const me = this.state.users.filter(u => u.id == this.state.me.id)[0]
     const newX = constrain(me.x + dx, 0, this.state.dimensions.x)
