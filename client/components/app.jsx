@@ -5,7 +5,6 @@ import dom from 'component-dom'
 import { Motion, spring } from 'react-motion'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import darkBaseTheme from 'material-ui/styles/baseThemes/darkBaseTheme'
 import KeyManager from '../lib/key-manager'
 import Grid from './grid/grid'
 import AppBarIconMenu from './app-bar/app-bar'
@@ -13,6 +12,7 @@ import Announcement from './announcement/announcement'
 import UserBlob from './user-blob/user-blob'
 import NewUserModal from './new-user-modal/new-user-modal'
 import AudioController from './audio-controller'
+import customTheme from '../lib/custom-theme.js'
 
 // movement attenuation constant
 const MAC = .05
@@ -175,7 +175,7 @@ export default class App extends React.Component {
     }
 
     return (
-      <MuiThemeProvider muiTheme={getMuiTheme(darkBaseTheme)}>
+      <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
         <div id='main-app'>
           {requiresMe}
           <AppBarIconMenu 

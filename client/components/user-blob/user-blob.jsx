@@ -40,7 +40,6 @@ export default class UserBlob extends React.Component {
               stroke='red'
               d={d3.svg.arc().innerRadius(r).outerRadius(r+1).startAngle(0).endAngle(pos.z / 20 * Math.PI)()}
              />
-            <text className='name-text' x='-40' y={r + 15} text-anchor='middle' transform={`translate(${pos.x},${pos.y})`} >{user.name}</text>
           </g>
         }
       </Motion>

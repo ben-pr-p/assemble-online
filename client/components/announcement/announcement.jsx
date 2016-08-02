@@ -1,4 +1,7 @@
 import React from 'react'
+import Paper from 'material-ui/Paper'
+import IconButton from 'material-ui/IconButton'
+import ModeEdit from 'material-ui/svg-icons/image/edit'
 import { Motion, spring } from 'react-motion'
 
 export default class Announcement extends React.Component {
@@ -6,7 +9,8 @@ export default class Announcement extends React.Component {
     super()
     this.state = {
       hidden: true,
-      opaque: true
+      opaque: true,
+      creatingPoll: false
     }
 
     this.shouldFade = true
@@ -14,6 +18,12 @@ export default class Announcement extends React.Component {
 
   componentWillMount () {
     setTimeout(this.flyAndFade.bind(this), 10)
+  }
+
+  togglePoll () {
+    this.setState({
+      creatingPoll: !this.state.creatingPoll
+    })
   }
 
   onMouseOver () {
@@ -57,9 +67,12 @@ export default class Announcement extends React.Component {
           style={{opacity: shouldFade ? spring(o, longOpts) : spring(o)}}
         >
           {s =>
-            <div className='announcement' style={s} >
+            <Paper zDepth={3} className='announcement' style={s} >
+              <IconButton className='edit-icon' onClick={this.togglePoll.bind(this)} >
+                <ModeEdit color='white' />
+              </IconButton>
               {text}
-            </div>
+            </Paper>
           }
         </Motion>
       </div>
