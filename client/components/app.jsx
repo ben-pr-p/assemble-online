@@ -14,8 +14,12 @@ import NewUserModal from './new-user-modal/new-user-modal'
 import AudioController from './audio-controller'
 import customTheme from '../lib/custom-theme.js'
 
+// TO DO: SOCKET UPDATES SHOULD BE DONE USING SERVICE WORKERS AND USER'S
+// MOVEMENT SHOULD BE PERFECT
+
 // movement attenuation constant
 const MAC = .05
+const UPDATE_INTERVAL = 99
 
 export default class App extends React.Component {
   constructor () {
@@ -96,7 +100,7 @@ export default class App extends React.Component {
 
   onMouseDown () {
     this.moveUser()
-    this.updateIntervalId = window.setInterval(this.moveUser.bind(this), 10)
+    this.updateIntervalId = window.setInterval(this.moveUser.bind(this), UPDATE_INTERVAL)
   }
 
   onMouseUp () {

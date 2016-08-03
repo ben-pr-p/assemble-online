@@ -47,7 +47,7 @@ export default class UserBlob extends React.Component {
   renderFar (user, x, y, me) {
     const halfW = window.innerWidth / 2
     const halfH = window.innerHeight / 2
-    const walls = {
+    const edges = {
       left: { start: { x: me.x - halfW, y: me.y - halfH }, end: { x: me.x - halfW, y: me.y + halfH } },
       right: { start: { x: me.x + halfW, y: me.y - halfH }, end: { x: me.x + halfW, y: me.y + halfH } },
       top: { start: { x: me.x - halfW, y: me.y - halfH }, end: { x: me.x + halfW, y: me.y - halfH } },
@@ -56,10 +56,10 @@ export default class UserBlob extends React.Component {
 
     const line = {start: {x: me.x, y: me.y} , end: {x, y}}
     const intersects = {
-      left: lineIntersect.checkIntersection(line.start.x, line.start.y, line.end.x, line.end.y, walls.left.start.x, walls.left.start.y, walls.left.end.x, walls.left.end.y),
-      right: lineIntersect.checkIntersection(line.start.x, line.start.y, line.end.x, line.end.y, walls.right.start.x, walls.right.start.y, walls.right.end.x, walls.right.end.y),
-      top: lineIntersect.checkIntersection(line.start.x, line.start.y, line.end.x, line.end.y, walls.top.start.x, walls.top.start.y, walls.top.end.x, walls.top.end.y),
-      bottom: lineIntersect.checkIntersection(line.start.x, line.start.y, line.end.x, line.end.y, walls.bottom.start.x, walls.bottom.start.y, walls.bottom.end.x, walls.bottom.end.y)
+      left: lineIntersect.checkIntersection(line.start.x, line.start.y, line.end.x, line.end.y, edges.left.start.x, edges.left.start.y, edges.left.end.x, edges.left.end.y),
+      right: lineIntersect.checkIntersection(line.start.x, line.start.y, line.end.x, line.end.y, edges.right.start.x, edges.right.start.y, edges.right.end.x, edges.right.end.y),
+      top: lineIntersect.checkIntersection(line.start.x, line.start.y, line.end.x, line.end.y, edges.top.start.x, edges.top.start.y, edges.top.end.x, edges.top.end.y),
+      bottom: lineIntersect.checkIntersection(line.start.x, line.start.y, line.end.x, line.end.y, edges.bottom.start.x, edges.bottom.start.y, edges.bottom.end.x, edges.bottom.end.y)
     }
 
     let point, intersectingWall
