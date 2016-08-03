@@ -131,8 +131,8 @@ export default class App extends React.Component {
   }
 
   calcTranslate (location) {
-    let x = (-1) * location.x + (window.screen.width / 2)
-    let y = (-1) * location.y + (window.screen.height / 2)
+    let x = (-1) * location.x + (window.screen.width / 2) - 25
+    let y = (-1) * location.y + (window.screen.height / 2) - 25
 
     if (isNaN(x)) x = 0
     if (isNaN(y)) y = 0

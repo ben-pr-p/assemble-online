@@ -23,7 +23,7 @@ export default class Grid extends React.Component {
           </pattern>
         </defs>
 
-        <rect id='grid' width={w} height={h} fill='url(#grid)' />
+        <rect id='grid-main' width={w} height={h} fill='url(#grid)' />
       </g>
     )
   }
