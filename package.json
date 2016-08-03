@@ -29,6 +29,7 @@
     "gulp-notify": "^2.2.0",
     "gulp-stylus": "^2.3.0",
     "gulp-util": "^3.0.7",
+    "line-intersect": "^1.0.0",
     "material-ui": "^0.15.1",
     "mongoose": "^4.5.2",
     "random-string": "^0.1.2",

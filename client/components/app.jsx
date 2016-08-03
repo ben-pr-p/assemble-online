@@ -35,8 +35,6 @@ export default class App extends React.Component {
     this.updateIntervalId = null
     this.mousePos = {}
     this.myBlob = null
-
-    window.onresize = this.handleWindowResize.bind(this)
   }
 
   componentWillMount () {
@@ -122,6 +120,8 @@ export default class App extends React.Component {
     const dy = (this.mousePos.y - 50 - posOfMe.top) * MAC
 
     const me = this.state.users.filter(u => u.id == this.state.me.id)[0]
+    if (!me.x) me.x = 0
+    if (!me.y) me.y = 0
     const newX = constrain(me.x + dx, 0, this.state.dimensions.x)
     const newY = constrain(me.y + dy, 0, this.state.dimensions.y)
     me.x = newX
@@ -131,10 +131,13 @@ export default class App extends React.Component {
   }
 
   calcTranslate (location) {
-    return {
-      x: (-1) * location.x + (window.screen.width / 2),
-      y: (-1) * location.y + (window.screen.height / 2)
-    }
+    let x = (-1) * location.x + (window.screen.width / 2)
+    let y = (-1) * location.y + (window.screen.height / 2)
+
+    if (isNaN(x)) x = 0
+    if (isNaN(y)) y = 0
+
+    return {x, y}
   }
 
   setEasyRTCId (easyrtcid) {
@@ -152,17 +155,11 @@ export default class App extends React.Component {
     this.forceUpdate()
   }
 
-  handleWindowResize () {
-    this.setState({
-      screenDims: {x: window.screen.width, y: window.screen.height}
-    })
-  }
-
   render () {
     const {users, me, dimensions, roomName, editingUser, translate} = this.state
 
     const blobs = users.map((u, i) => {
-      return (<UserBlob user={u} idx={i} key={i} />)
+      return (<UserBlob user={u} idx={i} key={i} isMe={me.id == u.id} translate={translate} />)
     })
 
     let newUserModal
