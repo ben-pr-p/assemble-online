@@ -131,8 +131,8 @@ export default class App extends React.Component {
   }
 
   calcTranslate (location) {
-    let x = (-1) * location.x + (window.screen.width / 2) - 25
-    let y = (-1) * location.y + (window.screen.height / 2) - 25
+    let x = (-1) * location.x + (window.innerWidth / 2) - 25
+    let y = (-1) * location.y + (window.innerHeight / 2) - 25
 
     if (isNaN(x)) x = 0
     if (isNaN(y)) y = 0
@@ -156,18 +156,20 @@ export default class App extends React.Component {
   }
 
   render () {
-    const {users, me, dimensions, roomName, editingUser, translate} = this.state
+    const {users, dimensions, roomName, editingUser, translate} = this.state
+    const me = this.state.users.filter(u => u.id == this.state.me.id)[0]
+    const myData = this.state.me
 
     const blobs = users.map((u, i) => {
-      return (<UserBlob user={u} idx={i} key={i} isMe={me.id == u.id} translate={translate} />)
+      return (<UserBlob user={u} idx={i} key={i} me={me} translate={translate} />)
     })
 
     let newUserModal
-    if (!me || editingUser)
-      newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} me={me} />)
+    if (!myData || editingUser)
+      newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} me={myData} />)
 
     let requiresMe = []
-    if (me) {
+    if (myData) {
       requiresMe.push(( <AudioController key='audio-controller' users={users} me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} announceVolume={this.announceVolume.bind(this)} /> ))
     }
 

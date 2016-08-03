@@ -6,6 +6,7 @@ import lineIntersect from 'line-intersect'
 
 /*
  * Motion in this component is modeled off of https://github.com/chenglou/react-motion/blob/master/demos/demo1-chat-heads/Demo.jsx
+ * TO DO: ADD ARROWS
  */
 
 const r = 50
@@ -22,7 +23,7 @@ export default class UserBlob extends React.Component {
   }
 
   render () {
-    const { user, idx, translate, isMe } = this.props
+    const { user, idx, translate, me } = this.props
     let { x, y } = user
 
     if (isNaN(x)) x = 0
@@ -36,25 +37,24 @@ export default class UserBlob extends React.Component {
       y: y + translate.y
     }
 
-    if (!isMe && (adj.x < 0 || adj.x > window.screen.width || adj.y < 0 || adj.y > window.screen.height)) {
-      return this.renderFar(user, x, y)
+    if (!(user.id == me.id) && (adj.x < 0 || adj.x > window.innerWidth || adj.y < 0 || adj.y > window.innerHeight)) {
+      return this.renderFar(user, x, y, me)
     } else {
       return this.renderClose(user, x, y)
     }
   }
 
-  renderFar (user, x, y) {
-    const halfW = window.screen.width / 2
-    const halfH = window.screen.height / 2
+  renderFar (user, x, y, me) {
+    const halfW = window.innerWidth / 2
+    const halfH = window.innerHeight / 2
     const walls = {
-      left: { start: { x: x - halfW, y: y - halfH }, end: { x: x - halfW, y: y + halfH } },
-      right: { start: { x: x + halfW, y: y - halfH }, end: { x: x + halfW, y: y + halfH } },
-      top: { start: { x: x - halfW, y: y - halfH }, end: { x: x + halfW, y: y - halfH } },
-      bottom: { start: { x: x - halfW, y: y + halfH }, end: { x: x + halfW, y: y + halfH } }
+      left: { start: { x: me.x - halfW, y: me.y - halfH }, end: { x: me.x - halfW, y: me.y + halfH } },
+      right: { start: { x: me.x + halfW, y: me.y - halfH }, end: { x: me.x + halfW, y: me.y + halfH } },
+      top: { start: { x: me.x - halfW, y: me.y - halfH }, end: { x: me.x + halfW, y: me.y - halfH } },
+      bottom: { start: { x: me.x - halfW, y: me.y + halfH }, end: { x: me.x + halfW, y: me.y + halfH } }
     }
 
-    const center = {x: (walls.left.start.x + walls.right.start.x) / 2, y: (walls.top.start.y + walls.bottom.start.y) / 2}
-    const line = {start: center, end: {x, y}}
+    const line = {start: {x: me.x, y: me.y} , end: {x, y}}
     const intersects = {
       left: lineIntersect.checkIntersection(line.start.x, line.start.y, line.end.x, line.end.y, walls.left.start.x, walls.left.start.y, walls.left.end.x, walls.left.end.y),
       right: lineIntersect.checkIntersection(line.start.x, line.start.y, line.end.x, line.end.y, walls.right.start.x, walls.right.start.y, walls.right.end.x, walls.right.end.y),
@@ -65,15 +65,17 @@ export default class UserBlob extends React.Component {
     let point, intersectingWall
     for (let wall in intersects) {
       if (intersects[wall].type == 'intersecting') {
-        point = result.point
+        point = intersects[wall].point
         intersectingWall = wall
       }
     }
 
+    if (!point) return (<div> </div>)
+
     let dx, dy
     switch (intersectingWall) {
       case 'left':
-        dx = sr
+        dx = 2 * sr
         dy = 0
         break
 
@@ -84,12 +86,12 @@ export default class UserBlob extends React.Component {
 
       case 'top':
         dx = 0
-        dy = sr
+        dy = 3 * sr
         break
 
       case 'bottom':
         dx = 0
-        dy = (-1) * sr
+        dy = (-4) * sr
         break
     }
 
@@ -101,10 +103,10 @@ export default class UserBlob extends React.Component {
     return (
       <Motion
         defaultStyle={{x: 0, y: 0, z: 0}}
-        style={{x: spring(p.x), y: spring(p.y), z: spring(user,volume || 0, {stiffness: 300, damping: 50})}}
+        style={{x: spring(p.x), y: spring(p.y), z: spring(user.volume || 0, {stiffness: 300, damping: 50})}}
       >
         {pos =>
-          <g className='user-blob' id={user.id} >
+          <g className='user-blob offscreen' id={user.id} >
             <defs>
               <pattern id={`avatar-${user.id}`} x='0' y='0' height='100%' width='100%' height='1' width='1' viewBox={`0 0 ${sd} ${sd}`}>
                 <image x='0' y='0' width={sd} height={sd} xlinkHref={user.avatar}></image>
@@ -115,7 +117,7 @@ export default class UserBlob extends React.Component {
               transform={`translate(${pos.x},${pos.y})`}
               strokeWidth='6px'
               stroke={this.color}
-              d={d3.svg.arc().innerRadius(r).outerRadius(r+1).startAngle(0).endAngle(pos.z / 20 * Math.PI)()}
+              d={d3.svg.arc().innerRadius(sr).outerRadius(sr+1).startAngle(0).endAngle(pos.z / 20 * Math.PI)()}
              />
           </g>
         }
