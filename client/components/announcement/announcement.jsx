@@ -1,7 +1,10 @@
 import React from 'react'
 import Paper from 'material-ui/Paper'
+import TextField from 'material-ui/TextField'
 import IconButton from 'material-ui/IconButton'
-import ModeEdit from 'material-ui/svg-icons/image/edit'
+import EditIcon from 'material-ui/svg-icons/content/create'
+import SaveIcon from 'material-ui/svg-icons/content/save'
+import ClearIcon from 'material-ui/svg-icons/content/clear'
 import { Motion, spring } from 'react-motion'
 
 export default class Announcement extends React.Component {
@@ -10,7 +13,7 @@ export default class Announcement extends React.Component {
     this.state = {
       hidden: true,
       opaque: true,
-      creatingPoll: false
+      editing: false
     }
 
     this.shouldFade = true
@@ -20,9 +23,21 @@ export default class Announcement extends React.Component {
     setTimeout(this.flyAndFade.bind(this), 10)
   }
 
-  togglePoll () {
+  setEdit () {
     this.setState({
-      creatingPoll: !this.state.creatingPoll
+      editing: true
+    })
+  }
+
+  saveEdit () {
+    this.setState({
+      editing: false
+    })
+  }
+
+  discardEdit () {
+    this.setState({
+      editing: false
     })
   }
 
@@ -47,7 +62,6 @@ export default class Announcement extends React.Component {
   }
 
   render () {
-    const { text } = this.props
     const { hidden, opaque } = this.state
     const { shouldFade } = this
 
@@ -60,6 +74,8 @@ export default class Announcement extends React.Component {
       damping: 100
     }
 
+    const contents = this.renderContents()
+
     return (
       <div className={`announcement-container ${c_ac}`} onMouseOver={this.onMouseOver.bind(this)} >
         <Motion
@@ -68,14 +84,45 @@ export default class Announcement extends React.Component {
         >
           {s =>
             <Paper zDepth={3} className='announcement' style={s} >
-              <IconButton className='edit-icon' onClick={this.togglePoll.bind(this)} >
-                <ModeEdit color='white' />
-              </IconButton>
-              {text}
+              {contents}
             </Paper>
           }
         </Motion>
       </div>
+    )
+  }
+
+  renderContents () {
+    const { text } = this.props
+    const { editing } = this.state
+
+    if (editing) {
+      return [
+        this.renderClearIcon(),
+        (<TextField key='input' style={{width: '100%'}} hintText='Type your announcement or question' />),
+        (<IconButton key='save' className='save-icon' onClick={this.saveEdit.bind(this)} ><SaveIcon /></IconButton>)
+      ]
+    } else {
+      return [
+        this.renderEditIcon(),
+        (<span>{text}</span>)
+      ]
+    }
+  }
+
+  renderClearIcon () {
+    return (
+      <IconButton key='left-icon' className='discard-icon' onClick={this.discardEdit.bind(this)} >
+        <ClearIcon color='white' />
+      </IconButton>
+    )
+  }
+
+  renderEditIcon () {
+    return (
+      <IconButton key='left-icon' className='edit-icon' onClick={this.setEdit.bind(this)} >
+        <EditIcon color='white' />
+      </IconButton>
     )
   }
 }
