@@ -137,16 +137,20 @@ export default class AudioController extends React.Component {
   }
 
   componentDidUpdate () {
-    const { easyrtc } = this
-    const { audioStreams } = this.state
-    const { users, me } = this.props
+    const {easyrtc} = this
+    const {audioStreams} = this.state
+    const {locations, me, users} = this.props
 
-    const otherMe = users.filter(u => u.id == me.id)[0]
-    const withoutMe = users.filter(u => u.id != me.id)
+    const myloc = locations[me.id]
+    const uids = Object.keys(users).filter(id => id != me.id)
+
     let distances = {}
-    withoutMe.forEach(u => {
-      if (u.x && u.y)
-        distances[u.easyrtcid] = Math.sqrt(Math.pow(otherMe.x - u.x, 2) + Math.pow(otherMe.y - u.y, 2))
+
+    uids.forEach(uid => {
+      let u = locations[uid]
+      if (u.x && u.y) {
+        distances[u.easyrtcid] = Math.sqrt(Math.pow(myloc.x - u.x, 2) + Math.pow(myloc.y - u.y, 2))
+      }
     })
 
     const videoEls = dom('video')

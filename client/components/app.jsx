@@ -26,11 +26,11 @@ export default class App extends React.Component {
     super()
     this.state = {
       users: [],
+      locations: {},
+      dimensions: {},
       me: null,
       roomName: 'plaza',
-      dimensions: null,
       editingUser: false,
-      audioStreams: [],
       translate: {x: 0, y: 0}
     }
 
@@ -71,7 +71,7 @@ export default class App extends React.Component {
 
   announceMessage (msg) {
     return console.log(msg)
-    this.socket.emit('my-announcement', msg, this.handleAnnouncement.bind(this))
+    this.socket.emit('my-announcement', msg)
   }
 
   setMeBlobRef () {
@@ -94,10 +94,22 @@ export default class App extends React.Component {
   }
 
   handleLocations (data) {
-    const me = data.users.filter(u => u.id == this.state.me.id)[0]
+    const { me } = this.state
     this.setState({
-      users: data.users,
-      translate: this.calcTranslate({x: me.x, y: me.y})
+      locations: data,
+      translate: this.calcTranslate(data[me.id])
+    })
+  }
+
+  handleDistances (data) {
+    this.setState({
+      distances: data
+    })
+  }
+
+  handleAnnouncement (data) {
+    this.setState({
+      announcement: data
     })
   }
 
@@ -125,6 +137,7 @@ export default class App extends React.Component {
   }
 
   moveUser () {
+    const {me, locations, users, dimensions} = this.state
     if (!this.myBlob) this.setMeBlobRef()
 
     const posOfMe = this.myBlob.getBoundingClientRect()
@@ -133,16 +146,18 @@ export default class App extends React.Component {
     const dx = (this.mousePos.x - 50 - posOfMe.left) * MAC
     const dy = (this.mousePos.y - 50 - posOfMe.top) * MAC
 
-    const me = this.state.users.filter(u => u.id == this.state.me.id)[0]
-    if (!me.x) me.x = 0
-    if (!me.y) me.y = 0
-    const x = constrain(me.x + dx, 0, this.state.dimensions.x)
-    const y = constrain(me.y + dy, 0, this.state.dimensions.y)
+    const base = locations[me.id]
+    if (!base.x) base.x = 0
+    if (!base.y) base.y = 0
+    const x = constrain(base.x + dx, 0, dimensions.x)
+    const y = constrain(base.y + dy, 0, dimensions.y)
 
     this.socket.emit('my-location', {x, y})
   }
 
   calcTranslate (location) {
+    if (!location) return {x: 0, y: 0}
+
     let x = (-1) * location.x + (window.innerWidth / 2) - 25
     let y = (-1) * location.y + (window.innerHeight / 2) - 25
 
@@ -168,21 +183,25 @@ export default class App extends React.Component {
   }
 
   render () {
-    const {users, dimensions, roomName, editingUser, translate} = this.state
-    const me = this.state.users.filter(u => u.id == this.state.me.id)[0]
-    const myData = this.state.me
+    const {me, users, locations, dimensions, editingUser, translate} = this.state
 
-    const blobs = users.map((u, i) => {
-      return (<UserBlob user={u} idx={i} key={i} me={me} translate={translate} />)
-    })
+    const blobs = []
+    let idx = 0
+    for (let u in users) {
+      blobs.push((
+        <UserBlob user={users[u]} location={locations[u]} idx={idx} key={u} me={locations[me.id]} translate={translate} isMe={u == me.id} />
+      ))
+      idx++
+    }
 
     let newUserModal
-    if (!myData || editingUser)
-      newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} me={myData} />)
+    if (!me || editingUser) {
+      newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} me={me} />)
+    }
 
     let requiresMe = []
-    if (myData) {
-      requiresMe.push(( <AudioController key='audio-controller' users={users} me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} announceVolume={this.announceVolume.bind(this)} /> ))
+    if (me) {
+      requiresMe.push(( <AudioController key='audio-controller' users={users} locations={locations} me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} announceVolume={this.announceVolume.bind(this)} /> ))
     }
 
     return (
@@ -190,7 +209,6 @@ export default class App extends React.Component {
         <div id='main-app'>
           {requiresMe}
           <AppBarIconMenu 
-            roomName={roomName}
             clearLocal={this.clearLocal.bind(this)}
             setEditUserState={this.setEditUserState.bind(this)} />
           <Announcement text='Welcome to Assemble Live!' announceMessage={this.announceMessage.bind(this)} />

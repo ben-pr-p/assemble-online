@@ -21,8 +21,6 @@ export default class AppBarIconMenu extends React.Component {
   }
 
   render () {
-    const { roomName } = this.props
-
     return (
       <div className='app-bar'>
         <Paper className='floating-button' circle={true} zDepth={5} style={{left: 'auto', right: 20}} >

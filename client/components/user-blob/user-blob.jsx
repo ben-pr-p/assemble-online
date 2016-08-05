@@ -23,7 +23,7 @@ export default class UserBlob extends React.Component {
   }
 
   render () {
-    const { user, idx, translate, me } = this.props
+    const {user, idx, translate, me, isMe} = this.props
     let { x, y } = user
 
     if (isNaN(x)) x = 0
@@ -37,7 +37,7 @@ export default class UserBlob extends React.Component {
       y: y + translate.y
     }
 
-    if (!(user.id == me.id) && (adj.x < 0 || adj.x > window.innerWidth || adj.y < 0 || adj.y > window.innerHeight)) {
+    if (!(isMe) && (adj.x < 0 || adj.x > window.innerWidth || adj.y < 0 || adj.y > window.innerHeight)) {
       return this.renderFar(user, x, y, me)
     } else {
       return this.renderClose(user, x, y)
