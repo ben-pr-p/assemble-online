@@ -21,11 +21,12 @@
     flexbox(flex)
     justify-content(center)
     align-items(center)
+    position relative
 
     .edit-icon
       float left
 
-.response-option-checkbox
+.response-option-checkbox, .feedback-checkbox
   flexbox(flex)
   align-items(center)
   width 100%
@@ -34,10 +35,24 @@
 
   .label-container
     margin-left 10px
-    width 70%
+    width 72%
+
+.feedback-checkbox
+  .label-container
+    width 78%
+
+.response-option-checkbox
+  margin-left 20px
 
 .drop-down
-  margin-top 100px !important
+  margin-top 140px !important
   width 400px !important
   padding-left 20px !important
   padding-right 20px !important
+  padding-top 10px
+  padding-bottom 10px
+  position absolute
+  left 0
+
+.response-option
+  padding 10px

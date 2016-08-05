@@ -1,6 +1,8 @@
+import dom from 'component-dom'
 import React from 'react'
 import { Motion, spring } from 'react-motion'
 import Paper from 'material-ui/Paper'
+import Divider from 'material-ui/Divider'
 import TextField from 'material-ui/TextField'
 import Toggle from 'material-ui/Toggle'
 import IconButton from 'material-ui/IconButton'
@@ -13,18 +15,31 @@ import FeedbackIcon from 'material-ui/svg-icons/action/feedback'
 import { green600, yellow600, red600, deepOrange900 } from 'material-ui/styles/colors'
 
 const responseOptions = [
-  {label: 'Agree', icon: (<ThumbIcon color={green600} />)},
-  {label: 'Support with Reservations', icon: (<ThumbIcon color={yellow600} />)},
-  {label: 'Block', icon: (<BlockIcon color={deepOrange900} />)}
+  {label: 'Agree', name: 'agree'},
+  {label: 'Support with Reservations', name: 'reservations'},
+  {label: 'Block', name: 'block'}
 ]
+
+const icons = {
+  agree: (<ThumbIcon color={green600} />),
+  reservations: (<ThumbIcon color={yellow600} />),
+  block: (<BlockIcon color={deepOrange900} />)
+}
 
 export default class Announcement extends React.Component {
   constructor () {
     super()
+
     this.state = {
       hidden: true,
       opaque: true,
-      editing: false
+      editing: false,
+      feedback: false,
+      feedOptions: {
+        agree: true,
+        reservations: true,
+        block: true
+      }
     }
 
     this.shouldFade = true
@@ -72,6 +87,17 @@ export default class Announcement extends React.Component {
     this.setState({opaque: false})
   }
 
+  toggleFeedback () {
+    this.setState({
+      feedback: !this.state.feedback
+    })
+  }
+
+  onToggle (ev) {
+    const type = dom(ev.nativeEvent.target).attr('data')
+    this.state.feedOptions[type] = !this.state.feedOptions[type]
+  }
+
   render () {
     const { hidden, opaque } = this.state
     const { shouldFade } = this
@@ -98,21 +124,30 @@ export default class Announcement extends React.Component {
 
   renderContents () {
     const { text } = this.props
-    const { editing } = this.state
+    const { editing, feedOptions, feedback } = this.state
 
+    let result = []
     if (editing) {
-      return [
-        this.renderOptionsMenu(),
-        this.renderClearIcon(),
-        (<TextField key='input' style={{width: '100%'}} hintText='Type your announcement or question' />),
-        (<IconButton key='save' className='save-icon' onClick={this.saveEdit.bind(this)} ><SaveIcon /></IconButton>)
-      ]
+      result.push(this.renderResponseOptions()),
+      result.push(this.renderClearIcon()),
+      result.push((<TextField key='input' style={{width: '100%'}} hintText='Type your announcement or question' />)),
+      result.push((<IconButton key='save' className='save-icon' onClick={this.saveEdit.bind(this)} ><SaveIcon /></IconButton>))
     } else {
-      return [
-        this.renderEditIcon(),
-        (<span key='text' >{text}</span>)
-      ]
+      result.push(this.renderEditIcon()),
+      result.push((<span key='text' >{text}</span>))
     }
+
+    for (let o in feedOptions) {
+      if (feedback && feedOptions[o]) {
+        result.push((
+          <div key={o} className='response-option'>
+            {icons[o]}
+          </div>
+        ))
+      }
+    }
+
+    return result
   }
 
   renderClearIcon () {
@@ -131,21 +166,36 @@ export default class Announcement extends React.Component {
     )
   }
 
-  renderOptionsMenu () {
-    const options = responseOptions.map((o, idx) => (
-      <div className='response-option-checkbox' key={idx} >
-        <Toggle style={{width: 'auto'}} defaultToggled={true}/>
-        <div className='label-container' >
-          {o.label}
+  renderResponseOptions () {
+    const {feedback} = this.state
+
+    let options
+    if (feedback) {
+      const divider = [(<Divider key='divider' />)]
+      options = divider.concat(responseOptions.map((o, idx) => (
+        <div className='response-option-checkbox' key={idx} >
+          <Toggle style={{width: 'auto'}} data={o.name} defaultToggled={true} onToggle={this.onToggle.bind(this)} />
+          <div className='label-container' >
+            {o.label}
+          </div>
+          <div className='icon-container'>
+            {icons[o.name]}
+          </div>
         </div>
-        <div className='icon-container'>
-          {o.icon}
-        </div>
-      </div>
-    ))
+      )))
+    }
 
     return (
-      <Paper key='drop-down' className='drop-down' openImmediately={true} >
+      <Paper key='drop-down' className='drop-down' >
+        <div className='feedback-checkbox' >
+          <Toggle style={{width: 'auto'}} defaultToggled={false} onToggle={this.toggleFeedback.bind(this)} />
+          <div className='label-container' >
+            {'Allow feedback for this announcement/question'}
+          </div>
+          <div className='icon-container'>
+            <FeedbackIcon color='white' />
+          </div>
+        </div>
         {options}
       </Paper>
     )
