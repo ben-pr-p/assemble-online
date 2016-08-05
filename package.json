@@ -42,7 +42,8 @@
     "socket.io-client": "^0.9.16",
     "store": "^1.3.20",
     "superagent": "^1.8.1",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^1.1.0",
+    "webworker-threads": "^0.7.8"
   },
   "browserify": {
     "transform": [

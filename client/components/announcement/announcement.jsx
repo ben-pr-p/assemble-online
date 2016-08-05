@@ -1,11 +1,22 @@
 import React from 'react'
+import { Motion, spring } from 'react-motion'
 import Paper from 'material-ui/Paper'
 import TextField from 'material-ui/TextField'
+import Toggle from 'material-ui/Toggle'
 import IconButton from 'material-ui/IconButton'
 import EditIcon from 'material-ui/svg-icons/content/create'
 import SaveIcon from 'material-ui/svg-icons/content/save'
 import ClearIcon from 'material-ui/svg-icons/content/clear'
-import { Motion, spring } from 'react-motion'
+import ThumbIcon from 'material-ui/svg-icons/action/thumb-up'
+import BlockIcon from 'material-ui/svg-icons/content/report'
+import FeedbackIcon from 'material-ui/svg-icons/action/feedback'
+import { green600, yellow600, red600, deepOrange900 } from 'material-ui/styles/colors'
+
+const responseOptions = [
+  {label: 'Agree', icon: (<ThumbIcon color={green600} />)},
+  {label: 'Support with Reservations', icon: (<ThumbIcon color={yellow600} />)},
+  {label: 'Block', icon: (<BlockIcon color={deepOrange900} />)}
+]
 
 export default class Announcement extends React.Component {
   constructor () {
@@ -30,9 +41,8 @@ export default class Announcement extends React.Component {
   }
 
   saveEdit () {
-    this.setState({
-      editing: false
-    })
+    this.state.editing = false
+    this.props.announceMessage()
   }
 
   discardEdit () {
@@ -42,6 +52,7 @@ export default class Announcement extends React.Component {
   }
 
   onMouseOver () {
+    return
     this.shouldFade = false
     this.setState({opaque: true})
     setTimeout(this.fadeOut.bind(this), 5000)
@@ -77,17 +88,10 @@ export default class Announcement extends React.Component {
     const contents = this.renderContents()
 
     return (
-      <div className={`announcement-container ${c_ac}`} onMouseOver={this.onMouseOver.bind(this)} >
-        <Motion
-          defaultStyle={{opacity: o}}
-          style={{opacity: shouldFade ? spring(o, longOpts) : spring(o)}}
-        >
-          {s =>
-            <Paper zDepth={3} className='announcement' style={s} >
-              {contents}
-            </Paper>
-          }
-        </Motion>
+      <div className={`announcement-container ${c_ac}`} >
+        <Paper key='main-bar' zDepth={3} className='announcement' >
+          {contents}
+        </Paper>
       </div>
     )
   }
@@ -98,6 +102,7 @@ export default class Announcement extends React.Component {
 
     if (editing) {
       return [
+        this.renderOptionsMenu(),
         this.renderClearIcon(),
         (<TextField key='input' style={{width: '100%'}} hintText='Type your announcement or question' />),
         (<IconButton key='save' className='save-icon' onClick={this.saveEdit.bind(this)} ><SaveIcon /></IconButton>)
@@ -123,6 +128,26 @@ export default class Announcement extends React.Component {
       <IconButton key='left-icon' className='edit-icon' onClick={this.setEdit.bind(this)} >
         <EditIcon color='white' />
       </IconButton>
+    )
+  }
+
+  renderOptionsMenu () {
+    const options = responseOptions.map((o, idx) => (
+      <div className='response-option-checkbox' key={idx} >
+        <Toggle style={{width: 'auto'}} defaultToggled={true}/>
+        <div className='label-container' >
+          {o.label}
+        </div>
+        <div className='icon-container'>
+          {o.icon}
+        </div>
+      </div>
+    ))
+
+    return (
+      <Paper key='drop-down' className='drop-down' openImmediately={true} >
+        {options}
+      </Paper>
     )
   }
 }

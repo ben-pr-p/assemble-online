@@ -19,7 +19,7 @@ import customTheme from '../lib/custom-theme.js'
 
 // movement attenuation constant
 const MAC = .05
-const UPDATE_INTERVAL = 99
+const UPDATE_INTERVAL = 50
 
 export default class App extends React.Component {
   constructor () {
@@ -47,7 +47,10 @@ export default class App extends React.Component {
     this.socket = io.connect()
     this.socket.on('connect', this.handleUsers.bind(this))
     this.socket.on('users', this.handleUsers.bind(this))
-    this.socket.on('movement-update', this.handleMovement.bind(this))
+    this.socket.on('locations', this.handleLocations.bind(this))
+    this.socket.on('dimensions', this.handleDimensions.bind(this))
+    this.socket.on('distances', this.handleDistances.bind(this))
+    this.socket.on('announcement', this.handleAnnouncement.bind(this))
 
     if (this.state.me) {
       this.announceMe()
@@ -59,7 +62,16 @@ export default class App extends React.Component {
   }
 
   announceMe () {
-    this.socket.emit('newuser', this.state.me, this.handleUsers.bind(this))
+    this.socket.emit('me', this.state.me, this.handleUsers.bind(this))
+  }
+
+  announceVolume (rms) {
+    this.socket.emit('my-volume', {userId: this.state.me.id, rms: rms})
+  }
+
+  announceMessage (msg) {
+    return console.log(msg)
+    this.socket.emit('my-announcement', msg, this.handleAnnouncement.bind(this))
   }
 
   setMeBlobRef () {
@@ -75,21 +87,18 @@ export default class App extends React.Component {
     }
   }
 
-  announceLocation (user) {
-    this.socket.emit('movement', user, this.handleMovement.bind(this))
-  }
-
-  handleMovement (data) {
-    const me = data.users.filter(u => u.id == this.state.me.id)[0]
+  handleDimensions (data) {
     this.setState({
-      users: data.users,
-      dimensions: data.dimensions,
-      translate: this.calcTranslate({x: me.x, y: me.y})
+      dimensions: data
     })
   }
 
-  announceVolume (rms) {
-    this.socket.emit('my-volume', {userId: this.state.me.id, rms: rms})
+  handleLocations (data) {
+    const me = data.users.filter(u => u.id == this.state.me.id)[0]
+    this.setState({
+      users: data.users,
+      translate: this.calcTranslate({x: me.x, y: me.y})
+    })
   }
 
   closeNewUserModal () {
@@ -119,6 +128,7 @@ export default class App extends React.Component {
     if (!this.myBlob) this.setMeBlobRef()
 
     const posOfMe = this.myBlob.getBoundingClientRect()
+
     // need to subtract radius
     const dx = (this.mousePos.x - 50 - posOfMe.left) * MAC
     const dy = (this.mousePos.y - 50 - posOfMe.top) * MAC
@@ -126,12 +136,10 @@ export default class App extends React.Component {
     const me = this.state.users.filter(u => u.id == this.state.me.id)[0]
     if (!me.x) me.x = 0
     if (!me.y) me.y = 0
-    const newX = constrain(me.x + dx, 0, this.state.dimensions.x)
-    const newY = constrain(me.y + dy, 0, this.state.dimensions.y)
-    me.x = newX
-    me.y = newY
+    const x = constrain(me.x + dx, 0, this.state.dimensions.x)
+    const y = constrain(me.y + dy, 0, this.state.dimensions.y)
 
-    this.announceLocation(me)
+    this.socket.emit('my-location', {x, y})
   }
 
   calcTranslate (location) {
@@ -185,7 +193,7 @@ export default class App extends React.Component {
             roomName={roomName}
             clearLocal={this.clearLocal.bind(this)}
             setEditUserState={this.setEditUserState.bind(this)} />
-          <Announcement text='Welcome to Assemble Live!' />
+          <Announcement text='Welcome to Assemble Live!' announceMessage={this.announceMessage.bind(this)} />
           <svg id='plaza' onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} onMouseMove={this.onMouseMove.bind(this)} >
             <Motion
               defaultStyle={{x: translate.x, y: translate.y}}

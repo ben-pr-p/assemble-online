@@ -26,3 +26,27 @@ npm run bs
 For development, I have one tab open running `gulp` and one running `npm start`.
 
 You'll also need to set `export DEBUG=assemble*` to see server side logs.
+
+# Socket Events
+
+## Client Emissions
+
+### 'me' - emitted by App
+
+### 'my-volume' - emitted by AudioController
+
+### 'my-announcement' - emitted by Announcement
+
+### 'my-location' - emitted by Room
+
+## Server Emissions
+
+### 'users' - handled by App
+
+### 'locations' - handled by Room
+
+### 'distances' - handled by AudioController
+
+### 'dimensions' - handled by Room
+
+### 'announcement' - handled by Announcement
