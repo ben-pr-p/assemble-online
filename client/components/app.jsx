@@ -25,9 +25,10 @@ export default class App extends React.Component {
   constructor () {
     super()
     this.state = {
-      users: [],
+      users: {},
       locations: {},
       dimensions: {},
+      volumes: {},
       me: null,
       roomName: 'plaza',
       editingUser: false,
@@ -44,13 +45,14 @@ export default class App extends React.Component {
   componentWillMount () {
     this.findMe()
 
-    this.socket = io.connect()
+    this.socket = io()
     this.socket.on('connect', this.handleUsers.bind(this))
     this.socket.on('users', this.handleUsers.bind(this))
     this.socket.on('locations', this.handleLocations.bind(this))
     this.socket.on('dimensions', this.handleDimensions.bind(this))
     this.socket.on('distances', this.handleDistances.bind(this))
     this.socket.on('announcement', this.handleAnnouncement.bind(this))
+    this.socket.on('volumes', this.handleVolumes.bind(this))
 
     if (this.state.me) {
       this.announceMe()
@@ -66,11 +68,10 @@ export default class App extends React.Component {
   }
 
   announceVolume (rms) {
-    this.socket.emit('my-volume', {userId: this.state.me.id, rms: rms})
+    this.socket.emit('my-volume', rms)
   }
 
   announceMessage (msg) {
-    return console.log(msg)
     this.socket.emit('my-announcement', msg)
   }
 
@@ -85,6 +86,12 @@ export default class App extends React.Component {
         users: users
       })
     }
+  }
+
+  handleVolumes (data) {
+    this.setState({
+      volumes: data
+    })
   }
 
   handleDimensions (data) {
@@ -183,13 +190,21 @@ export default class App extends React.Component {
   }
 
   render () {
-    const {me, users, locations, dimensions, editingUser, translate} = this.state
+    const {me, users, locations, volumes, dimensions, editingUser, translate} = this.state
 
     const blobs = []
     let idx = 0
     for (let u in users) {
       blobs.push((
-        <UserBlob user={users[u]} location={locations[u]} idx={idx} key={u} me={locations[me.id]} translate={translate} isMe={u == me.id} />
+        <UserBlob user={users[u]}
+          location={locations[u] || {x: 0, y: 0}}
+          volume={volumes[u] || 0}
+          idx={idx}
+          key={u}
+          me={locations[me.id]}
+          translate={translate}
+          isMe={u == me.id}
+        />
       ))
       idx++
     }

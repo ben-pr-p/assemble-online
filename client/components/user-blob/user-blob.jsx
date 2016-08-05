@@ -23,8 +23,8 @@ export default class UserBlob extends React.Component {
   }
 
   render () {
-    const {user, idx, translate, me, isMe} = this.props
-    let { x, y } = user
+    const {user, location, volume, idx, translate, me, isMe} = this.props
+    let { x, y } = location
 
     if (isNaN(x)) x = 0
     if (isNaN(y)) y = 0
@@ -38,13 +38,13 @@ export default class UserBlob extends React.Component {
     }
 
     if (!(isMe) && (adj.x < 0 || adj.x > window.innerWidth || adj.y < 0 || adj.y > window.innerHeight)) {
-      return this.renderFar(user, x, y, me)
+      return this.renderFar(user, volume, x, y, me)
     } else {
-      return this.renderClose(user, x, y)
+      return this.renderClose(user, volume, x, y)
     }
   }
 
-  renderFar (user, x, y, me) {
+  renderFar (user, volume, x, y, me) {
     const halfW = window.innerWidth / 2
     const halfH = window.innerHeight / 2
     const edges = {
@@ -103,7 +103,7 @@ export default class UserBlob extends React.Component {
     return (
       <Motion
         defaultStyle={{x: 0, y: 0, z: 0}}
-        style={{x: spring(p.x), y: spring(p.y), z: spring(user.volume || 0, {stiffness: 300, damping: 50})}}
+        style={{x: spring(p.x), y: spring(p.y), z: spring(volume || 0, {stiffness: 300, damping: 50})}}
       >
         {pos =>
           <g className='user-blob offscreen' id={user.id} >
@@ -125,11 +125,11 @@ export default class UserBlob extends React.Component {
     )
   }
 
-  renderClose (user, x, y) {
+  renderClose (user, volume, x, y) {
     return (
       <Motion
         defaultStyle={{x: 0, y: 0, z: 0}}
-        style={{x: spring(x), y: spring(y), z: spring(user.volume || 0, {stiffness: 300, damping: 50})}}
+        style={{x: spring(x), y: spring(y), z: spring(volume || 0, {stiffness: 300, damping: 50})}}
       >
         {pos =>
           <g className='user-blob'  id={user.id} >

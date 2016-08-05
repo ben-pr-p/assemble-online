@@ -110,7 +110,7 @@ export default class Announcement extends React.Component {
     } else {
       return [
         this.renderEditIcon(),
-        (<span>{text}</span>)
+        (<span key='text' >{text}</span>)
       ]
     }
   }

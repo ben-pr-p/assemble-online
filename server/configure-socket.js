@@ -4,11 +4,15 @@ var UPDATE_INTERVAL = 100
 var BASE_DIMENSIONS = {x: 2700, y: 1700} // mostly arbitrary, but a little bit smaller than macbook pro 15 inch screen
 var USERS_PER_SCREEN = 4
 
+var mainIo = null
+
 var users = {}
 var locations = {}
+var volumes = {}
+var distances = {}
 var sockets = {}
 var userIdFromSocketId = {}
-var distances = {}
+
 var dimGrowth = 1
 var dimensions = Object.assign({}, BASE_DIMENSIONS)
 
@@ -51,9 +55,8 @@ function areUpdatesRunning () {
 }
 
 function sendUpdates () {
-  for (var u in users) {
-    if (sockets[users[u].id]) sockets[users[u].id].emit('locations', locations)
-  }
+  mainIo.emit('locations', locations)
+  mainIo.emit('volumes', volumes)
 }
 
 /**
@@ -74,13 +77,16 @@ function setDimensions (n) {
 }
 
 exports.configure = function (io) {
+  mainIo = io
+
   io.on('connection', function (socket) {
 
     socket.on('connect', function () {
       log('New connection, sending users')
-      socket.emit('users', users)
-      socket.emit('dimensions', dimensions)
-      socket.emit('locations')
+      io.emit('users', users)
+      io.emit('dimensions', dimensions)
+      io.emit('locations', locations)
+      io.emit('volumes', volumes)
     })
 
     /*
@@ -98,7 +104,7 @@ exports.configure = function (io) {
         user.y = existing.y
 
         users[user.id] = user
-        return socket.emit('users', users)
+        return io.emit('users', users)
       }
 
       log('Got new user %s', user.id)
@@ -108,9 +114,9 @@ exports.configure = function (io) {
       userIdFromSocketId[socket.id] = user.id
       locations[user.id] = {x: 0, y: 0}
 
-      setDimensions(numUsers + 1)
-
-      socket.emit('users', users)
+      io.emit('users', users)
+      io.emit('dimensions', dimensions)
+      io.emit('locations', locations)
       if (firstUser) startUpdates()
     })
 
@@ -126,9 +132,8 @@ exports.configure = function (io) {
      * Handle user volume broadcast
      */
     socket.on('my-volume', function (data) {
-      var user = getUser(socket)
-      if (user)
-        user.volume = data.rms
+      var uid = getUserId(socket)
+      volumes[uid] = data
     })
 
     /*

@@ -15,11 +15,11 @@ export default class Grid extends React.Component {
       <g id='grid-container' width={w} height={h} >
         <defs>
           <pattern id='smallGrid' width='40' height='40' patternUnits='userSpaceOnUse'>
-            <path d='M 40 0 L 0 0 0 40' fill='none' stroke='gray' stroke-width='0.5'/>
+            <path d='M 40 0 L 0 0 0 40' fill='none' stroke='gray' strokeWidth='0.5'/>
           </pattern>
           <pattern id='grid' width='200' height='200' patternUnits='userSpaceOnUse'>
             <rect width='200' height='200' fill='url(#smallGrid)'/>
-            <path d='M 200 0 L 0 0 0 200' fill='none' stroke='gray' stroke-width='1'/>
+            <path d='M 200 0 L 0 0 0 200' fill='none' stroke='gray' strokeWidth='1'/>
           </pattern>
         </defs>
 
