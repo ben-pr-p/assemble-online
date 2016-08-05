@@ -226,7 +226,7 @@ export default class App extends React.Component {
           <AppBarIconMenu 
             clearLocal={this.clearLocal.bind(this)}
             setEditUserState={this.setEditUserState.bind(this)} />
-          <Announcement text='Welcome to Assemble Live!' announceMessage={this.announceMessage.bind(this)} />
+          <Announcement socket={this.socket} />
           <svg id='plaza' onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} onMouseMove={this.onMouseMove.bind(this)} >
             <Motion
               defaultStyle={{x: translate.x, y: translate.y}}

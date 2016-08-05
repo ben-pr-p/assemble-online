@@ -31,6 +31,7 @@ export default class Announcement extends React.Component {
     super()
 
     this.state = {
+      text: 'Welcome to Assemble Live!',
       hidden: true,
       opaque: true,
       editing: false,
@@ -42,7 +43,7 @@ export default class Announcement extends React.Component {
       }
     }
 
-    this.shouldFade = true
+    this.props.socket.on('announcement', this.handleAnnouncement.bind(this))
   }
 
   componentWillMount () {
@@ -56,21 +57,30 @@ export default class Announcement extends React.Component {
   }
 
   saveEdit () {
-    this.state.editing = false
-    this.props.announceMessage()
+    let msg = {
+      text: this.refs.field.value,
+      feedback: this.state.feedback,
+      feedOptions: this.state.feedOptions
+    }
+
+    this.props.socket.emit('my-announcement', msg)
+  }
+
+  handleAnnouncement (data) {
+    this.setState({
+      text: data.text,
+      feedback: data.feedback,
+      feedOptions: data.feedOptions,
+      editing: false,
+      hidden: false,
+      opaque: true
+    })
   }
 
   discardEdit () {
     this.setState({
       editing: false
     })
-  }
-
-  onMouseOver () {
-    return
-    this.shouldFade = false
-    this.setState({opaque: true})
-    setTimeout(this.fadeOut.bind(this), 5000)
   }
 
   flyAndFade () {
@@ -130,7 +140,7 @@ export default class Announcement extends React.Component {
     if (editing) {
       result.push(this.renderResponseOptions()),
       result.push(this.renderClearIcon()),
-      result.push((<TextField key='input' style={{width: '100%'}} hintText='Type your announcement or question' />)),
+      result.push((<TextField key='input' style={{width: '100%'}} hintText='Type your announcement or question' ref='field' />)),
       result.push((<IconButton key='save' className='save-icon' onClick={this.saveEdit.bind(this)} ><SaveIcon /></IconButton>))
     } else {
       result.push(this.renderEditIcon()),
