@@ -136,6 +136,10 @@ exports.configure = function (io) {
       volumes[uid] = data
     })
 
+    socket.on('my-announcement', function (data) {
+      io.emit('announcement', data)
+    })
+
     /*
      * Handle user disconnect
      */

@@ -51,7 +51,6 @@ export default class App extends React.Component {
     this.socket.on('locations', this.handleLocations.bind(this))
     this.socket.on('dimensions', this.handleDimensions.bind(this))
     this.socket.on('distances', this.handleDistances.bind(this))
-    this.socket.on('announcement', this.handleAnnouncement.bind(this))
     this.socket.on('volumes', this.handleVolumes.bind(this))
 
     if (this.state.me) {
@@ -69,10 +68,6 @@ export default class App extends React.Component {
 
   announceVolume (rms) {
     this.socket.emit('my-volume', rms)
-  }
-
-  announceMessage (msg) {
-    this.socket.emit('my-announcement', msg)
   }
 
   setMeBlobRef () {
@@ -111,12 +106,6 @@ export default class App extends React.Component {
   handleDistances (data) {
     this.setState({
       distances: data
-    })
-  }
-
-  handleAnnouncement (data) {
-    this.setState({
-      announcement: data
     })
   }
 

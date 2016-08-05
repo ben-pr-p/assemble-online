@@ -43,11 +43,15 @@ export default class Announcement extends React.Component {
       }
     }
 
-    this.props.socket.on('announcement', this.handleAnnouncement.bind(this))
+    this.prev = {
+      feedback: this.state.feedback,
+      feedOptions: this.state.feedOptions
+    }
   }
 
   componentWillMount () {
     setTimeout(this.flyAndFade.bind(this), 10)
+    this.props.socket.on('announcement', this.handleAnnouncement.bind(this))
   }
 
   setEdit () {
@@ -67,6 +71,11 @@ export default class Announcement extends React.Component {
   }
 
   handleAnnouncement (data) {
+    this.prev = {
+      feedback: data.feedback,
+      feedOptions: data.feedOptions
+    }
+
     this.setState({
       text: data.text,
       feedback: data.feedback,
@@ -79,7 +88,9 @@ export default class Announcement extends React.Component {
 
   discardEdit () {
     this.setState({
-      editing: false
+      editing: false,
+      feedback: this.prev.feedback,
+      feedOptions: this.prev.feedOptions
     })
   }
 
@@ -133,8 +144,7 @@ export default class Announcement extends React.Component {
   }
 
   renderContents () {
-    const { text } = this.props
-    const { editing, feedOptions, feedback } = this.state
+    const { text, editing, feedOptions, feedback } = this.state
 
     let result = []
     if (editing) {
@@ -177,14 +187,14 @@ export default class Announcement extends React.Component {
   }
 
   renderResponseOptions () {
-    const {feedback} = this.state
+    const {feedback, feedOptions} = this.state
 
     let options
     if (feedback) {
       const divider = [(<Divider key='divider' />)]
       options = divider.concat(responseOptions.map((o, idx) => (
         <div className='response-option-checkbox' key={idx} >
-          <Toggle style={{width: 'auto'}} data={o.name} defaultToggled={true} onToggle={this.onToggle.bind(this)} />
+          <Toggle style={{width: 'auto'}} data={o.name} defaultToggled={feedOptions[o.name]} onToggle={this.onToggle.bind(this)} />
           <div className='label-container' >
             {o.label}
           </div>
