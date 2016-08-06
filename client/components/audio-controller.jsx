@@ -6,57 +6,64 @@ import io from 'socket.io-client'
 
 const UPDATE_INTERVAL = 100
 
+const config = {
+  enableAudio: true,
+  enableAudioReceive: true,
+  enableVideo: false,
+  enableVideoReceive: false,
+  enableMicrophone: true,
+  enableCamera: false
+}
+
 export default class AudioController extends React.Component {
   constructor () {
     super()
 
     this.state = {
-      audioStreams: {}, msg: 'Initializing audio connection to room...'
+      audioStreams: {},
+      msg: 'Initializing audio connection to room...',
+      distances: {}
     }
 
     this.myAudio = null
-    this.isConnected = false
     this.easyrtc = window.easyrtc
     this.rms = null
     this.rmsIntervalId = null
     window.io = io
   }
 
+  componentWillMount () {
+    this.props.socket.on('distances', this.handleDistances.bind(this))
+  }
+
+  handleDistances (data) {
+    this.setState({
+      distances: data
+    })
+  }
+
+  announceVolume (vol) {
+    this.props.socket.emit('my-volume', vol)
+  }
+
   componentDidMount () {
     this.initialize()
   }
 
-  initialize () {
-    const { easyrtc } = this
+  onConnectSuccess (easyrtcid) {
+    this.props.setEasyRTCId(easyrtcid)
+    this.setState({msg: {code: 'conn_sucess', text: `...connected with easyrtcid ${easyrtcid}`}})
+  }
 
-    easyrtc.enableAudio(true)
-    easyrtc.enableAudioReceive(true)
-    easyrtc.enableVideo(false)
-    easyrtc.enableVideoReceive(false)
-    easyrtc.enableMicrophone(true)
-    easyrtc.enableCamera(false)
+  onError (errCode, errMsg) {
+    this.setState({msg: `Error ${errCode}: ${errMsg}`})
+  }
 
-    const onConnectSuccess = (easyrtcid) => {
-      this.props.setEasyRTCId(easyrtcid)
-      this.setState({msg: {code: 'conn_sucess', text: `...connected with easyrtcid ${easyrtcid}`}})
-    }
-
-    const handleError = (errCode, errMsg) => {
-      this.setState({msg: `Error ${errCode}: ${errMsg}`})
-    }
-
-    const onMediaSuccess = (stream) =>  {
-      this.setState({msg: {code: 'media_success', text: `Successfully retrieved user media` }})
-      this.myAudio = stream
-      this.initializeAudioContext()
-      easyrtc.connect('easyrtc.audioOnly', onConnectSuccess, handleError)
-    }
-
-    easyrtc.setRoomOccupantListener(this.occupantListener.bind(this))
-    easyrtc.setStreamAcceptor(this.acceptStream.bind(this))
-    easyrtc.setAcceptChecker(this.shouldAccept.bind(this))
-
-    easyrtc.initMediaSource(onMediaSuccess, handleError)
+  onMediaSuccess (stream) {
+    this.setState({msg: {code: 'media_success', text: `Successfully retrieved user media` }})
+    this.myAudio = stream
+    this.initializeAudioContext()
+    easyrtc.connect('easyrtc.audioOnly', this.onConnectSuccess.bind(this), this.onError.bind(this))
   }
 
   acceptStream (easyrtcid, stream) {
@@ -65,33 +72,45 @@ export default class AudioController extends React.Component {
   }
 
   onStreamClose (easyrtcid) {
-    delete this.state.audioStreams[easyrtcid]
+    this.state.audioStreams[easyrtcid] = null
     this.setState({msg: {code: 'audio_disconnect', text: `${easyrtcId} has disconnected`}})
   }
 
+  onCallSuccess (easyrtcid, mediaType) {
+    this.setState({msg: {code: 'call_success', text: `successfully called ${easyrtcid}`}})
+  }
+
+  onCallFailure (easyrtcid, errMsg) {
+    this.setState({msg: {code: 'call_failure', text: `failed to established audio connection with ${easyrtcid}: ${errMsg}`}})
+  }
+
+  onCallAnswer (wasAccepted, easyrtcid) {
+    this.setState({msg: {code: 'call_answer', text: `${easyrtcid} answered and accepted the call`}})
+  }
+
+
   occupantListener (roomName, occupants) {
     const { easyrtc } = this
-
-    const onCallSuccess = (easyrtcid, mediaType) => {
-      this.setState({msg: {code: 'call_success', text: `successfully called ${easyrtcid}`}})
-    }
-
-    const onCallFailure = (easyrtcid, errMsg) => {
-      this.setState({msg: {code: 'call_failure', text: `failed to established audio connection with ${easyrtcid}: ${errMsg}`}})
-    }
-
-    const onCallAnswer = (wasAccepted, easyrtcid) => {
-      this.setState({msg: {code: 'call_answer', text: `${easyrtcid} answered and accepted the call`}})
-    }
-
     for (let o in occupants) {
       this.setState({msg: {code: 'room_join', text: `${o} has joined the room`}})
-      easyrtc.call(o, onCallSuccess, onCallFailure, onCallAnswer)
+      easyrtc.call(o, this.onCallSuccess.bind(this), this.onCallFailure.bind(this), this.onCallAnswer.bind(this))
     }
   }
 
   shouldAccept (easyrtcid, fn) {
     fn(true)
+  }
+
+  initialize () {
+    const {easyrtc} = this
+
+    for (let opt in config) easyrtc[opt](config[opt])
+
+    easyrtc.setRoomOccupantListener(this.occupantListener.bind(this))
+    easyrtc.setStreamAcceptor(this.acceptStream.bind(this))
+    easyrtc.setAcceptChecker(this.shouldAccept.bind(this))
+
+    easyrtc.initMediaSource(this.onMediaSuccess.bind(this), this.onError.bind(this))
   }
 
   initializeAudioContext () {
@@ -108,24 +127,36 @@ export default class AudioController extends React.Component {
     this.inputNode.connect(this.processor)
     this.processor.connect(this.ac.destination)
 
-    this.updateIntervalId = window.setInterval(() => {
-      this.props.announceVolume(this.rms)
+    this.rmsIntervalId = window.setInterval(() => {
+      this.announceVolume(this.rms)
     }, UPDATE_INTERVAL)
   }
 
   componentWillUnmount () {
     const { easyrtc } = this
 
+    if (this.rmsIntervalId) window.clearInterval(this.rmsIntervalId)
+
     easyrtc.hangupAll()
     easyrtc.disconnect()
   }
 
+  calcVolume (d) {
+    let v = Math.min(1 / (Math.pow(distances[mId] - 70, 2) / 5000), 1)
+    if (typeof v == 'number' && !isNaN(v))
+      return v
+    else
+      return 0
+  }
+
   render () {
-    const { audioStreams, msg } = this.state
+    const {audioStreams, msg, distances} = this.state
 
     let videoEls = []
     for (let m in audioStreams) {
-      videoEls.push(<video key={m} data={m} autoplay='' width='0' height='0' />)
+      videoEls.push((
+        <video key={m} data={m} autoplay='' width='0' height='0' src={audioStreams[m].src} volume={this.calcVolume(distances[m])} />
+      ))
     }
 
     return (
@@ -134,39 +165,5 @@ export default class AudioController extends React.Component {
         {videoEls}
       </div>
     )
-  }
-
-  componentDidUpdate () {
-    const {easyrtc} = this
-    const {audioStreams} = this.state
-    const {locations, me, users} = this.props
-
-    const myloc = locations[me.id]
-    const uids = Object.keys(users).filter(id => id != me.id)
-
-    let distances = {}
-
-    uids.forEach(uid => {
-      let u = locations[uid]
-      if (u.x && u.y) {
-        distances[u.easyrtcid] = Math.sqrt(Math.pow(myloc.x - u.x, 2) + Math.pow(myloc.y - u.y, 2))
-      }
-    })
-
-    const videoEls = dom('video')
-    videoEls.forEach(el => {
-      let mId = dom(el).attr('data')
-      if (dom(el).attr('src') == null) {
-        easyrtc.setVideoObjectSrc(el, audioStreams[mId].stream)
-      }
-
-      let v = Math.min(1 / (Math.pow(distances[mId] - 70, 2) / 5000), 1)
-      if (typeof v == 'number' && !isNaN(v)) {
-        el.volume = v
-      } else {
-        console.log('Cannot assign volume %d', v)
-        el.volume = 0
-      }
-    })
   }
 }

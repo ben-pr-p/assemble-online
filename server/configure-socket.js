@@ -1,20 +1,22 @@
-var log = require('debug')('assemble:socket')
+'use strict'
 
-var UPDATE_INTERVAL = 100
-var BASE_DIMENSIONS = {x: 2700, y: 1700} // mostly arbitrary, but a little bit smaller than macbook pro 15 inch screen
-var USERS_PER_SCREEN = 4
+const log = require('debug')('assemble:socket')
+const LocationManager = require('./helpers/distance')
 
-var mainIo = null
+const UPDATE_INTERVAL = 100
+const BASE_DIMENSIONS = {x: 2700, y: 1700} // mostly arbitrary, but a little bit smaller than macbook pro 15 inch screen
+const USERS_PER_SCREEN = 4
 
-var users = {}
-var locations = {}
-var volumes = {}
-var distances = {}
-var sockets = {}
-var userIdFromSocketId = {}
+let mainIo = null
 
-var dimGrowth = 1
-var dimensions = Object.assign({}, BASE_DIMENSIONS)
+let users = {}
+let locations = {}
+let volumes = {}
+let sockets = new Map()
+let userIdFromSocketId = {}
+
+let dimGrowth = 1
+let dimensions = Object.assign({}, BASE_DIMENSIONS)
 
 /**
  * HELPERS
@@ -29,15 +31,15 @@ function getUserId (socket) {
 }
 
 function removeUser (user, socket) {
-  delete sockets[user.id]
-  delete locations[user.id]
-  delete users[user.id]
+  sockets.delete(user.id)
+  locations[user.id] = null
+  users[user.id] = null
 }
 
 /**
  * MANAGING REGULAR UPDATING
  */
-var updateIntervalId = null
+let updateIntervalId = null
 
 function startUpdates () {
   if (!updateIntervalId) {
@@ -57,13 +59,16 @@ function areUpdatesRunning () {
 function sendUpdates () {
   mainIo.emit('locations', locations)
   mainIo.emit('volumes', volumes)
+  sockets.forEach((socket, uid) => {
+    mainIo.to(socket.id).emit('distances', LocationManager.distancesFor(uid))
+  })
 }
 
 /**
  * MANAGE DIMENSIONS
  */
 function setDimensions (n) {
-  var newDimGrowth = (n > 0) ? Math.ceil(n / 4) : 1
+  let newDimGrowth = (n > 0) ? Math.ceil(n / 4) : 1
   if (newDimGrowth == dimGrowth) {
     return false
   } else {
@@ -89,14 +94,14 @@ exports.configure = function (io) {
       io.emit('volumes', volumes)
     })
 
-    /*
+    /**
      * Handle new user
      */
     socket.on('me', function (user) {
-      var numUsers = Object.keys(users).length
-      var firstUser = numUsers == 0
+      let numUsers = Object.keys(users).length
+      let firstUser = numUsers == 0
 
-      var existing = users[user.id]
+      let existing = users[user.id]
       if (existing) {
         log('Got existing user %s update', user.id)
 
@@ -110,7 +115,7 @@ exports.configure = function (io) {
       log('Got new user %s', user.id)
 
       users[user.id] = user
-      sockets[user.id] = socket
+      sockets.set(user.id, socket)
       userIdFromSocketId[socket.id] = user.id
       locations[user.id] = {x: 0, y: 0}
 
@@ -120,31 +125,35 @@ exports.configure = function (io) {
       if (firstUser) startUpdates()
     })
 
-    /*
+    /**
      * Handle user movement
      */
     socket.on('my-location', function (loc) {
-      var uid = getUserId(socket)
+      let uid = getUserId(socket)
       locations[uid] = loc
+      LocationManager.handleLocationUpdate(uid, loc)
     })
 
     /**
      * Handle user volume broadcast
      */
     socket.on('my-volume', function (data) {
-      var uid = getUserId(socket)
+      let uid = getUserId(socket)
       volumes[uid] = data
     })
 
+    /**
+     * Handle user announcement broadcast
+     */
     socket.on('my-announcement', function (data) {
       io.emit('announcement', data)
     })
 
-    /*
+    /**
      * Handle user disconnect
      */
     socket.on('disconnect', function () {
-      var user = getUser(socket)
+      let user = getUser(socket)
       if (!user) {
         log('Unknown user disconnect')
       } else {
@@ -152,7 +161,7 @@ exports.configure = function (io) {
         removeUser(user, socket)
       }
 
-      /*
+      /**
        * Stop sending updates
        */
       if (Object.keys(users).length == 0) {

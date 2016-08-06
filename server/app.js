@@ -1,18 +1,20 @@
-var log = require('debug')('assemble:app')
-var path = require('path')
-var express = require('express')
-var io = require('socket.io')
-var easyrtc = require('easyrtc')
-var http = require('http')
-var app = express()
+'use strict'
 
-var staticDir = path.resolve(__dirname + '/../build')
+const log = require('debug')('assemble:app')
+const path = require('path')
+const express = require('express')
+const io = require('socket.io')
+const easyrtc = require('easyrtc')
+const http = require('http')
+const app = express()
+
+const staticDir = path.resolve(__dirname + '/../build')
 app.use('/', express.static(staticDir))
 
-var server = http.createServer(app)
-var socketServer = io.listen(server, {'log level':1})
+const server = http.createServer(app)
+const socketServer = io.listen(server, {'log level':1})
 
-var mySocket = require('./configure-socket')
+const mySocket = require('./configure-socket')
 mySocket.configure(socketServer)
 
 easyrtc.setOption('logLevel', 'error')
@@ -43,7 +45,7 @@ easyrtc.events.on('roomJoin', function (connectionObj, roomName, roomParameter, 
 /*
  * Start EasyRTC server
  */
-var rtc = easyrtc.listen(app, socketServer, null, function(err, rtcRef) {
+const rtc = easyrtc.listen(app, socketServer, null, function(err, rtcRef) {
   log('initated easyrtc')
 
   rtcRef.events.on('roomCreate', function (appObj, creatorConnectionObj, roomName, roomOptions, cb) {
@@ -53,7 +55,7 @@ var rtc = easyrtc.listen(app, socketServer, null, function(err, rtcRef) {
   })
 })
 
-var PORT = process.env.PORT
+let PORT = process.env.PORT
 if (!PORT) {
   log('Missing env var PORT, using 3000')
   PORT = 3000
