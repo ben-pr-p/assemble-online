@@ -1,7 +1,7 @@
 'use strict'
 
 const log = require('debug')('assemble:socket')
-const LocationManager = require('./helpers/distance')
+const LocationManager = require('./helpers/location-manager')
 
 const UPDATE_INTERVAL = 100
 const BASE_DIMENSIONS = {x: 2700, y: 1700} // mostly arbitrary, but a little bit smaller than macbook pro 15 inch screen
