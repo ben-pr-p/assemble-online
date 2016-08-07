@@ -1,8 +1,10 @@
 import React from 'react'
 import store from 'store'
 import io from 'socket.io-client'
+import uaparse from 'user-agent-parser'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
+import Dialog from 'material-ui/Dialog'
 import AppBarIconMenu from './app-bar/app-bar'
 import Announcement from './announcement/announcement'
 import NewUserModal from './new-user-modal/new-user-modal'
@@ -13,10 +15,16 @@ import customTheme from '../lib/custom-theme.js'
 // TO DO: SOCKET UPDATES SHOULD BE DONE USING SERVICE WORKERS AND USER'S
 // MOVEMENT SHOULD BE PERFECT
 
+const goodBrowsers = ['Chrome', 'Chromium', 'Firefox', 'Mozilla', 'Opera', 'Bowser', 'Canary']
+
 export default class App extends React.Component {
   constructor () {
     super()
     this.state = {
+      browser: {
+        name: null,
+        bad: false
+      },
       users: {},
       me: null,
       roomName: 'plaza',
@@ -25,6 +33,10 @@ export default class App extends React.Component {
   }
 
   componentWillMount () {
+    this.state.browser.name = uaparse(navigator.userAgent).browser.name
+    if (goodBrowsers.indexOf(this.state.browser.name))
+      this.state.browser.bad = true
+
     this.state.me = store.get('me')
 
     this.socket = io()
@@ -70,7 +82,10 @@ export default class App extends React.Component {
   }
 
   render () {
-    const {me, users, editingUser} = this.state
+    const {me, users, editingUser, browser} = this.state
+    if (browser.bad) 
+      return this.renderBadBrowser()
+
     let newUserModal
     if (!me || editingUser) {
       newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} me={me} />)
@@ -92,6 +107,16 @@ export default class App extends React.Component {
           <Announcement socket={this.socket} />
           {newUserModal}
         </div>
+      </MuiThemeProvider>
+    )
+  }
+
+  renderBadBrowser () {
+    return (
+      <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
+        <Dialog open={true} >
+          {`assemble.live uses WebRTC technology for its audio transfer, which has only been implemented in ${goodBrowsers.join(', ')}. Please use one of these, instead of ${this.state.browser.name}.`}
+        </Dialog>
       </MuiThemeProvider>
     )
   }
