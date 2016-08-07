@@ -79,6 +79,7 @@ export default class App extends React.Component {
     let requiresMe = []
     if (me) {
       requiresMe.push(( <AudioController key='audio-controller' users={users} me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} socket={this.socket} /> ))
+      requiresMe.push(( <Room me={me} users={users} socket={this.socket} /> ))
     }
 
     return (
@@ -89,7 +90,6 @@ export default class App extends React.Component {
             clearLocal={this.clearLocal.bind(this)}
             setEditUserState={this.setEditUserState.bind(this)} />
           <Announcement socket={this.socket} />
-          <Room me={me} users={users} socket={this.socket} />
           {newUserModal}
         </div>
       </MuiThemeProvider>
