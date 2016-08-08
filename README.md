@@ -1,8 +1,8 @@
 # assemble.live
 
-Real time online meeting platform based on the use and manipulation of *space*.
+Secure, real time, audio and text based online meeting platform based on the exploitation of *space*.
 
-Built using Node.js, Socket.io, PeerJS, and React.
+Free and open source relying on only open source libraries: Node.js, Socket.io, EasyRTC, React, D3.
 
 ## Running locally
 
