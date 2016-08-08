@@ -12,8 +12,12 @@ import AudioController from './audio-controller'
 import Room from './room/room'
 import customTheme from '../lib/custom-theme.js'
 
-// TO DO: SOCKET UPDATES SHOULD BE DONE USING SERVICE WORKERS AND USER'S
-// MOVEMENT SHOULD BE PERFECT
+/**
+ * TO DO
+ *  socket updates should be done using service workers and user's movement should be perfect
+ *  play request was interrupted by a new load request
+ *  improper user disconnect
+ */
 
 const goodBrowsers = ['Chrome', 'Chromium', 'Firefox', 'Mozilla', 'Opera', 'Bowser', 'Canary']
 
@@ -34,7 +38,7 @@ export default class App extends React.Component {
 
   componentWillMount () {
     this.state.browser.name = uaparse(navigator.userAgent).browser.name
-    if (goodBrowsers.indexOf(this.state.browser.name))
+    if (goodBrowsers.indexOf(this.state.browser.name) < 0)
       this.state.browser.bad = true
 
     this.state.me = store.get('me')
@@ -94,7 +98,7 @@ export default class App extends React.Component {
     let requiresMe = []
     if (me) {
       requiresMe.push(( <AudioController key='audio-controller' users={users} me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} socket={this.socket} /> ))
-      requiresMe.push(( <Room me={me} users={users} socket={this.socket} /> ))
+      requiresMe.push(( <Room key='room' me={me} users={users} socket={this.socket} /> ))
     }
 
     return (
@@ -115,7 +119,13 @@ export default class App extends React.Component {
     return (
       <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
         <Dialog open={true} >
-          {`assemble.live uses WebRTC technology for its audio transfer, which has only been implemented in ${goodBrowsers.join(', ')}. Please use one of these, instead of ${this.state.browser.name}.`}
+          {`assemble.live uses WebRTC technology for its audio transfer, which has only been implemented in the following browsers:`}
+          <br />
+          <br />
+          {`${goodBrowsers.join(', ')}`}
+          <br />
+          <br />
+          {`Please use one of these, instead of ${this.state.browser.name}.`}
         </Dialog>
       </MuiThemeProvider>
     )

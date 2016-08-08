@@ -67,7 +67,7 @@ export default class AudioController extends React.Component {
   }
 
   acceptStream (easyrtcid, stream) {
-    this.state.audioStreams[easyrtcid] = {stream: stream, src: URL.createObjectURL(stream)}
+    this.state.audioStreams[easyrtcid] = stream
     this.setState({msg: {code: 'audio_from', text: `Now receiving audio from ${easyrtcid}`}})
   }
 
@@ -155,7 +155,7 @@ export default class AudioController extends React.Component {
     let videoEls = []
     for (let m in audioStreams) {
       videoEls.push((
-        <video key={m} data={m} autoplay='' width='0' height='0' src={audioStreams[m].src} volume={this.calcVolume(distances[m])} />
+        <video key={m} ref={m} autoPlay='' width='0' height='0' />
       ))
     }
 
@@ -165,5 +165,15 @@ export default class AudioController extends React.Component {
         {videoEls}
       </div>
     )
+  }
+
+  componentDidUpdate () {
+    const {audioStreams, distances} = this.state
+    const {easyrtc} = this
+
+    for (let m in audioStreams) {
+      this.refs[m].volume = this.calcVolume(distances[m])
+      easyrtc.setVideoObjectSrc(this.refs[m], audioStreams[m])
+    }
   }
 }

@@ -17,7 +17,7 @@ const socketServer = io.listen(server, {'log level':1})
 const mySocket = require('./configure-socket')
 mySocket.configure(socketServer)
 
-easyrtc.setOption('logLevel', 'error')
+easyrtc.setOption('logLevel', 'debug')
 
 /*
  * Overriding default listener to get logs
