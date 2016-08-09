@@ -129,13 +129,10 @@ export default class App extends React.Component {
     return (
       <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
         <Dialog open={true} >
-          {`assemble.live uses WebRTC technology for its audio transfer, which has only been implemented in the following browsers:`}
+          {`assemble.live uses WebRTC technology for its audio transfer and SharedWorkers for performance, which has only been implemented in Firefox, Chrome, and Opera.`}
           <br />
           <br />
-          {`${goodBrowsers.join(', ')}`}
-          <br />
-          <br />
-          {`Please use one of these, instead of ${this.state.browser.name}.`}
+          {`Please use one of those, instead of ${this.state.browser.name}.`}
         </Dialog>
       </MuiThemeProvider>
     )

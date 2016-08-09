@@ -6,6 +6,7 @@ class Boss {
     this.worker.port.onmessage = this.handleMessage.bind(this)
     this.worker.port.onerror = this.handleError.bind(this)
     this.worker.port.start()
+    console.log('boss initialized')
   }
 
   on (event, fn, caller) {
@@ -30,6 +31,7 @@ class Boss {
   }
 
   handleMessage (msg) {
+    console.log('recieving message hi')
     if (!msg.data.event) {
       throw new Error('Worker posted message without event descriptor: %j', msg.data)
     }
