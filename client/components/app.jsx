@@ -45,7 +45,7 @@ export default class App extends React.Component {
 
     this.state.me = store.get('me')
 
-    Boss.on('users', this.handleUsers.bind(this))
+    Boss.on('users', this.handleUsers.bind(this), 'App')
 
     if (this.state.me) {
       this.announceMe()
@@ -92,6 +92,7 @@ export default class App extends React.Component {
   clearLocal () {
     store.clear()
     this.state.me = null
+    Boss.post('trash-me')
     this.forceUpdate()
   }
 

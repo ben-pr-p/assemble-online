@@ -24,12 +24,16 @@ export default class Room extends React.Component {
   }
 
   componentWillMount () {
-    Boss.on('locations', this.handleLocations.bind(this))
-    Boss.on('volumes', this.handleVolumes.bind(this))
-    Boss.on('dimensions', this.handleDimensions.bind(this))
-    Boss.on('translate', this.handleTranslate.bind(this))
+    Boss.on('locations', this.handleLocations.bind(this), 'Room')
+    Boss.on('volumes', this.handleVolumes.bind(this), 'Room')
+    Boss.on('dimensions', this.handleDimensions.bind(this), 'Room')
+    Boss.on('translate', this.handleTranslate.bind(this), 'Room')
 
     Boss.post('screen', {x: window.innerWidth, y: window.innerHeight})
+  }
+
+  componentWillUnmount () {
+    Boss.offAllByCaller('Room')
   }
 
   setMeBlobRef () {

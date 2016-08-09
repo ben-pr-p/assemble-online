@@ -124,6 +124,19 @@ exports.configure = function (io) {
     })
 
     /**
+     * Handle user deleting themselves
+     */
+    socket.on('trash-me', function () {
+      let user = getUser(socket)
+      if (!user) {
+        log('Unknown user requesting trashing')
+      } else {
+        log('User %j requested trashing', user)
+        removeUser(user, socket)
+      }
+    })
+
+    /**
      * Handle user movement
      */
     socket.on('my-location', function (loc) {

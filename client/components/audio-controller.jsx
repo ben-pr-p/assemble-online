@@ -37,7 +37,11 @@ export default class AudioController extends React.Component {
   }
 
   componentWillMount () {
-    Boss.on('distances', this.handleDistances.bind(this))
+    Boss.on('distances', this.handleDistances.bind(this), 'AudioController')
+  }
+
+  componentWillUnmount () {
+    Boss.offAllByCaller('AudioController')
   }
 
   handleDistances (data) {

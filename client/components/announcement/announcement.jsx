@@ -54,7 +54,11 @@ export default class Announcement extends React.Component {
 
   componentWillMount () {
     setTimeout(this.flyAndFade.bind(this), 10)
-    Boss.on('announcement', this.handleAnnouncement.bind(this))
+    Boss.on('announcement', this.handleAnnouncement.bind(this), 'Announcement')
+  }
+
+  componentWillUnmount () {
+    Boss.offAllByCaller('Announcement')
   }
 
   setEdit () {

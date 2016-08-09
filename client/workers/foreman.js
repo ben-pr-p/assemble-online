@@ -22,6 +22,7 @@ function initialize (p) {
   socket.on('announcement', handleAnnouncement)
 
   on('me', announceMe)
+  on('trash-me', trashMe)
   on('my-location', announceLocation)
   on('my-volume', announceVolume)
   on('my-announcement', announceAnnouncement)
@@ -68,6 +69,11 @@ function handleUsers (data) {
 function announceMe (newme) {
   me = newme
   socket.emit('me', me)
+}
+
+function trashMe () {
+  me = null
+  socket.emit('trash-me')
 }
 
 function announceLocation (loc) {
