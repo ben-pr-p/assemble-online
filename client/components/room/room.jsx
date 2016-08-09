@@ -27,6 +27,9 @@ export default class App extends React.Component {
     Boss.on('locations', this.handleLocations.bind(this))
     Boss.on('volumes', this.handleVolumes.bind(this))
     Boss.on('dimensions', this.handleDimensions.bind(this))
+    Boss.on('translate', this.handleTranslate.bind(this))
+
+    Boss.post('screen', {x: window.innerWidth, y: window.innerHeight})
   }
 
   setMeBlobRef () {
@@ -50,13 +53,13 @@ export default class App extends React.Component {
     let map = new Map(data)
     this.setState({
       locations: map,
-      translate: this.calcTranslate(map.get(this.props.me.id))
     })
   }
 
   onMouseDown () {
     this.moveUser()
-    this.updateIntervalId = window.setInterval(this.moveUser.bind(this), UPDATE_INTERVAL)
+    if (!this.updateIntervalId)
+      this.updateIntervalId = window.setInterval(this.moveUser.bind(this), UPDATE_INTERVAL)
   }
 
   onMouseUp () {
@@ -91,16 +94,10 @@ export default class App extends React.Component {
     Boss.post('my-location', {x, y})
   }
 
-  calcTranslate (location) {
-    if (!location) return {x: 0, y: 0}
-
-    let x = (-1) * location.x + (window.innerWidth / 2) - 25
-    let y = (-1) * location.y + (window.innerHeight / 2) - 25
-
-    if (isNaN(x)) x = 0
-    if (isNaN(y)) y = 0
-
-    return {x, y}
+  handleTranslate (data) {
+    this.setState({
+      translate: data
+    })
   }
 
   render () {
@@ -124,11 +121,13 @@ export default class App extends React.Component {
       idx++
     })
 
+    const springParams = {stiffness: 60, damping: 50}
+
     return (
       <svg id='plaza' onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} onMouseMove={this.onMouseMove.bind(this)} >
         <Motion
           defaultStyle={{x: translate.x, y: translate.y}}
-          style={{x: spring(translate.x), y: spring(translate.y)}}
+          style={{x: spring(translate.x, springParams), y: spring(translate.y, springParams)}}
         >
           {trans => 
             <g id='viewport' transform={`translate(${trans.x}, ${trans.y})`} >

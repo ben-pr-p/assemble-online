@@ -5,7 +5,9 @@ importScripts('http://cdn.socket.io/socket.io-1.1.0.js')
 var events = {}
 var socket = io()
 
-var port, users, me, locations, volumes, dimensions
+var port, users, me, locations, volumes, dimensions, screen
+
+var translate = {x: 0, y: 0}
 
 function initialize (p) {
   port = p
@@ -19,11 +21,12 @@ function initialize (p) {
   socket.on('dimensions', handleDimensions)
   socket.on('announcement', handleAnnouncement)
 
-  emit('ready', true)
   on('me', announceMe)
   on('my-location', announceLocation)
   on('my-volume', announceVolume)
   on('my-announcement', announceAnnouncement)
+
+  on('screen', receiveScreen)
 }
 
 function on(event, fn) {
@@ -82,6 +85,12 @@ function announceVolume (vol) {
 function handleLocations (data) {
   locations = new Map(data)
   emit('locations', [...locations])
+
+  let myLocation = locations.get(me.id)
+  if (isInFourth(myLocation)) {
+    translate = calcTranslate(myLocation)
+    emit('translate', translate)
+  }
 }
 
 function handleVolumes (data) {
@@ -96,6 +105,37 @@ function handleDimensions (data) {
 
 function handleAnnouncement (data) {
   emit('announcement', data)
+}
+
+function receiveScreen (size) {
+  screen = {
+    x: size.x,
+    y: size.y
+  }
+}
+
+function calcTranslate (loc) {
+  var x = (-1) * loc.x + (screen.x / 2) - 25
+  var y = (-1) * loc.y + (screen.y / 2) - 25
+
+  return {x, y}
+}
+
+function isInFourth (loc) {
+  var display = {
+    x: loc.x + translate.x,
+    y: loc.y + translate.y
+  }
+
+  handleError(display)
+
+  var fourthWidth = screen.x / 4
+  var fourthHeight = screen.y / 4
+  if ((display.x < fourthWidth) || (display.x > (screen.x - fourthWidth)))
+    return true
+  if ((display.y < fourthHeight) || (display.y > (screen.y - fourthHeight)))
+    return true
+  return false
 }
 
 onconnect = function (e) {
