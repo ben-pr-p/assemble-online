@@ -31,7 +31,6 @@ class Boss {
   }
 
   handleMessage (msg) {
-    console.log('recieving message hi')
     if (!msg.data.event) {
       throw new Error('Worker posted message without event descriptor: %j', msg.data)
     }
