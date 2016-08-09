@@ -1,14 +1,18 @@
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var browserify = require('browserify');
-var babelify = require('babelify');
-var handleErrors = require('../util/handleErrors');
-var source = require('vinyl-source-stream');
+var gulp = require('gulp')
+var gutil = require('gulp-util')
+var browserify = require('browserify')
+var babelify = require('babelify')
+var handleErrors = require('../util/handleErrors')
+var source = require('vinyl-source-stream')
+var buffer = require('vinyl-buffer')
+var uglify = require('gulp-uglify')
 
 var dest = './build'
 
+var shouldUglify = process.env.ENV == 'production'
+
 gulp.task('browserify', function() {
-  return browserify({
+  var js = browserify({
     entries: ['./client/index.js'],
     extensions: ['.js', '.jsx'],
     paths: ['./node_modules','./client/js/'],
@@ -18,5 +22,10 @@ gulp.task('browserify', function() {
   .bundle()
   .on('error', handleErrors)
   .pipe(source('./client/index.js'))
-  .pipe(gulp.dest(dest));
-});
+
+  if (shouldUglify) {
+    js = js.pipe(buffer()).pipe(uglify())
+  }
+
+  return js.pipe(gulp.dest(dest))
+})
