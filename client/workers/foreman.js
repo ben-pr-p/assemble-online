@@ -1,6 +1,6 @@
 'use strict'
 
-importScripts('http://cdn.socket.io/socket.io-1.1.0.js')
+importScripts('https://cdn.socket.io/socket.io-1.1.0.js')
 
 var events = {}
 var socket = io()
