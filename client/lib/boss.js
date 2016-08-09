@@ -8,7 +8,6 @@ class Boss {
     this.worker.onerror = this.handleError.bind(this)
     this.worker.port.start()
     console.log('boss initialized')
-    debugger
   }
 
   on (event, fn, caller) {
