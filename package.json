@@ -20,6 +20,7 @@
     "browserify": "^13.0.0",
     "component-dom": "^1.0.8",
     "d3": "^3.5.17",
+    "del": "^2.2.1",
     "easyrtc": "git+https://github.com/priologic/easyrtc.git",
     "express": "^4.14.0",
     "gulp": "^3.9.1",

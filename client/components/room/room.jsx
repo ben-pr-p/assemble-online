@@ -2,6 +2,7 @@ import React from 'react'
 import {Motion, spring} from 'react-motion'
 import Grid from '../grid/grid'
 import UserBlob from '../user-blob/user-blob'
+import Boss from '../../lib/boss'
 
 // movement attenuation constant
 const MAC = .05
@@ -11,9 +12,9 @@ export default class App extends React.Component {
   constructor () {
     super()
     this.state = {
-      locations: {},
+      locations: new Map(),
+      volumes: new Map(),
       dimensions: {},
-      volumes: {},
       translate: {x: 0, y: 0}
     }
 
@@ -23,20 +24,19 @@ export default class App extends React.Component {
   }
 
   componentWillMount () {
-    this.props.socket.on('locations', this.handleLocations.bind(this))
-    this.props.socket.on('volumes', this.handleVolumes.bind(this))
-    this.props.socket.on('dimensions', this.handleDimensions.bind(this))
+    Boss.on('locations', this.handleLocations.bind(this))
+    Boss.on('volumes', this.handleVolumes.bind(this))
+    Boss.on('dimensions', this.handleDimensions.bind(this))
   }
 
   setMeBlobRef () {
     const query = '#' + this.props.me.id
     this.myBlob = document.querySelector(query)
-    console.log(this.myBlob)
   }
 
   handleVolumes (data) {
     this.setState({
-      volumes: data
+      volumes: new Map(data)
     })
   }
 
@@ -47,9 +47,10 @@ export default class App extends React.Component {
   }
 
   handleLocations (data) {
+    let map = new Map(data)
     this.setState({
-      locations: data,
-      translate: this.calcTranslate(data[this.props.me.id])
+      locations: map,
+      translate: this.calcTranslate(map.get(this.props.me.id))
     })
   }
 
@@ -71,7 +72,7 @@ export default class App extends React.Component {
   }
 
   moveUser () {
-    const {locations, users, dimensions} = this.state
+    const {locations, dimensions} = this.state
     const {me} = this.props
     if (!this.myBlob) this.setMeBlobRef()
 
@@ -81,13 +82,13 @@ export default class App extends React.Component {
     const dx = (this.mousePos.x - 50 - posOfMe.left) * MAC
     const dy = (this.mousePos.y - 50 - posOfMe.top) * MAC
 
-    const base = locations[me.id]
+    const base = locations.get(me.id)
     if (!base.x) base.x = 0
     if (!base.y) base.y = 0
     const x = constrain(base.x + dx, 0, dimensions.x)
     const y = constrain(base.y + dy, 0, dimensions.y)
 
-    this.props.socket.emit('my-location', {x, y})
+    Boss.post('my-location', {x, y})
   }
 
   calcTranslate (location) {
@@ -108,20 +109,20 @@ export default class App extends React.Component {
 
     const blobs = []
     let idx = 0
-    for (let u in users) {
+    users.forEach((user, uid) => {
       blobs.push((
-        <UserBlob user={users[u]}
-          location={locations[u] || {x: 0, y: 0}}
-          volume={volumes[u] || 0}
+        <UserBlob user={user}
+          location={locations.has(uid) ? locations.get(uid) : {x: 0, y: 0} }
+          volume={volumes.has(uid) ? volumes.get(uid) : 0 }
           idx={idx}
-          key={u}
-          me={locations[me.id]}
+          key={uid}
+          me={locations.get(me.id)}
           translate={translate}
-          isMe={u == me.id}
+          isMe={uid == me.id}
         />
       ))
       idx++
-    }
+    })
 
     return (
       <svg id='plaza' onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} onMouseMove={this.onMouseMove.bind(this)} >

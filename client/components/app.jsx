@@ -1,16 +1,16 @@
 import React from 'react'
 import store from 'store'
-import io from 'socket.io-client'
 import uaparse from 'user-agent-parser'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import Dialog from 'material-ui/Dialog'
-import AppBarIconMenu from './app-bar/app-bar'
+import AppBar from './app-bar/app-bar'
 import Announcement from './announcement/announcement'
 import NewUserModal from './new-user-modal/new-user-modal'
 import AudioController from './audio-controller'
 import Room from './room/room'
 import customTheme from '../lib/custom-theme.js'
+import Boss from '../lib/boss'
 
 /**
  * TO DO
@@ -29,11 +29,13 @@ export default class App extends React.Component {
         name: null,
         bad: false
       },
-      users: {},
+      users: new Map(),
       me: null,
       roomName: 'plaza',
       editingUser: false,
     }
+
+    this.uids = new Map()
   }
 
   componentWillMount () {
@@ -43,25 +45,33 @@ export default class App extends React.Component {
 
     this.state.me = store.get('me')
 
-    this.socket = io()
-    this.socket.on('connect', this.handleUsers.bind(this))
-    this.socket.on('users', this.handleUsers.bind(this))
+    Boss.on('users', this.handleUsers.bind(this))
 
     if (this.state.me) {
       this.announceMe()
     }
   }
 
+  getUidOf (easyrtcid) {
+    return this.uids.get(easyrtcid)
+  }
+
   announceMe () {
-    this.socket.emit('me', this.state.me)
+    Boss.post('me', this.state.me)
   }
 
   handleUsers (users) {
+    let map = new Map(users)
+
     if (users) {
       this.setState({
-        users: users
+        users: map
       })
     }
+
+    map.forEach((user, uid) => {
+      this.uids.set(user.easyrtcid, uid)
+    })
   }
 
   closeNewUserModal () {
@@ -97,18 +107,18 @@ export default class App extends React.Component {
 
     let requiresMe = []
     if (me) {
-      requiresMe.push(( <AudioController key='audio-controller' users={users} me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} socket={this.socket} /> ))
-      requiresMe.push(( <Room key='room' me={me} users={users} socket={this.socket} /> ))
+      requiresMe.push(( <AudioController key='audio-controller' getUidOf={this.getUidOf.bind(this)} me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} /> ))
+      requiresMe.push(( <Room key='room' me={me} users={users} /> ))
     }
 
     return (
       <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
         <div id='main-app'>
           {requiresMe}
-          <AppBarIconMenu 
+          <AppBar
             clearLocal={this.clearLocal.bind(this)}
             setEditUserState={this.setEditUserState.bind(this)} />
-          <Announcement socket={this.socket} />
+          <Announcement />
           {newUserModal}
         </div>
       </MuiThemeProvider>

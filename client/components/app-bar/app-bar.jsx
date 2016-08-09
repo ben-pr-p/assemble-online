@@ -7,7 +7,7 @@ import DeleteIcon from 'material-ui/svg-icons/action/delete'
 import AccountBox from 'material-ui/svg-icons/action/account-box'
 import Paper from 'material-ui/Paper'
 
-export default class AppBarIconMenu extends React.Component {
+export default class AppBar extends React.Component {
   constructor () {
     super()
   }

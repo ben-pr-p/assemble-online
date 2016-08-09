@@ -33,10 +33,23 @@ class LocationManager {
   distancesFor (uid1) {
     const result = {}
     this.users.forEach(uid2 => {
-      if (uid1 != uid2)
+      if (uid1 != uid2) {
         result[uid2] = this.distancePairs[key(uid1, uid2)]
+      }
     })
     return result
+  }
+
+  removeUser (uid) {
+    this.users.forEach(u => {
+      this.distancePairs.delete(key(u, uid))
+    })
+    this.users.delete(uid)
+    this.locations.delete(uid)
+  }
+
+  getLocations () {
+    return [...this.locations]
   }
 }
 

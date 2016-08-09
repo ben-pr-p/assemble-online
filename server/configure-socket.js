@@ -9,11 +9,10 @@ const USERS_PER_SCREEN = 4
 
 let mainIo = null
 
-let users = {}
-let locations = {}
-let volumes = {}
+let users = new Map()
+let volumes = new Map()
 let sockets = new Map()
-let userIdFromSocketId = {}
+let userIdFromSocketId = new Map()
 
 let dimGrowth = 1
 let dimensions = Object.assign({}, BASE_DIMENSIONS)
@@ -23,17 +22,18 @@ let dimensions = Object.assign({}, BASE_DIMENSIONS)
  */
 
 function getUser (socket) {
-  return users[getUserId(socket)]
+  return users.get(getUserId(socket))
 }
 
 function getUserId (socket) {
-  return userIdFromSocketId[socket.id]
+  return userIdFromSocketId.get(socket.id)
 }
 
 function removeUser (user, socket) {
+  log('Removing all traces of %j', user)
+  LocationManager.removeUser(user.id)
   sockets.delete(user.id)
-  locations[user.id] = null
-  users[user.id] = null
+  users.delete(user.id)
 }
 
 /**
@@ -57,8 +57,8 @@ function areUpdatesRunning () {
 }
 
 function sendUpdates () {
-  mainIo.emit('locations', locations)
-  mainIo.emit('volumes', volumes)
+  mainIo.emit('locations', LocationManager.getLocations())
+  mainIo.emit('volumes', [...volumes])
   sockets.forEach((socket, uid) => {
     mainIo.to(socket.id).emit('distances', LocationManager.distancesFor(uid))
   })
@@ -88,40 +88,38 @@ exports.configure = function (io) {
 
     socket.on('connect', function () {
       log('New connection, sending users')
-      io.emit('users', users)
+      io.emit('users', [...users])
       io.emit('dimensions', dimensions)
-      io.emit('locations', locations)
-      io.emit('volumes', volumes)
+      io.emit('locations', LocationManager.getLocations())
+      io.emit('volumes', [...volumes])
     })
 
     /**
      * Handle new user
      */
     socket.on('me', function (user) {
-      let numUsers = Object.keys(users).length
-      let firstUser = numUsers == 0
+      let firstUser = users.size == 0
 
-      let existing = users[user.id]
-      if (existing) {
+      if (users.has(user.id)) {
         log('Got existing user %s update', user.id)
 
+        let existing = users.get(user.id)
         user.x = existing.x
         user.y = existing.y
 
-        users[user.id] = user
-        return io.emit('users', users)
+        users.set(user.id, user)
+        return io.emit('users', [...users])
       }
 
       log('Got new user %s', user.id)
-
-      users[user.id] = user
+      users.set(user.id, user)
       sockets.set(user.id, socket)
-      userIdFromSocketId[socket.id] = user.id
-      locations[user.id] = {x: 0, y: 0}
+      userIdFromSocketId.set(socket.id, user.id)
+      LocationManager.handleLocationUpdate(user.id, {x: 0, y: 0})
 
-      io.emit('users', users)
+      io.emit('users', [...users])
       io.emit('dimensions', dimensions)
-      io.emit('locations', locations)
+      io.emit('locations', LocationManager.getLocations())
       if (firstUser) startUpdates()
     })
 
@@ -130,7 +128,6 @@ exports.configure = function (io) {
      */
     socket.on('my-location', function (loc) {
       let uid = getUserId(socket)
-      locations[uid] = loc
       LocationManager.handleLocationUpdate(uid, loc)
     })
 
@@ -139,7 +136,7 @@ exports.configure = function (io) {
      */
     socket.on('my-volume', function (data) {
       let uid = getUserId(socket)
-      volumes[uid] = data
+      volumes.set(uid, data)
     })
 
     /**
@@ -164,9 +161,11 @@ exports.configure = function (io) {
       /**
        * Stop sending updates
        */
-      if (Object.keys(users).length == 0) {
+      if (users.size == 0) {
         log('No users left - cancelling updates')
         stopUpdates()
+      } else {
+        io.emit('users', [...users])
       }
     })
   })

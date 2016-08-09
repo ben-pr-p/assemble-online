@@ -3,6 +3,7 @@ import ConnectionStatus from './connection-status/connection-status'
 import easyrtcClient from '../lib/easyrtc'
 import dom from 'component-dom'
 import io from 'socket.io-client'
+import Boss from '../lib/boss'
 
 const UPDATE_INTERVAL = 100
 
@@ -20,20 +21,23 @@ export default class AudioController extends React.Component {
     super()
 
     this.state = {
-      audioStreams: {},
+      audioStreams: new Map(),
       msg: 'Initializing audio connection to room...',
       distances: {}
     }
 
     this.myAudio = null
     this.easyrtc = window.easyrtc
+
     this.rms = null
     this.rmsIntervalId = null
+
     window.io = io
+    this.registeredStreams = new Set()
   }
 
   componentWillMount () {
-    this.props.socket.on('distances', this.handleDistances.bind(this))
+    Boss.on('distances', this.handleDistances.bind(this))
   }
 
   handleDistances (data) {
@@ -43,7 +47,7 @@ export default class AudioController extends React.Component {
   }
 
   announceVolume (vol) {
-    this.props.socket.emit('my-volume', vol)
+    Boss.post('my-volume', vol)
   }
 
   componentDidMount () {
@@ -67,7 +71,7 @@ export default class AudioController extends React.Component {
   }
 
   acceptStream (easyrtcid, stream) {
-    this.state.audioStreams[easyrtcid] = stream
+    this.state.audioStreams.set(easyrtcid, stream)
     this.setState({msg: {code: 'audio_from', text: `Now receiving audio from ${easyrtcid}`}})
   }
 
@@ -90,10 +94,11 @@ export default class AudioController extends React.Component {
 
 
   occupantListener (roomName, occupants) {
-    const { easyrtc } = this
+    const {easyrtc} = this
     for (let o in occupants) {
       this.setState({msg: {code: 'room_join', text: `${o} has joined the room`}})
-      easyrtc.call(o, this.onCallSuccess.bind(this), this.onCallFailure.bind(this), this.onCallAnswer.bind(this))
+      if (easyrtc.myEasyrtcid < o)
+        easyrtc.call(o, this.onCallSuccess.bind(this), this.onCallFailure.bind(this), this.onCallAnswer.bind(this))
     }
   }
 
@@ -143,21 +148,22 @@ export default class AudioController extends React.Component {
 
   calcVolume (d) {
     let v = Math.min(1 / (Math.pow(d - 70, 2) / 5000), 1)
-    if (typeof v == 'number' && !isNaN(v))
+    if (typeof v == 'number' && !isNaN(v)) {
       return v
-    else
+    } else {
       return 0
+    }
   }
 
   render () {
     const {audioStreams, msg, distances} = this.state
 
     let videoEls = []
-    for (let m in audioStreams) {
+    audioStreams.forEach((stream, m) => {
       videoEls.push((
-        <video key={m} ref={m} autoPlay='' width='0' height='0' />
+        <video key={m} data={m} autoPlay='' width='0' height='0' />
       ))
-    }
+    })
 
     return (
       <div className='video-container' style={{height: '0px', width: '0px'}} >
@@ -170,10 +176,16 @@ export default class AudioController extends React.Component {
   componentDidUpdate () {
     const {audioStreams, distances} = this.state
     const {easyrtc} = this
+    const {getUidOf} = this.props
 
-    for (let m in audioStreams) {
-      this.refs[m].volume = this.calcVolume(distances[m])
-      easyrtc.setVideoObjectSrc(this.refs[m], audioStreams[m])
-    }
+    const els = dom('video')
+    els.forEach(el => {
+      let m = dom(el).attr('data')
+      el.volume = this.calcVolume(distances[getUidOf(m)])
+      if (!this.registeredStreams.has(m)) {
+        this.registeredStreams.add(m)
+        easyrtc.setVideoObjectSrc(el, audioStreams.get(m))
+      }
+    })
   }
 }

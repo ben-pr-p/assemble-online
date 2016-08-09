@@ -1,6 +1,7 @@
 import dom from 'component-dom'
 import React from 'react'
 import { Motion, spring } from 'react-motion'
+import Boss from '../../lib/boss'
 import Paper from 'material-ui/Paper'
 import Divider from 'material-ui/Divider'
 import TextField from 'material-ui/TextField'
@@ -51,7 +52,7 @@ export default class Announcement extends React.Component {
 
   componentWillMount () {
     setTimeout(this.flyAndFade.bind(this), 10)
-    this.props.socket.on('announcement', this.handleAnnouncement.bind(this))
+    Boss.on('announcement', this.handleAnnouncement.bind(this))
   }
 
   setEdit () {
@@ -67,7 +68,7 @@ export default class Announcement extends React.Component {
       feedOptions: this.state.feedOptions
     }
 
-    this.props.socket.emit('my-announcement', msg)
+    Boss.post('my-announcement', msg)
   }
 
   handleAnnouncement (data) {
@@ -189,6 +190,7 @@ export default class Announcement extends React.Component {
   renderResponseOptions () {
     const {feedback, feedOptions} = this.state
 
+    let cn = 'drop-down '
     let options
     if (feedback) {
       const divider = [(<Divider key='divider' />)]
@@ -203,10 +205,12 @@ export default class Announcement extends React.Component {
           </div>
         </div>
       )))
+    } else {
+      cn += 'high-margin'
     }
 
     return (
-      <Paper key='drop-down' className='drop-down' >
+      <Paper key='drop-down' className={cn} >
         <div className='feedback-checkbox' >
           <Toggle style={{width: 'auto'}} defaultToggled={false} onToggle={this.toggleFeedback.bind(this)} />
           <div className='label-container' >
