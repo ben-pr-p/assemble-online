@@ -49,7 +49,7 @@ class Boss {
   }
 
   handleError (err) {
-    throw new Error(`Worker encountered error: ${err}`)
+    throw new Error(`Worker encountered error: ${JSON.stringify(err)}`)
   }
 
   post (event, data) {
