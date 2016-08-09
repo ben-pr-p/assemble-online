@@ -7,7 +7,6 @@ class Boss {
     this.worker.port.onerror = this.handleError.bind(this)
     this.worker.onerror = this.handleError.bind(this)
     this.worker.port.start()
-    console.log('boss initialized')
   }
 
   on (event, fn, caller) {
@@ -49,6 +48,7 @@ class Boss {
   }
 
   handleError (err) {
+    console.log(err)
     throw new Error(`Worker encountered error: ${JSON.stringify(err)}`)
   }
 
