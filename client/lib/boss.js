@@ -5,6 +5,7 @@ class Boss {
     this.worker = new SharedWorker('/workers/foreman.js')
     this.worker.port.onmessage = this.handleMessage.bind(this)
     this.worker.port.onerror = this.handleError.bind(this)
+    this.worker.onerror = this.handleError.bind(this)
     this.worker.port.start()
     console.log('boss initialized')
     debugger
