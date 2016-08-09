@@ -27,6 +27,8 @@ function initialize (p) {
   on('my-announcement', announceAnnouncement)
 
   on('screen', receiveScreen)
+
+  handleError('ready')
 }
 
 function on(event, fn) {

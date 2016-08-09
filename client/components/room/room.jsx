@@ -8,7 +8,7 @@ import Boss from '../../lib/boss'
 const MAC = .05
 const UPDATE_INTERVAL = 50
 
-export default class App extends React.Component {
+export default class Room extends React.Component {
   constructor () {
     super()
     this.state = {
