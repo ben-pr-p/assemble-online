@@ -121,10 +121,13 @@ function receiveScreen (size) {
 }
 
 function calcTranslate (loc) {
-  var x = (-1) * loc.x + (screen.x / 2) - 25
-  var y = (-1) * loc.y + (screen.y / 2) - 25
-
-  return {x, y}
+  if (loc) {
+    var x = (-1) * loc.x + (screen.x / 2) - 25
+    var y = (-1) * loc.y + (screen.y / 2) - 25
+    return {x, y}
+  } else {
+    return {x: 0, y: 0}
+  }
 }
 
 function isInFourth (loc) {
