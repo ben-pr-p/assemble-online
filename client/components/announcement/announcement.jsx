@@ -48,6 +48,8 @@ export default class Announcement extends React.Component {
       feedback: this.state.feedback,
       feedOptions: this.state.feedOptions
     }
+
+    this.current = null
   }
 
   componentWillMount () {
@@ -63,10 +65,11 @@ export default class Announcement extends React.Component {
 
   saveEdit () {
     let msg = {
-      text: this.refs.field.value,
+      text: this.current,
       feedback: this.state.feedback,
       feedOptions: this.state.feedOptions
     }
+    this.current = null
 
     Boss.post('my-announcement', msg)
   }
@@ -85,6 +88,10 @@ export default class Announcement extends React.Component {
       hidden: false,
       opaque: true
     })
+  }
+
+  handleInputChange (ev) {
+    this.current = ev.target.value
   }
 
   discardEdit () {
@@ -151,7 +158,7 @@ export default class Announcement extends React.Component {
     if (editing) {
       result.push(this.renderResponseOptions()),
       result.push(this.renderClearIcon()),
-      result.push((<TextField key='input' style={{width: '100%'}} hintText='Type your announcement or question' ref='field' />)),
+      result.push((<TextField key='input' style={{width: '100%'}} hintText='Type your announcement or question' ref='field' onChange={this.handleInputChange.bind(this)} />)),
       result.push((<IconButton key='save' className='save-icon' onClick={this.saveEdit.bind(this)} ><SaveIcon /></IconButton>))
     } else {
       result.push(this.renderEditIcon()),

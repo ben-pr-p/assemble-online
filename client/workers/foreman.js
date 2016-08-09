@@ -75,7 +75,7 @@ function announceLocation (loc) {
 }
 
 function announceAnnouncement (msg) {
-  socket.emit('my-announcement, msg')
+  socket.emit('my-announcement', msg)
 }
 
 function announceVolume (vol) {
@@ -126,8 +126,6 @@ function isInFourth (loc) {
     x: loc.x + translate.x,
     y: loc.y + translate.y
   }
-
-  handleError(display)
 
   var fourthWidth = screen.x / 4
   var fourthHeight = screen.y / 4
