@@ -131,9 +131,14 @@ function calcTranslate (loc) {
 }
 
 function isInFourth (loc) {
-  var display = {
-    x: loc.x + translate.x,
-    y: loc.y + translate.y
+  var display
+  if (loc) {
+    display = {
+      x: loc.x + translate.x,
+      y: loc.y + translate.y
+    }
+  } else {
+    display = {x: 0, y: 0}
   }
 
   var fourthWidth = screen.x / 4
