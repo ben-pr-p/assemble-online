@@ -1,5 +1,6 @@
-import dom from 'component-dom'
 import React from 'react'
+import dom from 'component-dom'
+import closest from 'component-closest'
 import { Motion, spring } from 'react-motion'
 import Boss from '../../lib/boss'
 import Paper from 'material-ui/Paper'
@@ -7,6 +8,8 @@ import Divider from 'material-ui/Divider'
 import TextField from 'material-ui/TextField'
 import Toggle from 'material-ui/Toggle'
 import IconButton from 'material-ui/IconButton'
+import Dialog from 'material-ui/Dialog'
+import RaisedButton from 'material-ui/RaisedButton'
 import EditIcon from 'material-ui/svg-icons/content/create'
 import SaveIcon from 'material-ui/svg-icons/content/save'
 import ClearIcon from 'material-ui/svg-icons/content/clear'
@@ -16,7 +19,7 @@ import FeedbackIcon from 'material-ui/svg-icons/action/feedback'
 import { green600, yellow600, red600, deepOrange900 } from 'material-ui/styles/colors'
 
 const responseOptions = [
-  {label: 'Agree', name: 'agree'},
+  {label: 'Support', name: 'agree'},
   {label: 'Support with Reservations', name: 'reservations'},
   {label: 'Block', name: 'block'}
 ]
@@ -33,7 +36,7 @@ export default class Announcement extends React.Component {
 
     this.state = {
       text: 'Welcome to Assemble Live!',
-      hidden: true,
+      hidden: false,
       opaque: true,
       editing: false,
       feedback: false,
@@ -41,7 +44,9 @@ export default class Announcement extends React.Component {
         agree: true,
         reservations: true,
         block: true
-      }
+      },
+      responses: {},
+      responseModalShown: false
     }
 
     this.prev = {
@@ -53,7 +58,6 @@ export default class Announcement extends React.Component {
   }
 
   componentWillMount () {
-    setTimeout(this.flyAndFade.bind(this), 10)
     Boss.on('announcement', this.handleAnnouncement.bind(this), 'Announcement')
   }
 
@@ -63,7 +67,8 @@ export default class Announcement extends React.Component {
 
   setEdit () {
     this.setState({
-      editing: true
+      editing: true,
+      feedback: false
     })
   }
 
@@ -71,10 +76,15 @@ export default class Announcement extends React.Component {
     let msg = {
       text: this.current,
       feedback: this.state.feedback,
-      feedOptions: this.state.feedOptions
+      feedOptions: this.state.feedOptions,
+      responses: {}
     }
-    this.current = null
 
+    for (let o in this.state.feedOptions) {
+      msg.responses[o] = []
+    }
+
+    this.current = null
     Boss.post('my-announcement', msg)
   }
 
@@ -88,6 +98,7 @@ export default class Announcement extends React.Component {
       text: data.text,
       feedback: data.feedback,
       feedOptions: data.feedOptions,
+      responses: data.responses,
       editing: false,
       hidden: false,
       opaque: true
@@ -106,20 +117,6 @@ export default class Announcement extends React.Component {
     })
   }
 
-  flyAndFade () {
-    this.flyIn()
-    setTimeout(this.fadeOut.bind(this), 5000)
-  }
-
-  flyIn () {
-    this.setState({hidden: false})
-  }
-
-  fadeOut () {
-    this.shouldFade = true
-    this.setState({opaque: false})
-  }
-
   toggleFeedback () {
     this.setState({
       feedback: !this.state.feedback
@@ -129,11 +126,27 @@ export default class Announcement extends React.Component {
   onToggle (ev) {
     const type = dom(ev.nativeEvent.target).attr('data')
     this.state.feedOptions[type] = !this.state.feedOptions[type]
+    this.forceUpdate()
+  }
+
+  initializeResponse (ev) {
+    this.responseType = dom(closest(ev.nativeEvent.target, '.response-option')).attr('data')
+    this.setState({
+      responseModalShown: true
+    })
+  }
+
+  respond (reason) {
+    const {text, feedback, feedOptions, responses, } = this.state
+    const date = Date.now()
+    const type = this.responseType
+    const announcement = {text, feedback, feedOptions, responses}
+    Boss.post('my-response', {announcement, type, reason, date})
   }
 
   render () {
-    const { hidden, opaque } = this.state
-    const { shouldFade } = this
+    const {hidden, opaque, responseModalShown} = this.state
+    const {shouldFade} = this
 
     let c_ac = ''
     if (hidden) c_ac = 'hidden'
@@ -145,22 +158,24 @@ export default class Announcement extends React.Component {
     }
 
     const contents = this.renderContents()
+    const responseModal = responseModalShown ? this.renderResponseModal() : null
 
     return (
       <div className={`announcement-container ${c_ac}`} >
         <Paper key='main-bar' zDepth={3} className='announcement' >
           {contents}
+          {responseModal}
         </Paper>
       </div>
     )
   }
 
   renderContents () {
-    const { text, editing, feedOptions, feedback } = this.state
+    const { text, editing, feedOptions, feedback, responses } = this.state
 
     let result = []
     if (editing) {
-      result.push(this.renderResponseOptions()),
+      result.push(this.renderResponseOptionSelector()),
       result.push(this.renderClearIcon()),
       result.push((<TextField key='input' style={{width: '100%'}} hintText='Type your announcement or question' ref='field' onChange={this.handleInputChange.bind(this)} />)),
       result.push((<IconButton key='save' className='save-icon' onClick={this.saveEdit.bind(this)} ><SaveIcon /></IconButton>))
@@ -171,11 +186,7 @@ export default class Announcement extends React.Component {
 
     for (let o in feedOptions) {
       if (feedback && feedOptions[o]) {
-        result.push((
-          <div key={o} className='response-option'>
-            {icons[o]}
-          </div>
-        ))
+        result.push(this.renderResponseOption(o))
       }
     }
 
@@ -198,7 +209,7 @@ export default class Announcement extends React.Component {
     )
   }
 
-  renderResponseOptions () {
+  renderResponseOptionSelector () {
     const {feedback, feedOptions} = this.state
 
     let cn = 'drop-down '
@@ -207,7 +218,7 @@ export default class Announcement extends React.Component {
       const divider = [(<Divider key='divider' />)]
       options = divider.concat(responseOptions.map((o, idx) => (
         <div className='response-option-checkbox' key={idx} >
-          <Toggle style={{width: 'auto'}} data={o.name} defaultToggled={feedOptions[o.name]} onToggle={this.onToggle.bind(this)} />
+          <Toggle style={{width: 'auto'}} data={o.name} toggled={feedOptions[o.name]} onToggle={this.onToggle.bind(this)} />
           <div className='label-container' >
             {o.label}
           </div>
@@ -223,7 +234,7 @@ export default class Announcement extends React.Component {
     return (
       <Paper key='drop-down' className={cn} >
         <div className='feedback-checkbox' >
-          <Toggle style={{width: 'auto'}} defaultToggled={false} onToggle={this.toggleFeedback.bind(this)} />
+          <Toggle style={{width: 'auto'}} toggled={feedback} onToggle={this.toggleFeedback.bind(this)} />
           <div className='label-container' >
             {'Allow feedback for this announcement/question'}
           </div>
@@ -233,6 +244,78 @@ export default class Announcement extends React.Component {
         </div>
         {options}
       </Paper>
+    )
+  }
+
+  renderResponseOption (o) {
+    const {responses, editing} = this.state
+
+    if (editing) {
+      return (
+        <div key={o} className='response-option'>
+          {icons[o]}
+        </div>
+      )
+    } else {
+      return (
+        <div key={o} className='response-option' data={o} >
+          <div className='increment-container'>
+            {responses[o].length}
+          </div>
+          <IconButton onClick={this.initializeResponse.bind(this)} >
+            {icons[o]}
+          </IconButton>
+        </div>
+      )
+    }
+  }
+
+  onReasonChange (ev) {
+    this.reason = ev.target.value
+  }
+
+  closeWithOutReason () {
+    this.state.responseModalShown = false
+    this.respond(null)
+  }
+
+  closeWithReason () {
+    this.state.responseModalShown = false
+    this.respond(this.reason)
+  }
+
+  cancel () {
+    this.state.responseModalShown = false
+  }
+
+  renderResponseModal () {
+    const actions = [
+      (<RaisedButton
+        key='cancel'
+        label='Cancel'
+        onClick={this.cancel.bind(this)}/>),
+      (<RaisedButton
+        key='no-reason'
+        label='No Reason'
+        onClick={this.closeWithOutReason.bind(this)}/>),
+      (<RaisedButton
+        key='submit'
+        label='Submit'
+        onClick={this.closeWithReason.bind(this)}/>)
+    ]
+
+    return (
+      <Dialog title='Optionally add a reason for your response'
+        actions={actions}
+        modal={true}
+        open={true}
+      >
+        <div className='fields-container'>
+          <TextField id='reason'
+            onChange={this.onReasonChange.bind(this)}
+          />
+        </div>
+      </Dialog>
     )
   }
 }

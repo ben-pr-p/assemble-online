@@ -14,9 +14,17 @@ import Boss from '../lib/boss'
 
 /**
  * TO DO
- *  socket updates should be done using service workers and user's movement should be perfect
- *  play request was interrupted by a new load request
- *  improper user disconnect
+  * Get announcement responses working
+    * Display announcement response reasons
+    * Only allow one response per user
+    * Style those buttons
+  * Create tests for performance
+  * Serve distances with easyrtcid's ready
+  * Serve locations directly to user blobs
+  * Arrows on the user blobs
+  * Extended user profiles
+  * Arrow key movement
+  * Agenda setting widget
  */
 
 const goodBrowsers = ['Chrome', 'Chromium', 'Firefox', 'Mozilla', 'Opera', 'Bowser', 'Canary']

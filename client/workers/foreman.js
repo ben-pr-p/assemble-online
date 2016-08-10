@@ -26,6 +26,7 @@ function initialize (p) {
   on('my-location', announceLocation)
   on('my-volume', announceVolume)
   on('my-announcement', announceAnnouncement)
+  on('my-response', announceResponse)
 
   on('screen', receiveScreen)
 }
@@ -84,6 +85,13 @@ function announceAnnouncement (msg) {
   socket.emit('my-announcement', msg)
 }
 
+function announceResponse (data) {
+  const {announcement, type, reason, date} = data
+  const user = me.id
+  announcement.responses[type].push({user, reason, date})
+  socket.emit('my-announcement', announcement)
+}
+
 function announceVolume (vol) {
   socket.emit('my-volume', vol)
 }
@@ -92,7 +100,7 @@ function handleLocations (data) {
   locations = new Map(data)
   emit('locations', [...locations])
 
-  let myLocation = locations.get(me.id)
+  const myLocation = locations.get(me.id)
   if (isInFourth(myLocation)) {
     translate = calcTranslate(myLocation)
     emit('translate', translate)
@@ -122,8 +130,8 @@ function receiveScreen (size) {
 
 function calcTranslate (loc) {
   if (loc) {
-    var x = (-1) * loc.x + (screen.x / 2) - 25
-    var y = (-1) * loc.y + (screen.y / 2) - 25
+    const x = (-1) * loc.x + (screen.x / 2) - 25
+    const y = (-1) * loc.y + (screen.y / 2) - 25
     return {x, y}
   } else {
     return {x: 0, y: 0}
@@ -131,7 +139,8 @@ function calcTranslate (loc) {
 }
 
 function isInFourth (loc) {
-  var display
+  let display
+  let edge = {}
   if (loc) {
     display = {
       x: loc.x + translate.x,
@@ -141,11 +150,11 @@ function isInFourth (loc) {
     display = {x: 0, y: 0}
   }
 
-  var fourthWidth = screen.x / 4
-  var fourthHeight = screen.y / 4
-  if ((display.x < fourthWidth) || (display.x > (screen.x - fourthWidth)))
+  edge.w = screen.x / 6
+  edge.h = screen.y / 6
+  if ((display.x < edge.w) || (display.x > (screen.x - edge.w)))
     return true
-  if ((display.y < fourthHeight) || (display.y > (screen.y - fourthHeight)))
+  if ((display.y < edge.h) || (display.y > (screen.y - edge.h)))
     return true
   return false
 }
