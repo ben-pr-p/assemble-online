@@ -61,6 +61,10 @@ export default class Announcement extends React.Component {
     Boss.on('announcement', this.handleAnnouncement.bind(this), 'Announcement')
   }
 
+  componentDidMount () {
+    Boss.post('request-announcement')
+  }
+
   componentWillUnmount () {
     Boss.offAllByCaller('Announcement')
   }

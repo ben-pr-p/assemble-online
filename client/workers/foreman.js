@@ -27,6 +27,7 @@ function initialize (p) {
   on('my-volume', announceVolume)
   on('my-announcement', announceAnnouncement)
   on('my-response', announceResponse)
+  on('request-announcement', requestAnnouncement)
 
   on('screen', receiveScreen)
 }
@@ -92,6 +93,10 @@ function announceResponse (data) {
   socket.emit('my-announcement', announcement)
 }
 
+function requestAnnouncement () {
+  socket.emit('request-announcement')
+}
+
 function announceVolume (vol) {
   socket.emit('my-volume', vol)
 }
@@ -118,7 +123,9 @@ function handleDimensions (data) {
 }
 
 function handleAnnouncement (data) {
-  emit('announcement', data)
+  if (data) {
+    emit('announcement', data)
+  }
 }
 
 function receiveScreen (size) {

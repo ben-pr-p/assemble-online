@@ -11,6 +11,7 @@ let mainIo = null
 
 let users = new Map()
 let volumes = new Map()
+let announcement = null
 let sockets = new Map()
 let userIdFromSocketId = new Map()
 
@@ -39,6 +40,11 @@ function removeUser (user, socket) {
 /**
  * MANAGING REGULAR UPDATING
  */
+
+function emitTo (uid, event, data) {
+  mainIo.to(sockets.get(uid).id).emit(event, data)
+}
+
 let updateIntervalId = null
 
 function startUpdates () {
@@ -156,7 +162,16 @@ exports.configure = function (io) {
      * Handle user announcement broadcast
      */
     socket.on('my-announcement', function (data) {
-      io.emit('announcement', data)
+      announcement = data
+      io.emit('announcement', announcement)
+    })
+
+    /**
+     * Emit announcement on request
+     */
+    socket.on('request-announcement', function (data) {
+      log('User %s requested announcement', getUserId(socket))
+      io.emit('announcement', announcement)
     })
 
     /**
