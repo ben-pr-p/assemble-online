@@ -285,22 +285,26 @@ export default class Announcement extends React.Component {
   }
 
   cancel () {
-    this.state.responseModalShown = false
+    this.setState({
+      responseModalShown: false
+    })
   }
 
   renderResponseModal () {
     const actions = [
-      (<RaisedButton
+      (<RaisedButton className='cancel'
         key='cancel'
         label='Cancel'
         onClick={this.cancel.bind(this)}/>),
-      (<RaisedButton
+      (<RaisedButton className='no-reason'
         key='no-reason'
         label='No Reason'
+        secondary={true}
         onClick={this.closeWithOutReason.bind(this)}/>),
-      (<RaisedButton
+      (<RaisedButton className='submit'
         key='submit'
         label='Submit'
+        primary={true}
         onClick={this.closeWithReason.bind(this)}/>)
     ]
 
@@ -309,10 +313,13 @@ export default class Announcement extends React.Component {
         actions={actions}
         modal={true}
         open={true}
+        className='reason-dialog'
       >
-        <div className='fields-container'>
+        <div>
           <TextField id='reason'
             onChange={this.onReasonChange.bind(this)}
+            multiLine={true}
+            style={{width: '100%'}}
           />
         </div>
       </Dialog>

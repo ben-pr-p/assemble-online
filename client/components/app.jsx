@@ -17,7 +17,7 @@ import Boss from '../lib/boss'
   * Get announcement responses working
     * Display announcement response reasons
     * Only allow one response per user
-    * Style those buttons
+    * Request existing announcements on start up
   * Create tests for performance
   * Serve distances with easyrtcid's ready
   * Serve locations directly to user blobs

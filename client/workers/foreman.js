@@ -2,12 +2,12 @@
 
 importScripts('https://cdn.socket.io/socket.io-1.1.0.js')
 
-var events = {}
-var socket = io()
+let events = {}
+const socket = io()
 
-var port, users, me, locations, volumes, dimensions, screen
+let port, users, me, locations, volumes, dimensions, screen
 
-var translate = {x: 0, y: 0}
+let translate = {x: 0, y: 0}
 
 function initialize (p) {
   port = p
