@@ -14,8 +14,9 @@ import Boss from '../lib/boss'
 
 /**
  * TO DO
+  * Serve distances with easyrtcid's ready / get distances working generally
+  * Sub url spawning
   * Create tests for performance
-  * Serve distances with easyrtcid's ready
   * Serve locations directly to user blobs
   * Arrows on the user blobs
   * Extended user profiles
