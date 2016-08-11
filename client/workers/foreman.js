@@ -89,7 +89,9 @@ function announceAnnouncement (msg) {
 function announceResponse (data) {
   const {announcement, type, reason, date} = data
   const user = me.id
-  announcement.responses[type].push({user, reason, date})
+  const userAvatar = me.avatar
+  const userName = me.name
+  announcement.responses[type].push({user, reason, date, userAvatar, userName})
   socket.emit('my-announcement', announcement)
 }
 

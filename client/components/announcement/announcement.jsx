@@ -13,22 +13,10 @@ import RaisedButton from 'material-ui/RaisedButton'
 import EditIcon from 'material-ui/svg-icons/content/create'
 import SaveIcon from 'material-ui/svg-icons/content/save'
 import ClearIcon from 'material-ui/svg-icons/content/clear'
-import ThumbIcon from 'material-ui/svg-icons/action/thumb-up'
-import BlockIcon from 'material-ui/svg-icons/content/report'
 import FeedbackIcon from 'material-ui/svg-icons/action/feedback'
-import { green600, yellow600, red600, deepOrange900 } from 'material-ui/styles/colors'
-
-const responseOptions = [
-  {label: 'Support', name: 'agree'},
-  {label: 'Support with Reservations', name: 'reservations'},
-  {label: 'Block', name: 'block'}
-]
-
-const icons = {
-  agree: (<ThumbIcon color={green600} />),
-  reservations: (<ThumbIcon color={yellow600} />),
-  block: (<BlockIcon color={deepOrange900} />)
-}
+import CommentIcon from 'material-ui/svg-icons/editor/insert-comment'
+import {responseOptions, icons} from './response-options/response-options'
+import ResponseListTabs from './response-list-tabs/response-list-tabs'
 
 export default class Announcement extends React.Component {
   constructor () {
@@ -46,7 +34,8 @@ export default class Announcement extends React.Component {
         block: true
       },
       responses: {},
-      responseModalShown: false
+      responseModalShown: false,
+      reasonsShown: false
     }
 
     this.prev = {
@@ -141,7 +130,7 @@ export default class Announcement extends React.Component {
   }
 
   respond (reason) {
-    const {text, feedback, feedOptions, responses, } = this.state
+    const {text, feedback, feedOptions, responses} = this.state
     const date = Date.now()
     const type = this.responseType
     const announcement = {text, feedback, feedOptions, responses}
@@ -149,7 +138,7 @@ export default class Announcement extends React.Component {
   }
 
   render () {
-    const {hidden, opaque, responseModalShown} = this.state
+    const {hidden, opaque, responseModalShown, reasonsShown} = this.state
     const {shouldFade} = this
 
     let c_ac = ''
@@ -163,12 +152,14 @@ export default class Announcement extends React.Component {
 
     const contents = this.renderContents()
     const responseModal = responseModalShown ? this.renderResponseModal() : null
+    const reasonModal = reasonsShown ? this.renderReasonModal() : null
 
     return (
       <div className={`announcement-container ${c_ac}`} >
         <Paper key='main-bar' zDepth={3} className='announcement' >
           {contents}
           {responseModal}
+          {reasonModal}
         </Paper>
       </div>
     )
@@ -194,6 +185,9 @@ export default class Announcement extends React.Component {
       }
     }
 
+    if (!editing)
+      result.push(this.renderViewReasonsIcon())
+
     return result
   }
 
@@ -209,6 +203,14 @@ export default class Announcement extends React.Component {
     return (
       <IconButton key='left-icon' className='edit-icon' onClick={this.setEdit.bind(this)} >
         <EditIcon color='white' />
+      </IconButton>
+    )
+  }
+
+  renderViewReasonsIcon () {
+    return (
+      <IconButton key='view-reasons-icon' className='view-reasons-icon' onClick={this.viewReasons.bind(this)}>
+        <CommentIcon color='white' />
       </IconButton>
     )
   }
@@ -326,6 +328,31 @@ export default class Announcement extends React.Component {
             style={{width: '100%'}}
           />
         </div>
+      </Dialog>
+    )
+  }
+
+  closeReasonModal () {
+    this.setState({reasonsShown: false})
+  }
+
+  viewReasons () {
+    this.setState({
+      reasonsShown: true
+    })
+  }
+
+  renderReasonModal () {
+    const {responses} = this.state
+    const actions = [(<RaisedButton key='done' label='Done' onClick={this.closeReasonModal.bind(this)} />)]
+
+    return (
+      <Dialog title='Reasons'
+        actions={actions}
+        open={true}
+        contentClassName='reason-view-dialog'
+      >
+        <ResponseListTabs responses={responses} />
       </Dialog>
     )
   }

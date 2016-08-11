@@ -14,9 +14,6 @@ import Boss from '../lib/boss'
 
 /**
  * TO DO
-  * Get announcement responses working
-    * Only allow one response per user
-    * Display announcement response reasons
   * Create tests for performance
   * Serve distances with easyrtcid's ready
   * Serve locations directly to user blobs
@@ -24,6 +21,7 @@ import Boss from '../lib/boss'
   * Extended user profiles
   * Arrow key movement
   * Agenda setting widget
+  * Full accessibility - voice, keys, and mouse exclusive navigation
  */
 
 const goodBrowsers = ['Chrome', 'Chromium', 'Firefox', 'Mozilla', 'Opera', 'Bowser', 'Canary']
