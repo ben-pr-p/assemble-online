@@ -133,7 +133,7 @@ exports.configure = function (io) {
      * Handle user deleting themselves
      */
     socket.on('trash-me', function () {
-      let user = getUser(socket)
+      const user = getUser(socket)
       if (!user) {
         log('Unknown user requesting trashing')
       } else {
@@ -146,7 +146,7 @@ exports.configure = function (io) {
      * Handle user movement
      */
     socket.on('my-location', function (loc) {
-      let uid = getUserId(socket)
+      const uid = getUserId(socket)
       LocationManager.handleLocationUpdate(uid, loc)
     })
 
@@ -154,7 +154,7 @@ exports.configure = function (io) {
      * Handle user volume broadcast
      */
     socket.on('my-volume', function (data) {
-      let uid = getUserId(socket)
+      const uid = getUserId(socket)
       volumes.set(uid, data)
     })
 
@@ -162,7 +162,33 @@ exports.configure = function (io) {
      * Handle user announcement broadcast
      */
     socket.on('my-announcement', function (data) {
+      const clone = {}
+      const byUser = {}
+
+      for (let type in data.responses) {
+        clone[type] = [] // for 19j
+
+        data.responses[type].forEach(response => {
+          if (!byUser[response.user]) {
+            byUser[response.user] = []
+          }
+          byUser[response.user].push({response, type})
+        })
+      }
+
+      for (let uid in byUser) {
+        let tokeep = null
+        if (byUser[uid].length > 1)
+          tokeep = byUser[uid].sort((a, b) => b.response.date - a.response.date)[0]
+        else if (byUser[uid].length == 1)
+          tokeep = byUser[uid][0]
+
+        if (tokeep)
+          clone[tokeep.type].push(tokeep.response)
+      }
+
       announcement = data
+      announcement.responses = clone
       io.emit('announcement', announcement)
     })
 
@@ -178,7 +204,7 @@ exports.configure = function (io) {
      * Handle user disconnect
      */
     socket.on('disconnect', function () {
-      let user = getUser(socket)
+      const user = getUser(socket)
       if (!user) {
         log('Unknown user disconnect')
       } else {
