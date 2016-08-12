@@ -9,5 +9,4 @@ gulp.task('watch', function() {
   gulp.watch('./client/**/*.jsx', ['browserify'])
   gulp.watch('./client/**/*.png', ['images'])
   gulp.watch('./client/**/*.styl', ['styles'])
-  gulp.watch('./client/*.jade', ['jade'])
 })

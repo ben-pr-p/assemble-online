@@ -3,19 +3,29 @@
 importScripts('https://cdn.socket.io/socket.io-1.1.0.js')
 
 let events = {}
-const socket = io()
-
-let port, users, me, locations, volumes, dimensions, screen, distances
+let port, socket, roomName, namespace, users, me, locations, volumes, dimensions, screen, distances
 
 let easyrtcids = new Map()
 
 let translate = {x: 0, y: 0}
 
-function initialize (p) {
+function ready (p) {
   port = p
+
   port.onmessage = handleMessage
   port.onerror = handleError
 
+  on('room-name', handleRoomName)
+}
+
+function handleRoomName (roomName) {
+  roomName = roomName
+  namespace = '/' + roomName
+  socket = io(namespace)
+  initialize()
+}
+
+function initialize () {
   socket.on('connect', handleUsers)
   socket.on('users', handleUsers)
   socket.on('locations', handleLocations)
@@ -188,5 +198,5 @@ function isInFourth (loc) {
 }
 
 onconnect = function (e) {
-  initialize(e.ports[0])
+  ready(e.ports[0])
 }

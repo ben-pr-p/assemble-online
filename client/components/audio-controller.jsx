@@ -63,6 +63,10 @@ export default class AudioController extends React.Component {
     this.setState({msg: {code: 'conn_sucess', text: `...connected with easyrtcid ${easyrtcid}`}})
   }
 
+  onRoomJoin (roomName) {
+    this.setState({msg: {code: 'room_join', text: `...successfully connected to room ${roomName}`}})
+  }
+
   onError (errCode, errMsg) {
     this.setState({msg: `Error ${errCode}: ${errMsg}`})
   }
@@ -72,6 +76,7 @@ export default class AudioController extends React.Component {
     this.myAudio = stream
     this.initializeAudioContext()
     easyrtc.connect('easyrtc.audioOnly', this.onConnectSuccess.bind(this), this.onError.bind(this))
+    easyrtc.joinRoom(this.props.roomName, null, this.onRoomJoin.bind(this), this.onError.bind(this))
   }
 
   acceptStream (easyrtcid, stream) {
@@ -95,7 +100,6 @@ export default class AudioController extends React.Component {
   onCallAnswer (wasAccepted, easyrtcid) {
     this.setState({msg: {code: 'call_answer', text: `${easyrtcid} answered and accepted the call`}})
   }
-
 
   occupantListener (roomName, occupants) {
     const {easyrtc} = this

@@ -8,7 +8,7 @@ var dest = './build'
  * Compile ./client/index.styl (and all styles since index imports everything) to ./www/index.css
  */
 gulp.task('styles', function () {
-  return gulp.src(['./client/index.styl'])
+  return gulp.src(['./client/room.styl'])
     .pipe(stylus())
     .on('error', handleErrors)
     .pipe(gulp.dest(dest));

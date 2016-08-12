@@ -13,7 +13,7 @@ var shouldUglify = process.env.ENV == 'production'
 
 gulp.task('browserify', function() {
   var js = browserify({
-    entries: ['./client/index.js'],
+    entries: ['./client/room.js'],
     extensions: ['.js', '.jsx'],
     paths: ['./node_modules','./client/js/'],
     debug: true
@@ -21,7 +21,7 @@ gulp.task('browserify', function() {
   .transform(babelify, {presets: ['es2015', 'react']})
   .bundle()
   .on('error', handleErrors)
-  .pipe(source('./client/index.js'))
+  .pipe(source('./client/room.js'))
 
   if (shouldUglify) {
     js = js.pipe(buffer()).pipe(uglify())

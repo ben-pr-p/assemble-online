@@ -4,20 +4,47 @@ const log = require('debug')('assemble:app')
 const path = require('path')
 const express = require('express')
 const io = require('socket.io')
+const pug = require('pug')
 const easyrtc = require('easyrtc')
 const http = require('http')
+const spawnRoom = require('./spawn-room')
 const app = express()
 
 const staticDir = path.resolve(__dirname + '/../build')
-app.use('/', express.static(staticDir))
 
 const server = http.createServer(app)
 const socketServer = io.listen(server, {'log level':1})
 
-const mySocket = require('./configure-socket')
-mySocket.configure(socketServer)
+const rooms = {}
+
+function destroyRoom (roomName) {
+  rooms[roomName] = null
+  delete rooms[roomName]
+}
+
+function ensureRoom (req, res, next) {
+  if (rooms[req.params.room]) return next()
+
+  rooms[req.params.room] = spawnRoom(socketServer, req.params.room, destroyRoom)
+  next()
+}
+
+app.use('/', express.static(staticDir))
+
+app.set('view engine', 'pug')
+app.set('views', './server/views')
+
+app.get('/:room', ensureRoom, function (req, res) {
+  log('User requesting room %s', req.params.room)
+  res.render('room', {room: req.params.room})
+})
+
+/*
+ * Create rooms when necessary
+ */
 
 easyrtc.setOption('logLevel', 'debug')
+easyrtc.setOption('roomDefaultEnable', false)
 
 /*
  * Overriding default listener to get logs

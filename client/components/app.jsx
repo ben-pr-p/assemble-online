@@ -1,5 +1,6 @@
 import React from 'react'
 import store from 'store'
+import dom from 'component-dom'
 import uaparse from 'user-agent-parser'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
@@ -14,9 +15,9 @@ import Boss from '../lib/boss'
 
 /**
  * TO DO
+  * Sub url spawning - homepage
   * Serve locations directly to user blobs
   * Persist locations across refreshes
-  * Sub url spawning
   * Create tests for performance
   * Extended user profiles
   * Arrow key movement
@@ -37,7 +38,6 @@ export default class App extends React.Component {
       },
       users: new Map(),
       me: null,
-      roomName: 'plaza',
       editingUser: false,
     }
   }
@@ -45,15 +45,16 @@ export default class App extends React.Component {
   componentWillMount () {
     this.state.browser.name = uaparse(navigator.userAgent).browser.name
     if (goodBrowsers.indexOf(this.state.browser.name) < 0)
-      this.state.browser.bad = true
+      return this.state.browser.bad = true
 
     this.state.me = store.get('me')
-
     Boss.on('users', this.handleUsers.bind(this), 'App')
-
-    if (this.state.me) {
+    if (this.state.me)
       this.announceMe()
-    }
+
+    this.state.roomName = dom('#reactAppContainer').attr('data')
+    if (this.state.roomName)
+      Boss.post('room-name', this.state.roomName)
   }
 
   announceMe () {
@@ -91,7 +92,7 @@ export default class App extends React.Component {
   }
 
   render () {
-    const {me, users, editingUser, browser} = this.state
+    const {me, users, editingUser, browser, roomName} = this.state
     if (browser.bad) 
       return this.renderBadBrowser()
 
@@ -102,7 +103,7 @@ export default class App extends React.Component {
 
     let requiresMe = []
     if (me) {
-      requiresMe.push(( <AudioController key='audio-controller' me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} /> ))
+      requiresMe.push(( <AudioController key='audio-controller' me={me} roomName={roomName} setEasyRTCId={this.setEasyRTCId.bind(this)} /> ))
       requiresMe.push(( <Room key='room' me={me} users={users} /> ))
     }
 
