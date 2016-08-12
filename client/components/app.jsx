@@ -14,11 +14,9 @@ import Boss from '../lib/boss'
 
 /**
  * TO DO
-  * Arrows on the user blobs
   * Serve locations directly to user blobs
   * Persist locations across refreshes
   * Sub url spawning
-  * What's happening on first user register? Sequencing problem most likely
   * Create tests for performance
   * Extended user profiles
   * Arrow key movement
