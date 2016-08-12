@@ -185,7 +185,7 @@ export default class Announcement extends React.Component {
       }
     }
 
-    if (!editing)
+    if (!editing && feedback)
       result.push(this.renderViewReasonsIcon())
 
     return result

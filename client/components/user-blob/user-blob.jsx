@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import d3 from 'd3'
 import { Motion, spring } from 'react-motion'
 import lineIntersect from 'line-intersect'
+import Boss from '../../lib/boss'
 
 /*
  * Motion in this component is modeled off of https://github.com/chenglou/react-motion/blob/master/demos/demo1-chat-heads/Demo.jsx
@@ -38,23 +39,28 @@ export default class UserBlob extends React.Component {
     }
 
     if (!(isMe) && (adj.x < 0 || adj.x > window.innerWidth || adj.y < 0 || adj.y > window.innerHeight)) {
-      return this.renderFar(user, volume, x, y, me)
+      return this.renderFar(user, volume, x, y, translate)
     } else {
       return this.renderClose(user, volume, x, y)
     }
   }
 
-  renderFar (user, volume, x, y, me) {
+  renderFar (user, volume, x, y, trans) {
+    const center = {
+      x: (window.innerWidth / 2) - trans.x,
+      y: (window.innerHeight / 2) - trans.y
+    }
+
     const halfW = window.innerWidth / 2
     const halfH = window.innerHeight / 2
     const edges = {
-      left: { start: { x: me.x - halfW, y: me.y - halfH }, end: { x: me.x - halfW, y: me.y + halfH } },
-      right: { start: { x: me.x + halfW, y: me.y - halfH }, end: { x: me.x + halfW, y: me.y + halfH } },
-      top: { start: { x: me.x - halfW, y: me.y - halfH }, end: { x: me.x + halfW, y: me.y - halfH } },
-      bottom: { start: { x: me.x - halfW, y: me.y + halfH }, end: { x: me.x + halfW, y: me.y + halfH } }
+      left: { start: { x: center.x - halfW, y: center.y - halfH }, end: { x: center.x - halfW, y: center.y + halfH } },
+      right: { start: { x: center.x + halfW, y: center.y - halfH }, end: { x: center.x + halfW, y: center.y + halfH } },
+      top: { start: { x: center.x - halfW, y: center.y - halfH }, end: { x: center.x + halfW, y: center.y - halfH } },
+      bottom: { start: { x: center.x - halfW, y: center.y + halfH }, end: { x: center.x + halfW, y: center.y + halfH } }
     }
 
-    const line = {start: {x: me.x, y: me.y} , end: {x, y}}
+    const line = {start: {x: center.x, y: center.y} , end: {x, y}}
     const intersects = {
       left: lineIntersect.checkIntersection(line.start.x, line.start.y, line.end.x, line.end.y, edges.left.start.x, edges.left.start.y, edges.left.end.x, edges.left.end.y),
       right: lineIntersect.checkIntersection(line.start.x, line.start.y, line.end.x, line.end.y, edges.right.start.x, edges.right.start.y, edges.right.end.x, edges.right.end.y),
@@ -62,15 +68,15 @@ export default class UserBlob extends React.Component {
       bottom: lineIntersect.checkIntersection(line.start.x, line.start.y, line.end.x, line.end.y, edges.bottom.start.x, edges.bottom.start.y, edges.bottom.end.x, edges.bottom.end.y)
     }
 
-    let point, intersectingWall
+    let p, intersectingWall
     for (let wall in intersects) {
       if (intersects[wall].type == 'intersecting') {
-        point = intersects[wall].point
+        p= intersects[wall].point
         intersectingWall = wall
       }
     }
 
-    if (!point) return (<div> </div>)
+    if (!p) return (<div> </div>)
 
     let dx, dy
     switch (intersectingWall) {
@@ -80,7 +86,7 @@ export default class UserBlob extends React.Component {
         break
 
       case 'right':
-        dx = (-1) * sr
+        dx = (-2) * sr
         dy = 0
         break
 
@@ -91,19 +97,14 @@ export default class UserBlob extends React.Component {
 
       case 'bottom':
         dx = 0
-        dy = (-4) * sr
+        dy = (-2) * sr
         break
-    }
-
-    const p = {
-      x: point.x + dx,
-      y: point.y + dy
     }
 
     return (
       <Motion
         defaultStyle={{x: 0, y: 0, z: 0}}
-        style={{x: spring(p.x), y: spring(p.y), z: spring(volume || 0, {stiffness: 300, damping: 50})}}
+        style={{x: spring(p.x + dx), y: spring(p.y + dy), z: spring(volume || 0, {stiffness: 300, damping: 50})}}
       >
         {pos =>
           <g className='user-blob offscreen' id={user.id} >
@@ -111,8 +112,14 @@ export default class UserBlob extends React.Component {
               <pattern id={`avatar-${user.id}`} x='0' y='0' height='100%' width='100%' height='1' width='1' viewBox={`0 0 ${sd} ${sd}`}>
                 <image x='0' y='0' width={sd} height={sd} xlinkHref={user.avatar}></image>
               </pattern>
+              <marker id='arrow' viewBox='0 -5 10 10' refX='5' refY='0' markerWidth='20' markerHeight='16' orient='auto'>
+                <path d='M0,-5L10,0L0,5' className='arrowHead' stroke={this.color} fill={this.color} />
+              </marker>
             </defs>
             <circle transform={`translate(${pos.x},${pos.y})`} r={sr} fill={this.fill} strokeWidth='6px' stroke='black' />
+            <line x1={pos.x} y1={pos.y}
+              x2={p.x + (dx / 4)} y2={p.y + (dy / 4)}
+              className='arrow' markerEnd='url(#arrow)' />
             <path
               transform={`translate(${pos.x},${pos.y})`}
               strokeWidth='6px'

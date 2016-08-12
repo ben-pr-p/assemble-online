@@ -14,14 +14,17 @@ import Boss from '../lib/boss'
 
 /**
  * TO DO
-  * Serve locations directly to user blobs
   * Arrows on the user blobs
+  * Serve locations directly to user blobs
+  * Persist locations across refreshes
   * Sub url spawning
+  * What's happening on first user register? Sequencing problem most likely
   * Create tests for performance
   * Extended user profiles
   * Arrow key movement
   * Agenda setting widget
   * Full accessibility - voice, keys, and mouse exclusive navigation
+  * WebRTC to PSTN signaling
  */
 
 const goodBrowsers = ['Chrome', 'Chromium', 'Firefox', 'Mozilla', 'Opera', 'Bowser', 'Canary']

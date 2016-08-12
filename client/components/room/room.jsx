@@ -21,6 +21,8 @@ export default class Room extends React.Component {
     this.mousePos = {}
     this.updateIntervalId = null
     this.myBlob = null
+
+    window.onresize = this.postScreen.bind(this)
   }
 
   componentWillMount () {
@@ -29,6 +31,10 @@ export default class Room extends React.Component {
     Boss.on('dimensions', this.handleDimensions.bind(this), 'Room')
     Boss.on('translate', this.handleTranslate.bind(this), 'Room')
 
+    this.postScreen()
+  }
+
+  postScreen () {
     Boss.post('screen', {x: window.innerWidth, y: window.innerHeight})
   }
 
