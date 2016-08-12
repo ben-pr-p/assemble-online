@@ -5,7 +5,9 @@ importScripts('https://cdn.socket.io/socket.io-1.1.0.js')
 let events = {}
 const socket = io()
 
-let port, users, me, locations, volumes, dimensions, screen
+let port, users, me, locations, volumes, dimensions, screen, distances
+
+let easyrtcids = new Map()
 
 let translate = {x: 0, y: 0}
 
@@ -20,6 +22,7 @@ function initialize (p) {
   socket.on('volumes', handleVolumes)
   socket.on('dimensions', handleDimensions)
   socket.on('announcement', handleAnnouncement)
+  socket.on('distances', handleDistances)
 
   on('me', announceMe)
   on('trash-me', trashMe)
@@ -62,10 +65,15 @@ function emit (event, data) {
 }
 
 function handleUsers (data) {
+  const map = new Map(data)
   if (data) {
-    users = new Map(data)
+    users = map
     emit('users', [...users])
   }
+
+  map.forEach((user, uid) => {
+    easyrtcids.set(uid, user.easyrtcid)
+  })
 }
 
 function announceMe (newme) {
@@ -127,6 +135,17 @@ function handleDimensions (data) {
 function handleAnnouncement (data) {
   if (data) {
     emit('announcement', data)
+  }
+}
+
+function handleDistances (data) {
+  if (data) {
+    let copy = {}
+    for (let uid in data) {
+      copy[easyrtcids.get(uid)] = data[uid]
+    }
+    emit('distances', copy)
+    distances = copy
   }
 }
 

@@ -14,11 +14,10 @@ import Boss from '../lib/boss'
 
 /**
  * TO DO
-  * Serve distances with easyrtcid's ready / get distances working generally
-  * Sub url spawning
-  * Create tests for performance
   * Serve locations directly to user blobs
   * Arrows on the user blobs
+  * Sub url spawning
+  * Create tests for performance
   * Extended user profiles
   * Arrow key movement
   * Agenda setting widget
@@ -40,8 +39,6 @@ export default class App extends React.Component {
       roomName: 'plaza',
       editingUser: false,
     }
-
-    this.uids = new Map()
   }
 
   componentWillMount () {
@@ -58,26 +55,16 @@ export default class App extends React.Component {
     }
   }
 
-  getUidOf (easyrtcid) {
-    return this.uids.get(easyrtcid)
-  }
-
   announceMe () {
     Boss.post('me', this.state.me)
   }
 
   handleUsers (users) {
-    let map = new Map(users)
-
     if (users) {
       this.setState({
-        users: map
+        users: new Map(users)
       })
     }
-
-    map.forEach((user, uid) => {
-      this.uids.set(user.easyrtcid, uid)
-    })
   }
 
   closeNewUserModal () {
@@ -114,7 +101,7 @@ export default class App extends React.Component {
 
     let requiresMe = []
     if (me) {
-      requiresMe.push(( <AudioController key='audio-controller' getUidOf={this.getUidOf.bind(this)} me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} /> ))
+      requiresMe.push(( <AudioController key='audio-controller' me={me} setEasyRTCId={this.setEasyRTCId.bind(this)} /> ))
       requiresMe.push(( <Room key='room' me={me} users={users} /> ))
     }
 
