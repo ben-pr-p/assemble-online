@@ -107,6 +107,8 @@ function announceAnnouncement (msg) {
 }
 
 function announceResponse (data) {
+  if (!me) return handleError('Cannot announce response - me is not defined')
+
   const {announcement, type, reason, date} = data
   const user = me.id
   const userAvatar = me.avatar
@@ -124,6 +126,8 @@ function announceVolume (vol) {
 }
 
 function handleLocations (data) {
+  if (!me) return null
+
   locations = new Map(data)
   emit('locations', [...locations])
 
