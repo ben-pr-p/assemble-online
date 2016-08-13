@@ -21,6 +21,9 @@ const colorScale = d3.scale.ordinal().range(['#01df00', '#daff02', '#fe6634', '#
 export default class UserBlob extends React.Component {
   constructor () {
     super()
+    this.state = {
+      showCard: false
+    }
   }
 
   render () {

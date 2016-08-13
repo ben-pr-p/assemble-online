@@ -1,0 +1,10 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    title Error! Can't join two rooms from the same browser
+
+  body
+    span You are not allowed to join two different rooms from the same browser. Why is this? Well, assemble.live uses a
+    a(href='https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker')= ' SharedWorker '
+    span in order to keep a high refresh rate (smooth animations) while doing some computationally intensive things. Shared Workers are background threads accessible by multiple tabs or windows at the same time. As a result, multiple tabs/windows use one SharedWorker, and the SharedWorker as written is not smart enough to allow multiple room connections. So, the server blocks this connection so it doesn't crash! Go back to your other window!

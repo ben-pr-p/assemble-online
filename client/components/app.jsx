@@ -15,12 +15,12 @@ import Boss from '../lib/boss'
 
 /**
  * TO DO
-  * Sub url spawning - get working
+  * Arrow key movement
+  * Extended user profiles
+  * Create tests for performance
   * Serve locations directly to user blobs
   * Persist locations across refreshes
-  * Create tests for performance
-  * Extended user profiles
-  * Arrow key movement
+  * Sandstorm.io
   * Agenda setting widget
   * Full accessibility - voice, keys, and mouse exclusive navigation
   * WebRTC to PSTN signaling

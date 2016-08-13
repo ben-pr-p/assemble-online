@@ -150,7 +150,7 @@ function preventDuplicateJoin (req, res, next) {
   // otherwise, they better have left the room they were previously in
   if (rooms[prevroom].containsUser(ubid)) {
     log('User is still in %s - error, we bad', prevroom)
-    return res.status(400).json({error: 'duplicate-join'})
+    return res.render('duplicate-join-error')
   } else {
     log('User has left %s - we good', prevroom)
     remoteLocations.set(ubid, req.params.room)
