@@ -11,21 +11,30 @@ var dest = './build'
 
 var shouldUglify = process.env.ENV == 'production'
 
-gulp.task('browserify', function() {
-  var js = browserify({
-    entries: ['./client/room.js'],
-    extensions: ['.js', '.jsx'],
-    paths: ['./node_modules','./client/js/'],
-    debug: true
-  })
-  .transform(babelify, {presets: ['es2015', 'react']})
-  .bundle()
-  .on('error', handleErrors)
-  .pipe(source('./client/room.js'))
+function generate (jsname) {
+  return function () {
+    var js = browserify({
+      entries: [`./client/${jsname}`],
+      extensions: ['.js', '.jsx'],
+      paths: ['./node_modules','./client/js/'],
+      debug: true
+    })
+    .transform(babelify, {presets: ['es2015', 'react']})
+    .bundle()
+    .on('error', handleErrors)
+    .pipe(source(`./client/${jsname}`))
 
-  if (shouldUglify) {
-    js = js.pipe(buffer()).pipe(uglify())
+    if (shouldUglify) {
+      js = js.pipe(buffer()).pipe(uglify())
+    }
+
+    return js.pipe(gulp.dest(dest))
   }
+}
 
-  return js.pipe(gulp.dest(dest))
+var clientapps = ['room.js', 'portal.js']
+clientapps.forEach(js => {
+  gulp.task(js, generate(js))
 })
+
+gulp.task('browserify', clientapps)

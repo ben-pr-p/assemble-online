@@ -15,7 +15,7 @@ import Boss from '../lib/boss'
 
 /**
  * TO DO
-  * Sub url spawning - homepage
+  * Sub url spawning - get working
   * Serve locations directly to user blobs
   * Persist locations across refreshes
   * Create tests for performance

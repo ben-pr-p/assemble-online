@@ -1,5 +1,12 @@
 'use strict'
 
+/*
+ * KNOWN ERRORS
+  * If the server goes down while a client is still connected to a room, the
+    * socket will have no record of that rooms namespace (only created on a GET
+    * request) and so will be unable to connect
+ */
+
 const log = require('debug')('assemble:app')
 const path = require('path')
 const express = require('express')
@@ -25,6 +32,10 @@ function destroyRoom (roomName) {
 function ensureRoom (req, res, next) {
   if (rooms[req.params.room]) return next()
 
+  if (req.params.room.indexOf('.') > -1)
+    return res.status(400).json({error: 'invalid room name'})
+
+  log('Creating room %s', req.params.room)
   rooms[req.params.room] = spawnRoom(socketServer, req.params.room, destroyRoom)
   next()
 }
@@ -34,8 +45,21 @@ app.use('/', express.static(staticDir))
 app.set('view engine', 'pug')
 app.set('views', './server/views')
 
+app.get('/', function (req, res) {
+  res.render('portal')
+})
+
+app.get('/room-status', function (req, res) {
+  const result = {}
+  for (let room in rooms)
+    result[room] = rooms[room].getNumOccupants()
+
+  log(Object.keys(rooms))
+  res.json(result)
+})
+
 app.get('/:room', ensureRoom, function (req, res) {
-  log('User requesting room %s', req.params.room)
+  log('Request /%s', req.params.room)
   res.render('room', {room: req.params.room})
 })
 

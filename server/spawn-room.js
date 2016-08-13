@@ -226,5 +226,12 @@ class Room {
       return true
     }
   }
+
+  /**
+   * ACCESSIBLE BY OUTSIDE
+   */
+  getNumOccupants () {
+    return this.users.size
+  }
 }
 

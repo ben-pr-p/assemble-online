@@ -1,15 +1,21 @@
-var gulp = require('gulp');
-var stylus = require('gulp-stylus');
-var handleErrors = require('../util/handleErrors');
+var gulp = require('gulp')
+var stylus = require('gulp-stylus')
+var handleErrors = require('../util/handleErrors')
 
 var dest = './build'
 
-/**
- * Compile ./client/index.styl (and all styles since index imports everything) to ./www/index.css
- */
-gulp.task('styles', function () {
-  return gulp.src(['./client/room.styl'])
-    .pipe(stylus())
-    .on('error', handleErrors)
-    .pipe(gulp.dest(dest));
-});
+function generate (stylname) {
+  return function () {
+    return gulp.src([`./client/${stylname}`])
+      .pipe(stylus())
+      .on('error', handleErrors)
+      .pipe(gulp.dest(dest))
+  }
+}
+
+var stylroots = ['room.styl', 'portal.styl']
+stylroots.forEach(styl => {
+  gulp.task(styl, generate(styl))
+})
+
+gulp.task('styles', stylroots)
