@@ -26,14 +26,6 @@ function handleRoomName (roomName) {
 }
 
 function initialize () {
-  socket.on('connect', handleUsers)
-  socket.on('users', handleUsers)
-  socket.on('locations', handleLocations)
-  socket.on('volumes', handleVolumes)
-  socket.on('dimensions', handleDimensions)
-  socket.on('announcement', handleAnnouncement)
-  socket.on('distances', handleDistances)
-
   on('me', announceMe)
   on('trash-me', trashMe)
   on('my-location', announceLocation)
@@ -43,6 +35,14 @@ function initialize () {
   on('request-announcement', requestAnnouncement)
 
   on('screen', receiveScreen)
+
+  socket.on('connect', handleUsers)
+  socket.on('users', handleUsers)
+  socket.on('locations', handleLocations)
+  socket.on('volumes', handleVolumes)
+  socket.on('dimensions', handleDimensions)
+  socket.on('announcement', handleAnnouncement)
+  socket.on('distances', handleDistances)
 }
 
 function on(event, fn) {
@@ -61,9 +61,11 @@ function handleMessage (msg) {
     handleError(`Worker posted message without event descriptor: ${msg.data}`)
   }
 
-  events[msg.data.event].forEach(fn => {
-    fn(msg.data.data)
-  })
+  if (events[msg.data.event]) {
+    events[msg.data.event].forEach(fn => {
+      fn(msg.data.data)
+    })
+  }
 }
 
 function handleError (err) {
