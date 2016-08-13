@@ -114,7 +114,7 @@ export default class App extends React.Component {
           <AppBar
             clearLocal={this.clearLocal.bind(this)}
             setEditUserState={this.setEditUserState.bind(this)} />
-          <Announcement />
+          <Announcement roomName={roomName} />
           {newUserModal}
         </div>
       </MuiThemeProvider>

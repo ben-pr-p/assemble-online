@@ -2,6 +2,7 @@
 
 const debug = require('debug')
 const LocationManager = require('./helpers/location-manager')
+const identifyUserBrowser = require('./helpers/user-browser-id')
 const UPDATE_INTERVAL = 100
 const BASE_DIMENSIONS = {x: 2700, y: 1700} // mostly arbitrary, but a little bit smaller than macbook pro 15 inch screen
 const USERS_PER_SCREEN = 4
@@ -32,6 +33,7 @@ class Room {
     this.updateIntervalId = null
     this.destroySelf = destroySelf
     this.bindEvents()
+
     this.log('I am risen!')
   }
 
@@ -232,6 +234,15 @@ class Room {
    */
   getNumOccupants () {
     return this.users.size
+  }
+
+  containsUser (ubid) {
+    for (let uid of this.users.keys()) {
+      let socket = this.sockets.get(uid)
+      let ub = identifyUserBrowser(socket.handshake.address, socket.request.headers['user-agent'])
+      if (ub == ubid) return true
+    }
+    return false
   }
 }
 

@@ -15,6 +15,7 @@ const pug = require('pug')
 const easyrtc = require('easyrtc')
 const http = require('http')
 const spawnRoom = require('./spawn-room')
+const identifyUserBrowser = require('./helpers/user-browser-id')
 const app = express()
 
 const staticDir = path.resolve(__dirname + '/../build')
@@ -23,22 +24,7 @@ const server = http.createServer(app)
 const socketServer = io.listen(server, {'log level':1})
 
 const rooms = {}
-
-function destroyRoom (roomName) {
-  rooms[roomName] = null
-  delete rooms[roomName]
-}
-
-function ensureRoom (req, res, next) {
-  if (rooms[req.params.room]) return next()
-
-  if (req.params.room.indexOf('.') > -1)
-    return res.status(400).json({error: 'invalid room name'})
-
-  log('Creating room %s', req.params.room)
-  rooms[req.params.room] = spawnRoom(socketServer, req.params.room, destroyRoom)
-  next()
-}
+const remoteLocations = new Map()
 
 app.use('/', express.static(staticDir))
 
@@ -54,11 +40,10 @@ app.get('/room-status', function (req, res) {
   for (let room in rooms)
     result[room] = rooms[room].getNumOccupants()
 
-  log(Object.keys(rooms))
   res.json(result)
 })
 
-app.get('/:room', ensureRoom, function (req, res) {
+app.get('/:room', rejectBadRooms, preventDuplicateJoin, ensureRoom, function (req, res) {
   log('Request /%s', req.params.room)
   res.render('room', {room: req.params.room})
 })
@@ -67,7 +52,7 @@ app.get('/:room', ensureRoom, function (req, res) {
  * Create rooms when necessary
  */
 
-easyrtc.setOption('logLevel', 'debug')
+easyrtc.setOption('logLevel', 'error')
 easyrtc.setOption('roomDefaultEnable', false)
 
 /*
@@ -114,3 +99,62 @@ if (!PORT) {
 
 log('Listening on PORT %d', PORT)
 server.listen(PORT)
+
+function destroyRoom (roomName) {
+  rooms[roomName] = null
+  delete rooms[roomName]
+}
+
+function rejectBadRooms (req, res, next) {
+  if (req.params.room.indexOf('.') > -1)
+    return res.status(400).json({error: 'invalid room name'})
+  return next()
+}
+
+function ensureRoom (req, res, next) {
+  if (rooms[req.params.room]) return next()
+
+  log('Creating room %s', req.params.room)
+  rooms[req.params.room] = spawnRoom(socketServer, req.params.room, destroyRoom)
+  next()
+}
+
+function preventDuplicateJoin (req, res, next) {
+  const ipaddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+  const uagent = req.headers['user-agent']
+  const ubid = identifyUserBrowser(ipaddress, uagent)
+  log('User is %s', ubid)
+
+  // if the user isn't anywhere, we're good
+  if (!remoteLocations.has(ubid)) {
+    log('User brand new - we good')
+    remoteLocations.set(ubid, req.params.room)
+    return next()
+  }
+  log('User was previously in %s', remoteLocations.get(ubid))
+
+  // if the user is trying to go a room they're already in, we're good
+  const prevroom = remoteLocations.get(ubid)
+  if (prevroom == req.params.room) {
+    log('User already in room %s - we good', prevroom)
+    return next()
+  }
+
+  // if the room they were in doesn't exist, we're good
+  if (!rooms[prevroom]) {
+    log('Previous room %s destroyed - we good', prevroom)
+    remoteLocations.set(ubid, req.params.room)
+    return next()
+  }
+
+  // otherwise, they better have left the room they were previously in
+  if (rooms[prevroom].containsUser(ubid)) {
+    log('User is still in %s - error, we bad', prevroom)
+    return res.status(400).json({error: 'duplicate-join'})
+  } else {
+    log('User has left %s - we good', prevroom)
+    remoteLocations.set(ubid, req.params.room)
+    return next()
+  }
+}
+

@@ -188,8 +188,8 @@ export default class AudioController extends React.Component {
     const els = dom('video')
     els.forEach(el => {
       let m = dom(el).attr('data')
-      el.volume = this.calcVolume(distances[m])
-      //el.volume = 0
+      //el.volume = this.calcVolume(distances[m])
+      el.volume = 0
       if (!this.registeredStreams.has(m)) {
         this.registeredStreams.add(m)
         easyrtc.setVideoObjectSrc(el, audioStreams.get(m))

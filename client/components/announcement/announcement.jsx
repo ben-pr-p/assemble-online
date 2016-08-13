@@ -23,7 +23,6 @@ export default class Announcement extends React.Component {
     super()
 
     this.state = {
-      text: 'Welcome to Assemble Live!',
       hidden: false,
       opaque: true,
       editing: false,
@@ -47,6 +46,7 @@ export default class Announcement extends React.Component {
   }
 
   componentWillMount () {
+    this.state.text = `Welcome to ${this.props.roomName}`
     Boss.on('announcement', this.handleAnnouncement.bind(this), 'Announcement')
   }
 
