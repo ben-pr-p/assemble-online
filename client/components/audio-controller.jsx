@@ -156,6 +156,7 @@ export default class AudioController extends React.Component {
 
   calcVolume (d) {
     let v = Math.min(1 / (Math.pow(d - 70, 2) / 5000), 1)
+    console.log(v)
     if (typeof v == 'number' && !isNaN(v)) {
       return v
     } else {

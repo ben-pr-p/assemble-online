@@ -31,14 +31,12 @@ module.exports = class LocationManager {
   }
 
   distancesFor (uid1) {
-    log('distances are %j', [...this.distancePairs])
     const result = {}
     this.users.forEach(uid2 => {
       if (uid1 != uid2) {
         result[uid2] = this.distancePairs.get(key(uid1, uid2))
       }
     })
-    log('result for %s: %j', uid1, result)
     return result
   }
 
