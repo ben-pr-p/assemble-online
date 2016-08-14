@@ -60,7 +60,7 @@ export default class Portal extends React.Component {
   }
 
   enterRoom (room) {
-    window.location.pathname = '/' + room
+    window.location.pathname = '/#' + room
   }
 
   onNewRoomChange (ev) {
@@ -98,7 +98,7 @@ export default class Portal extends React.Component {
     let urlDisplay
     if (newRoomUrl && newRoomUrl != '') {
       urlDisplay = (
-        <span>{`Your room will be available at htts://www.assemble.live/${newRoomUrl}`}</span>
+        <span>{`Your room will be available at htts://www.assemble.live/#${newRoomUrl}`}</span>
       )
     }
 

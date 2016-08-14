@@ -43,7 +43,7 @@ app.get('/room-status', function (req, res) {
   res.json(result)
 })
 
-app.get('/:room', rejectBadRooms, preventDuplicateJoin, ensureRoom, function (req, res) {
+app.get('/#:room', rejectBadRooms, preventDuplicateJoin, ensureRoom, function (req, res) {
   log('Request /%s', req.params.room)
   res.render('room', {room: req.params.room})
 })
