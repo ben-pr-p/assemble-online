@@ -86,7 +86,8 @@ export default class NewUserModal extends React.Component {
       return (
         <div className='avatar-field-container' key={attr}>
           <Avatar src={this.state.avatar} style={{minHeight: '60px', minWidth: '60px'}} />
-          <TextField id={attr} 
+          <TextField id={attr}
+            name={attr}
             value={this.state[attr]}
             onChange={this.onChange.bind(this)}
             floatingLabelText={labelMap[attr]}

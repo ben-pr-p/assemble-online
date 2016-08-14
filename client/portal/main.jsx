@@ -121,6 +121,8 @@ export default class Portal extends React.Component {
               style={{width:'100%'}}
               onChange={this.onNewRoomChange.bind(this)}
               maxLength='30'
+              id='room-name-input'
+              name='room'
             />
 
             {urlDisplay}
