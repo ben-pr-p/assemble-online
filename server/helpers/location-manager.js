@@ -26,7 +26,7 @@ module.exports = class LocationManager {
     this.locations.set(uid1, loc)
     this.users.add(uid1)
     this.users.forEach(uid2 => {
-      this.distancePairs[key(uid1, uid2)] = distance(this.locations.get(uid1), this.locations.get(uid2))
+      this.distancePairs.set(key(uid1, uid2), distance(this.locations.get(uid1), this.locations.get(uid2)))
     })
   }
 
