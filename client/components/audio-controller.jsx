@@ -189,6 +189,8 @@ export default class AudioController extends React.Component {
     const els = dom('video')
     els.forEach(el => {
       let m = dom(el).attr('data')
+      console.log(m)
+      console.log(audioStreams.get(m))
       el.volume = this.calcVolume(distances[m])
       //el.volume = 0
       if (!this.registeredStreams.has(m)) {
