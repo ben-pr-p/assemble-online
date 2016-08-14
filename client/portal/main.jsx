@@ -7,10 +7,15 @@ import Paper from 'material-ui/Paper'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import customTheme from '../lib/custom-theme.js'
-import EnterIcon from 'material-ui/svg-icons/content/forward'
+import EnterIcon from 'material-ui/svg-icons/action/open-in-new'
 import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
 import CreateIcon from 'material-ui/svg-icons/content/add'
+
+/**
+ * TO DO:
+  * make descriptions of what it is and how to use it
+ */
 
 const hinttextoptions = ['Super Important Meeting', 'Virtual Intervention for Paul', 'City Council Weekly #6', 'Paul, You Need Help']
 
@@ -105,6 +110,7 @@ export default class Portal extends React.Component {
     return (
       <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
         <div className='center-with-padding'>
+          <div className='overlay'></div>
           <Paper className='room-status-container'>
 
             <List className='room-status'>

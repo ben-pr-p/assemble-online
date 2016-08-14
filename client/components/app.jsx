@@ -15,8 +15,11 @@ import Boss from '../lib/boss'
 
 /**
  * TO DO
+  * Settings for MAC, pan distance, and stiffness and damping
+  * Bug report
   * Arrow key movement
   * Extended user profiles
+    * view other users
   * Create tests for performance
   * Serve locations directly to user blobs
   * Persist locations across refreshes
@@ -24,6 +27,33 @@ import Boss from '../lib/boss'
   * Agenda setting widget
   * Full accessibility - voice, keys, and mouse exclusive navigation
   * WebRTC to PSTN signaling
+ */
+
+/**
+ * DESIGN SUGGESTIONS
+  * transparent user overlaps
+  * on feedback - try black box around icon and black headers
+  * try gray scale for primary and secondary colors
+  * use greed red spectrum for agree disagree
+  * use other colors for other things
+  * Persistent idxs
+  * have a semi transparent underlay of the room picture
+  * subheaders on room list box should be bigger
+  * subheaders should be brighter in color
+  * room names should be darker in color, num active users should be even darker
+  * your room will be available at should be smaller, just the url
+  * no box resize because character limit
+  * picture takes up the whole circle
+ */
+
+/**
+ * FEATURE SUGGESTIONS
+  * searchable public rooms sorted by number of active users
+    * if same number then alphabetized
+  * chat
+  * click on heads and go to the person
+  * optional video communication
+  * badges for agreements
  */
 
 const goodBrowsers = ['Chrome', 'Chromium', 'Firefox', 'Mozilla', 'Opera', 'Bowser', 'Canary']

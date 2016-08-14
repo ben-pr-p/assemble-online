@@ -5,8 +5,10 @@ import UserBlob from '../user-blob/user-blob'
 import Boss from '../../lib/boss'
 
 // movement attenuation constant
-const MAC = .05
+const MAC = .1
 const UPDATE_INTERVAL = 50
+const STIFFNESS = 241
+const DAMPING = 10
 
 export default class Room extends React.Component {
   constructor () {
@@ -131,7 +133,7 @@ export default class Room extends React.Component {
       idx++
     })
 
-    const springParams = {stiffness: 60, damping: 50}
+    const springParams = {stiffness: STIFFNESS, damping: DAMPING}
 
     return (
       <svg id='plaza' onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} onMouseMove={this.onMouseMove.bind(this)} >

@@ -5,6 +5,7 @@ import IconMenu from 'material-ui/IconMenu'
 import MenuItem from 'material-ui/MenuItem'
 import DeleteIcon from 'material-ui/svg-icons/action/delete'
 import AccountBox from 'material-ui/svg-icons/action/account-box'
+import BugIcon from 'material-ui/svg-icons/action/bug-report'
 import Paper from 'material-ui/Paper'
 
 export default class AppBar extends React.Component {
@@ -43,6 +44,13 @@ export default class AppBar extends React.Component {
             <DeleteIcon />
           </IconButton>
         </Paper>
+
+        <Paper className='floating-button' circle={true} zDepth={5} style={{left: 90, right: 'auto'}} >
+          <IconButton onClick={this.props.bugReport} className='circle-button'  >
+            <BugIcon />
+          </IconButton>
+        </Paper>
+
       </div>
     )
   }
