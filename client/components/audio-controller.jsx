@@ -85,7 +85,7 @@ export default class AudioController extends React.Component {
   }
 
   onStreamClose (easyrtcid) {
-    this.state.audioStreams[easyrtcid] = null
+    this.state.audioStreams.delete(easyrtcid)
     this.setState({msg: {code: 'audio_disconnect', text: `${easyrtcId} has disconnected`}})
   }
 
@@ -156,7 +156,6 @@ export default class AudioController extends React.Component {
 
   calcVolume (d) {
     let v = Math.min(1 / (Math.pow(d - 70, 2) / 5000), 1)
-    console.log(v)
     if (typeof v == 'number' && !isNaN(v)) {
       return v
     } else {
@@ -189,8 +188,6 @@ export default class AudioController extends React.Component {
     const els = dom('video')
     els.forEach(el => {
       let m = dom(el).attr('data')
-      console.log(m)
-      console.log(audioStreams.get(m))
       el.volume = this.calcVolume(distances[m])
       //el.volume = 0
       if (!this.registeredStreams.has(m)) {
