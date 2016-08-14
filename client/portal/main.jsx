@@ -24,7 +24,7 @@ function encodeName (name) {
   replacements.forEach(r => {
     result = result.replace(new RegExp(r[0], 'g'), r[1])
   })
-  return encodeURIComponent(result.toLowerCase())
+  return encodeURI(result.toLowerCase())
 }
 
 export default class Portal extends React.Component {
