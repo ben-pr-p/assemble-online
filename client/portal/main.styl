@@ -18,11 +18,37 @@
   .room-status-container
     position fixed
     top auto
-    bottom 100px
+    bottom 50px
     max-height 500px
     padding 20px
-    min-width 600px
+    min-width 650px
     border-radius 5px
 
-    .button-right
-      float right
+    .room-list-container
+      max-height 200px
+      overflow-y scroll
+      &::-webkit-scrollbar
+        display none
+
+    .room-list-item
+      flexbox(flex)
+      align-items(center)
+      border-bottom 1px solid grey
+      min-height 80px
+
+      .enter-icon-container
+        width 30px
+        height 30px
+        padding 5px
+        background-color white !important
+        flexbox(flex)
+        align-items(center)
+        justify-content(center)
+        margin-left 10px
+        margin-right 15px
+        box-shadow 1px 1px 1px 1px grey
+        cursor pointer
+
+        .enter-icon
+          color black !important
+          fill black !important

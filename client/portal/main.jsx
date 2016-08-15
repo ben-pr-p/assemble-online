@@ -11,6 +11,7 @@ import EnterIcon from 'material-ui/svg-icons/action/open-in-new'
 import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
 import CreateIcon from 'material-ui/svg-icons/content/add'
+import IconButton from 'material-ui/IconButton'
 
 /**
  * TO DO:
@@ -84,16 +85,17 @@ export default class Portal extends React.Component {
     let rs = []
     for (let r in rooms) {
       rs.push((
-        <ListItem key={r} primaryText={r}
-          secondaryText={`${rooms[r]} active users`} >
-          <RaisedButton label='Enter'
-            labelPosition='before'
-            secondary={true}
-            icon={<EnterIcon />}
-            className='button-right'
-            onClick={this.enterRoom.bind(this, r)}
-          />
-        </ListItem>
+        <div key={r} className='room-list-item'>
+          <Paper circle={true} className='enter-icon-container' zDepth={15}
+           onClick={this.enterRoom.bind(this, r)} >
+            <EnterIcon className='enter-icon' />
+          </Paper>
+          <div className='text-container'>
+            <span className='room-name'>{r}</span>
+            <br/>
+            <span className='room-users'>{`${rooms[r]} active users`}</span>
+          </div>
+        </div>
       ))
     }
 
@@ -103,7 +105,7 @@ export default class Portal extends React.Component {
     let urlDisplay
     if (newRoomUrl && newRoomUrl != '') {
       urlDisplay = (
-        <span>{`Your room will be available at htts://www.assemble.live/room/${newRoomUrl}`}</span>
+        <span>{`htts://www.assemble.live/room/${newRoomUrl}`}</span>
       )
     }
 
@@ -111,16 +113,18 @@ export default class Portal extends React.Component {
       <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
         <div className='center-with-padding'>
           <div className='overlay'></div>
-          <Paper className='room-status-container'>
+          <Paper className='room-status-container' zDepth={10} >
 
-            <List className='room-status'>
-              <Subheader>Publicly Joinable Rooms</Subheader>
+            <div className='room-status'>
+              <h3>Publicly Joinable Rooms</h3>
               <Divider />
-              {rs}
-            </List>
+              <div className='room-list-container'>
+                {rs}
+              </div>
+            </div>
             <Divider />
 
-            <Subheader>Create Your Own Room</Subheader>
+            <h3>Create Your Own Room</h3>
             <TextField hintText={hinttextoptions[hintidx]}
               floatingLabelText='What would you like to name your room?'
               floatingLabelFixed={true}
