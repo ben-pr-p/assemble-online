@@ -113,6 +113,8 @@ export default class AudioController extends React.Component {
 
   occupantListener (roomName, occupants) {
     const {easyrtc} = this
+    console.log(occupants)
+    console.log(occupants.map(o => this.getUidOf(o)))
     for (let o in occupants) {
       this.setState({msg: {code: 'room_join', text: `${o} has joined the room`}})
       if (easyrtc.myEasyrtcid < o) {
@@ -195,17 +197,6 @@ export default class AudioController extends React.Component {
   componentDidUpdate () {
     const {audioStreams, distances} = this.state
     const {easyrtc} = this
-
-    const calledUsers = {}
-    audioStreams.forEach((stream, m) => {
-      let user = this.getUidOf(m)
-      if (user) {
-        if (!calledUsers[user.name])
-          calledUsers[user.name] = 0
-        calledUsers[user.name]++
-      }
-    })
-    console.log(calledUsers)
 
     const els = dom('video')
     els.forEach(el => {
