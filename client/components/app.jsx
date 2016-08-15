@@ -37,12 +37,8 @@ import Boss from '../lib/boss'
   * use greed red spectrum for agree disagree
   * use other colors for other things
   * Persistent idxs
-  * have a semi transparent underlay of the room picture
-  * subheaders on room list box should be bigger
-  * subheaders should be brighter in color
   * room names should be darker in color, num active users should be even darker
   * your room will be available at should be smaller, just the url
-  * no box resize because character limit
   * picture takes up the whole circle
  */
 

@@ -16,6 +16,8 @@ const easyrtc = require('easyrtc')
 const http = require('http')
 const spawnRoom = require('./spawn-room')
 const identifyUserBrowser = require('./helpers/user-browser-id')
+const github = require('./helpers/github')
+const bodyParser = require('body-parser')
 const app = express()
 
 const staticDir = path.resolve(__dirname + '/../build')
@@ -26,6 +28,7 @@ const socketServer = io.listen(server, {'log level':1})
 const rooms = {}
 const remoteLocations = new Map()
 
+app.use(bodyParser.json())
 app.use('/', express.static(staticDir))
 
 app.set('view engine', 'pug')
@@ -43,8 +46,14 @@ app.get('/room-status', function (req, res) {
   res.json(result)
 })
 
+app.post('/bug-report', function (req, res) {
+  log('Request POST /bug-report with bug %j', req.body)
+  github.issue(req.body)
+  res.sendStatus(200)
+})
+
 app.get('/room/:room', rejectBadRooms, preventDuplicateJoin, ensureRoom, function (req, res) {
-  log('Request /%s', req.params.room)
+  log('Request GET /%s', req.params.room)
   res.render('room', {room: req.params.room})
 })
 

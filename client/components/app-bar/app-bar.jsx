@@ -7,10 +7,22 @@ import DeleteIcon from 'material-ui/svg-icons/action/delete'
 import AccountBox from 'material-ui/svg-icons/action/account-box'
 import BugIcon from 'material-ui/svg-icons/action/bug-report'
 import Paper from 'material-ui/Paper'
+import BugReport from '../bug-report/bug-report'
 
 export default class AppBar extends React.Component {
   constructor () {
     super()
+    this.state = {
+      bugreport: false
+    }
+  }
+
+  initializeBugReport () {
+    this.setState({bugreport: true})
+  }
+
+  endBugReport () {
+    this.setState({bugreport: false})
   }
 
   editUser () {
@@ -22,6 +34,9 @@ export default class AppBar extends React.Component {
   }
 
   render () {
+    let bugmodal
+    if (this.state.bugreport) bugmodal = (<BugReport endBugReport={this.endBugReport.bind(this)} />)
+
     return (
       <div className='app-bar'>
         <Paper className='floating-button' circle={true} zDepth={5} style={{left: 'auto', right: 20}} >
@@ -46,11 +61,12 @@ export default class AppBar extends React.Component {
         </Paper>
 
         <Paper className='floating-button' circle={true} zDepth={5} style={{left: 90, right: 'auto'}} >
-          <IconButton onClick={this.props.bugReport} className='circle-button'  >
+          <IconButton onClick={this.initializeBugReport.bind(this)} className='circle-button'  >
             <BugIcon />
           </IconButton>
         </Paper>
 
+        {bugmodal}
       </div>
     )
   }
