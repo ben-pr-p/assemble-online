@@ -28,6 +28,7 @@ export default class AudioController extends React.Component {
 
     this.myAudio = null
     this.easyrtc = window.easyrtc
+    this.activeCalls = new Set()
 
     this.rms = null
     this.rmsIntervalId = null
@@ -87,10 +88,12 @@ export default class AudioController extends React.Component {
   onStreamClose (easyrtcid) {
     this.state.audioStreams.delete(easyrtcid)
     easyrtc.hangup(easyrtcid)
+    this.activeCalls.delete(easyrtcid)
     this.setState({msg: {code: 'audio_disconnect', text: `${easyrtcid} has disconnected`}})
   }
 
   onCallSuccess (easyrtcid, mediaType) {
+    this.activeCalls.add(easyrtcid)
     this.setState({msg: {code: 'call_success', text: `successfully called ${easyrtcid}`}})
   }
 
@@ -104,11 +107,9 @@ export default class AudioController extends React.Component {
 
   occupantListener (roomName, occupants) {
     const {easyrtc} = this
-    let uids = []
-    console.log(occupants)
     for (let o in occupants) {
       this.setState({msg: {code: 'room_join', text: `${o} has joined the room`}})
-      if (easyrtc.myEasyrtcid < o) {
+      if (easyrtc.myEasyrtcid < o && !this.activeCalls.has(o)) {
         easyrtc.call(o, this.onCallSuccess.bind(this), this.onCallFailure.bind(this), this.onCallAnswer.bind(this))
       }
     }
