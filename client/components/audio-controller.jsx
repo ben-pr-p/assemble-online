@@ -33,7 +33,6 @@ export default class AudioController extends React.Component {
     this.rmsIntervalId = null
 
     window.io = io
-    this.calls = new Set()
     this.registeredStreams = new Set()
   }
 
@@ -99,7 +98,6 @@ export default class AudioController extends React.Component {
   }
 
   onStreamClose (easyrtcid) {
-    this.calls.delete(this.getUidOf(easyrtcid))
     this.state.audioStreams.delete(easyrtcid)
     this.setState({msg: {code: 'audio_disconnect', text: `${easyrtcId} has disconnected`}})
   }
@@ -120,7 +118,7 @@ export default class AudioController extends React.Component {
     const {easyrtc} = this
     for (let o in occupants) {
       this.setState({msg: {code: 'room_join', text: `${o} has joined the room`}})
-      if (easyrtc.myEasyrtcid < o && !this.calls.has(this.getUidOf(o))) {
+      if (easyrtc.myEasyrtcid < o) {
         easyrtc.call(o, this.onCallSuccess.bind(this), this.onCallFailure.bind(this), this.onCallAnswer.bind(this))
       }
     }
@@ -184,7 +182,6 @@ export default class AudioController extends React.Component {
 
     let videoEls = []
     audioStreams.forEach((stream, m) => {
-      this.calls.add(this.getUidOf(m))
       videoEls.push((
         <video key={m} data={m} autoPlay='' width='0' height='0' />
       ))
@@ -202,11 +199,20 @@ export default class AudioController extends React.Component {
     const {audioStreams, distances} = this.state
     const {easyrtc} = this
 
+    const calledUsers = new Set()
+    audioStreams.forEach((stream, m) => {
+      let uid = this.getUidOf(m)
+      if (calledUsers.has(uid)) {
+        alert('duplicate call found!')
+      } else {
+        calledUsers.add(uid)
+      }
+    })
+
     const els = dom('video')
     els.forEach(el => {
       let m = dom(el).attr('data')
       el.volume = this.calcVolume(distances[m])
-      //el.volume = 0
       if (!this.registeredStreams.has(m)) {
         this.registeredStreams.add(m)
         easyrtc.setVideoObjectSrc(el, audioStreams.get(m))
