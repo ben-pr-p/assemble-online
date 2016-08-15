@@ -63,7 +63,7 @@ export default class AudioController extends React.Component {
 
     for (let user of this.props.users.values()) {
       if (user.easyrtcid == easyrtc) {
-        match = user.id
+        match = user
         break
       }
     }
@@ -199,15 +199,14 @@ export default class AudioController extends React.Component {
     const {audioStreams, distances} = this.state
     const {easyrtc} = this
 
-    const calledUsers = new Set()
+    const calledUsers = {}
     audioStreams.forEach((stream, m) => {
-      let uid = this.getUidOf(m)
-      if (calledUsers.has(uid)) {
-        alert('duplicate call found!')
-      } else {
-        calledUsers.add(uid)
-      }
+      let user = this.getUidOf(m)
+      if (!calledUsers[user.name])
+        calledUsers[user.name] = 0
+      calledUsers[user.name]++
     })
+    console.log(calledUsers)
 
     const els = dom('video')
     els.forEach(el => {
