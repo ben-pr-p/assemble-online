@@ -33,6 +33,7 @@ export default class AudioController extends React.Component {
     this.rmsIntervalId = null
 
     window.io = io
+    this.calls = new Set()
     this.registeredStreams = new Set()
   }
 
@@ -58,6 +59,11 @@ export default class AudioController extends React.Component {
     this.initialize()
   }
 
+  getUidOf (easyrtcid) {
+    const u = this.props.users.filter(u => u.easyrtcid == easyrtcid)[0]
+    return (u != null) ? u.easyrtcid : null
+  }
+
   onConnectSuccess (easyrtcid) {
     this.props.setEasyRTCId(easyrtcid)
     this.setState({msg: {code: 'conn_sucess', text: `...connected with easyrtcid ${easyrtcid}`}})
@@ -80,11 +86,13 @@ export default class AudioController extends React.Component {
   }
 
   acceptStream (easyrtcid, stream) {
+    this.calls.add(getUidOf(easyrtcid))
     this.state.audioStreams.set(easyrtcid, stream)
     this.setState({msg: {code: 'audio_from', text: `Now receiving audio from ${easyrtcid}`}})
   }
 
   onStreamClose (easyrtcid) {
+    this.calls.delete(getUidOf(easyrtcid))
     this.state.audioStreams.delete(easyrtcid)
     this.setState({msg: {code: 'audio_disconnect', text: `${easyrtcId} has disconnected`}})
   }
@@ -98,6 +106,7 @@ export default class AudioController extends React.Component {
   }
 
   onCallAnswer (wasAccepted, easyrtcid) {
+    this.calls.add(getUidOf(easyrtcid))
     this.setState({msg: {code: 'call_answer', text: `${easyrtcid} answered and accepted the call`}})
   }
 
@@ -105,7 +114,7 @@ export default class AudioController extends React.Component {
     const {easyrtc} = this
     for (let o in occupants) {
       this.setState({msg: {code: 'room_join', text: `${o} has joined the room`}})
-      if (easyrtc.myEasyrtcid < o)
+      if (!this.calls.has(getUidOf(o)) && easyrtc.myEasyrtcid < o)
         easyrtc.call(o, this.onCallSuccess.bind(this), this.onCallFailure.bind(this), this.onCallAnswer.bind(this))
     }
   }

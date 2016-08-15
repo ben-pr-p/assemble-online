@@ -7,8 +7,8 @@ import Boss from '../../lib/boss'
 // movement attenuation constant
 const MAC = .1
 const UPDATE_INTERVAL = 50
-const STIFFNESS = 241
-const DAMPING = 10
+const STIFFNESS = 50
+const DAMPING = 60
 
 export default class Room extends React.Component {
   constructor () {

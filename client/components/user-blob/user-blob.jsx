@@ -10,6 +10,9 @@ import Boss from '../../lib/boss'
  * TO DO: ADD ARROWS
  */
 
+const STIFFNESS = 241
+const DAMPING = 10
+
 const r = 50
 const d = r * 2
 
@@ -104,10 +107,12 @@ export default class UserBlob extends React.Component {
         break
     }
 
+    const params = {stiffness: STIFFNESS, damping: DAMPING}
+
     return (
       <Motion
         defaultStyle={{x: 0, y: 0, z: 0}}
-        style={{x: spring(p.x + dx), y: spring(p.y + dy), z: spring(volume || 0, {stiffness: 300, damping: 50})}}
+        style={{x: spring(p.x + dx, params), y: spring(p.y + dy, params), z: spring(volume || 0, {stiffness: 300, damping: 50})}}
       >
         {pos =>
           <g className='user-blob offscreen' id={user.id} >
@@ -136,10 +141,12 @@ export default class UserBlob extends React.Component {
   }
 
   renderClose (user, volume, x, y) {
+    const params = {stiffness: STIFFNESS, damping: DAMPING}
+
     return (
       <Motion
         defaultStyle={{x: 0, y: 0, z: 0}}
-        style={{x: spring(x), y: spring(y), z: spring(volume || 0, {stiffness: 300, damping: 50})}}
+        style={{x: spring(x, params), y: spring(y, params), z: spring(volume || 0, {stiffness: 300, damping: 50})}}
       >
         {pos =>
           <g className='user-blob'  id={user.id} >
