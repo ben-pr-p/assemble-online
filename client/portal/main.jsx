@@ -18,7 +18,15 @@ import IconButton from 'material-ui/IconButton'
   * make descriptions of what it is and how to use it
  */
 
-const hinttextoptions = ['Super Important Meeting', 'Virtual Intervention for Paul', 'City Council Weekly #6', 'Paul, You Need Help']
+const hinttextoptions = [
+  'Super Important Meeting',
+  'Virtual Intervention for Joshua',
+  'City Council Weekly #6',
+  'Joshua, You Need Help',
+  'Friend Party',
+  'Planning the Furry Convention',
+  'Joshua, We Can\'t Just Watch While You Ruin Your Life'
+]
 
 function encodeName (name) {
   const replacements = [
@@ -105,7 +113,7 @@ export default class Portal extends React.Component {
     let urlDisplay
     if (newRoomUrl && newRoomUrl != '') {
       urlDisplay = (
-        <span>{`htts://www.assemble.live/room/${newRoomUrl}`}</span>
+        <span>{`https://www.assemble.live/room/${newRoomUrl}`}</span>
       )
     }
 
