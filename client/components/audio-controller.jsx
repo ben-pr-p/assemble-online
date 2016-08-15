@@ -86,7 +86,8 @@ export default class AudioController extends React.Component {
 
   onStreamClose (easyrtcid) {
     this.state.audioStreams.delete(easyrtcid)
-    this.setState({msg: {code: 'audio_disconnect', text: `${easyrtcId} has disconnected`}})
+    easyrtc.hangup(easyrtcid)
+    this.setState({msg: {code: 'audio_disconnect', text: `${easyrtcid} has disconnected`}})
   }
 
   onCallSuccess (easyrtcid, mediaType) {
