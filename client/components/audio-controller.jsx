@@ -60,8 +60,16 @@ export default class AudioController extends React.Component {
   }
 
   getUidOf (easyrtcid) {
-    const u = this.props.users.filter(u => u.easyrtcid == easyrtcid)[0]
-    return (u != null) ? u.easyrtcid : null
+    let match = this.props.users.filter(u => u.easyrtcid == easyrtcid)[0]
+
+    for (let user of this.props.users.values()) {
+      if (user.easyrtcid == easyrtc) {
+        match = user.id
+        break
+      }
+    }
+
+    return match
   }
 
   onConnectSuccess (easyrtcid) {

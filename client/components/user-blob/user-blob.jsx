@@ -10,8 +10,8 @@ import Boss from '../../lib/boss'
  * TO DO: ADD ARROWS
  */
 
-const STIFFNESS = 241
-const DAMPING = 10
+const STIFFNESS = 141
+const DAMPING = 30
 
 const r = 50
 const d = r * 2
