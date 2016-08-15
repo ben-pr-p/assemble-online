@@ -58,16 +58,6 @@ export default class AudioController extends React.Component {
     this.initialize()
   }
 
-  getUidOf (easyrtcid) {
-    let match
-
-    for (let user of this.props.users.values()) {
-      if (user.easyrtcid == easyrtc) {
-        return match
-      }
-    }
-  }
-
   onConnectSuccess (easyrtcid) {
     this.props.setEasyRTCId(easyrtcid)
     this.setState({msg: {code: 'conn_sucess', text: `...connected with easyrtcid ${easyrtcid}`}})
@@ -115,9 +105,6 @@ export default class AudioController extends React.Component {
     const {easyrtc} = this
     let uids = []
     console.log(occupants)
-    for (let o in occupants)
-      uids.push(this.getUidOf(o))
-    console.log(uids)
     for (let o in occupants) {
       this.setState({msg: {code: 'room_join', text: `${o} has joined the room`}})
       if (easyrtc.myEasyrtcid < o) {
@@ -138,6 +125,7 @@ export default class AudioController extends React.Component {
     easyrtc.setRoomOccupantListener(this.occupantListener.bind(this))
     easyrtc.setStreamAcceptor(this.acceptStream.bind(this))
     easyrtc.setAcceptChecker(this.shouldAccept.bind(this))
+    easyrtc.setOnStreamClosed(this.onStreamClose.bind(this))
 
     easyrtc.initMediaSource(this.onMediaSuccess.bind(this), this.onError.bind(this))
   }
