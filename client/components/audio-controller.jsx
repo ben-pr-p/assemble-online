@@ -113,8 +113,11 @@ export default class AudioController extends React.Component {
 
   occupantListener (roomName, occupants) {
     const {easyrtc} = this
+    let uids = []
     console.log(occupants)
-    console.log(occupants.map(o => this.getUidOf(o)))
+    for (let o in occupants)
+      uids.push(this.getUidOf(o))
+    console.log(uids)
     for (let o in occupants) {
       this.setState({msg: {code: 'room_join', text: `${o} has joined the room`}})
       if (easyrtc.myEasyrtcid < o) {
