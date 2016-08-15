@@ -63,12 +63,9 @@ export default class AudioController extends React.Component {
 
     for (let user of this.props.users.values()) {
       if (user.easyrtcid == easyrtc) {
-        match = user
-        break
+        return match
       }
     }
-
-    return match
   }
 
   onConnectSuccess (easyrtcid) {
@@ -202,9 +199,11 @@ export default class AudioController extends React.Component {
     const calledUsers = {}
     audioStreams.forEach((stream, m) => {
       let user = this.getUidOf(m)
-      if (!calledUsers[user.name])
-        calledUsers[user.name] = 0
-      calledUsers[user.name]++
+      if (user) {
+        if (!calledUsers[user.name])
+          calledUsers[user.name] = 0
+        calledUsers[user.name]++
+      }
     })
     console.log(calledUsers)
 
