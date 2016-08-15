@@ -94,7 +94,6 @@ export default class AudioController extends React.Component {
   }
 
   acceptStream (easyrtcid, stream) {
-    this.calls.add(this.getUidOf(easyrtcid))
     this.state.audioStreams.set(easyrtcid, stream)
     this.setState({msg: {code: 'audio_from', text: `Now receiving audio from ${easyrtcid}`}})
   }
@@ -114,7 +113,6 @@ export default class AudioController extends React.Component {
   }
 
   onCallAnswer (wasAccepted, easyrtcid) {
-    this.calls.add(this.getUidOf(easyrtcid))
     this.setState({msg: {code: 'call_answer', text: `${easyrtcid} answered and accepted the call`}})
   }
 
@@ -122,8 +120,9 @@ export default class AudioController extends React.Component {
     const {easyrtc} = this
     for (let o in occupants) {
       this.setState({msg: {code: 'room_join', text: `${o} has joined the room`}})
-      if (!this.calls.has(this.getUidOf(o)) && easyrtc.myEasyrtcid < o)
+      if (easyrtc.myEasyrtcid < o && !this.calls.has(this.getUidOf(o))) {
         easyrtc.call(o, this.onCallSuccess.bind(this), this.onCallFailure.bind(this), this.onCallAnswer.bind(this))
+      }
     }
   }
 
@@ -185,6 +184,7 @@ export default class AudioController extends React.Component {
 
     let videoEls = []
     audioStreams.forEach((stream, m) => {
+      this.calls.add(this.getUidOf(m))
       videoEls.push((
         <video key={m} data={m} autoPlay='' width='0' height='0' />
       ))
