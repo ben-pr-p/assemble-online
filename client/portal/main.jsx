@@ -173,9 +173,13 @@ export default class Portal extends React.Component {
 
   renderNoRooms () {
     return (
-      <ListItem primaryText='No rooms have been created yet.'
-        secondaryText='Do so yourself below!' >
-      </ListItem>
+      <div className='room-list-item'>
+        <div className='text-container'>
+          <span className='room-name'>No rooms have been created yet.</span>
+          <br/>
+          <span className='room-users'>Make the first one yourself below! Don't forget to invite friends otherwise it's not fun.</span>
+        </div>
+      </div>
     )
   }
 }
