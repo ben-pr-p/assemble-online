@@ -15,8 +15,7 @@ import Boss from '../lib/boss'
 
 /**
  * TO DO
-  * Settings for MAC, pan distance, and stiffness and damping
-  * see how posted announcements
+  * see who posted announcements
   * kick out / mute for facillitator
   * mode where only facillitator can make announcements
   * Arrow key movement
@@ -28,6 +27,7 @@ import Boss from '../lib/boss'
   * Sandstorm.io
   * Agenda setting widget
   * Barriers
+  * Documents
   * Full accessibility - voice, keys, and mouse exclusive navigation
   * WebRTC to PSTN signaling
  */
@@ -36,12 +36,7 @@ import Boss from '../lib/boss'
  * DESIGN SUGGESTIONS
   * transparent user overlaps
   * on feedback - try black box around icon and black headers
-  * try gray scale for primary and secondary colors
   * use greed red spectrum for agree disagree
-  * use other colors for other things
-  * room names should be darker in color, num active users should be even darker
-  * your room will be available at should be smaller, just the url
-  * picture takes up the whole circle
  */
 
 /**

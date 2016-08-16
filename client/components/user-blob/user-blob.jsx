@@ -119,8 +119,8 @@ export default class UserBlob extends React.Component {
         {pos =>
           <g className='user-blob offscreen' id={user.id} >
             <defs>
-              <pattern id={`avatar-${user.id}`} x='0' y='0' height='100%' width='100%' height='1' width='1' viewBox={`0 0 ${sd} ${sd}`}>
-                <image x='0' y='0' width={sd} height={sd} xlinkHref={user.avatar}></image>
+              <pattern id={`avatar-${user.id}`} preserveAspectRatio='none' x='0' y='0' height='100%' width='100%' height='1' width='1' viewBox={`0 0 ${sd} ${sd}`}>
+                <image preserveAspectRatio='none' x='0' y='0' width={sd} height={sd} xlinkHref={user.avatar}></image>
               </pattern>
               <marker id='arrow' viewBox='0 -5 10 10' refX='5' refY='0' markerWidth='20' markerHeight='16' orient='auto'>
                 <path d='M0,-5L10,0L0,5' className='arrowHead' stroke={this.color} fill={this.color} />
@@ -153,8 +153,8 @@ export default class UserBlob extends React.Component {
         {pos =>
           <g className='user-blob'  id={user.id} >
             <defs>
-              <pattern id={`avatar-${user.id}`} x='0' y='0' height='100%' width='100%' height='1' width='1' viewBox={`0 0 ${d} ${d}`}>
-                <image x='0' y='0' width={d} height={d} xlinkHref={user.avatar}></image>
+              <pattern id={`avatar-${user.id}`} preserveAspectRatio='none' x='0' y='0' height='100%' width='100%' height='1' width='1' viewBox={`0 0 ${d} ${d}`}>
+                <image preserveAspectRatio='none' x='0' y='0' width={d} height={d} xlinkHref={user.avatar}></image>
               </pattern>
             </defs>
             <circle transform={`translate(${pos.x},${pos.y})`} r={r} fill={this.fill} strokeWidth='6px' stroke='black' />
