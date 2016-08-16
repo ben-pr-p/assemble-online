@@ -19,8 +19,6 @@ const d = r * 2
 const sr = 25
 const sd = sr * 2
 
-const colorScale = d3.scale.ordinal().range(['#01df00', '#daff02', '#fe6634', '#008e82', '#00cfe2', '#fb0528', '#9b6304', '#532696', '#b53284', '#ff7ba6'])
-
 export default class UserBlob extends React.Component {
   constructor () {
     super()

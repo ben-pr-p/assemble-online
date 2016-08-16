@@ -121,7 +121,7 @@ export default class Portal extends React.Component {
       <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
         <div className='center-with-padding'>
           <div className='overlay'></div>
-          <Paper className='room-status-container' zDepth={2} >
+          <Paper className='room-status-container' zDepth={5} >
 
             <div className='room-status'>
               <h3>Publicly Joinable Rooms</h3>
