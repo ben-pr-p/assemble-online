@@ -94,7 +94,7 @@ export default class Portal extends React.Component {
     for (let r in rooms) {
       rs.push((
         <div key={r} className='room-list-item'>
-          <Paper circle={true} className='enter-icon-container' zDepth={15}
+          <Paper circle={true} className='enter-icon-container' zDepth={5}
            onClick={this.enterRoom.bind(this, r)} >
             <EnterIcon className='enter-icon' />
           </Paper>
@@ -121,7 +121,7 @@ export default class Portal extends React.Component {
       <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
         <div className='center-with-padding'>
           <div className='overlay'></div>
-          <Paper className='room-status-container' zDepth={10} >
+          <Paper className='room-status-container' zDepth={2} >
 
             <div className='room-status'>
               <h3>Publicly Joinable Rooms</h3>

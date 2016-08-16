@@ -129,6 +129,12 @@ export default class Announcement extends React.Component {
     })
   }
 
+  saveOnEnter (ev) {
+    if (ev.keyCode == 13) {
+      this.saveEdit()
+    }
+  }
+
   respond (reason) {
     const {text, feedback, feedOptions, responses} = this.state
     const date = Date.now()
@@ -172,7 +178,14 @@ export default class Announcement extends React.Component {
     if (editing) {
       result.push(this.renderResponseOptionSelector()),
       result.push(this.renderClearIcon()),
-      result.push((<TextField key='input' style={{width: '100%'}} hintText='Type your announcement or question' ref='field' onChange={this.handleInputChange.bind(this)} />)),
+      result.push((
+        <TextField key='input' 
+          style={{width: '100%'}}
+          hintText='Type your announcement or question'
+          ref='field' onChange={this.handleInputChange.bind(this)}
+          onKeyDown={this.saveOnEnter.bind(this)}
+        />
+      )),
       result.push((<IconButton key='save' className='save-icon' onClick={this.saveEdit.bind(this)} ><SaveIcon /></IconButton>))
     } else {
       result.push(this.renderEditIcon()),

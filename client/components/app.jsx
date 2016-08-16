@@ -16,7 +16,9 @@ import Boss from '../lib/boss'
 /**
  * TO DO
   * Settings for MAC, pan distance, and stiffness and damping
-  * Bug report
+  * see how posted announcements
+  * kick out / mute for facillitator
+  * mode where only facillitator can make announcements
   * Arrow key movement
   * Extended user profiles
     * view other users
@@ -25,6 +27,7 @@ import Boss from '../lib/boss'
   * Persist locations across refreshes
   * Sandstorm.io
   * Agenda setting widget
+  * Barriers
   * Full accessibility - voice, keys, and mouse exclusive navigation
   * WebRTC to PSTN signaling
  */
@@ -47,6 +50,8 @@ import Boss from '../lib/boss'
   * searchable public rooms sorted by number of active users
     * if same number then alphabetized
   * chat
+  * mute yourself option
+  * take a picture with camera
   * click on heads and go to the person
   * optional video communication
   * badges for agreements

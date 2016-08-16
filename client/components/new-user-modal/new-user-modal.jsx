@@ -54,6 +54,10 @@ export default class NewUserModal extends React.Component {
     this.props.closeNewUserModal()
   }
 
+  cancel () {
+    this.props.closeNewUserModal()
+  }
+
   render () {
     let fields = []
     for (let attr in this.state) {
@@ -61,18 +65,26 @@ export default class NewUserModal extends React.Component {
       fields.push((this.renderField(attr)))
     }
 
-    let actions = [(
+    let actions = []
+    if (this.state.id) {
+      actions.push((
+        <RaisedButton key='cancel' label='Cancel'
+          onClick={this.cancel.bind(this)}
+        />
+      ))
+    }
+
+    actions.push((
       <RaisedButton key='ok' label='Get Started'
         onClick={this.submit.bind(this)}
       />
-    )]
+    ))
 
     return (
       <Dialog title='Create a New Profile'
         actions={actions}
         modal={true}
         open={true}
-        onRequestClose={this.submit.bind(this)}
       >
         <div className='fields-container'>
           {fields}

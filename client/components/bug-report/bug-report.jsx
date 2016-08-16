@@ -40,6 +40,10 @@ export default class BugReport extends React.Component {
       })
   }
 
+  cancel () {
+    this.props.endBugReport()
+  }
+
   render () {
     let fields = []
     for (let attr in this.state) {
@@ -48,7 +52,11 @@ export default class BugReport extends React.Component {
     }
 
     let actions = [(
-      <RaisedButton key='ok' label='Submit Bug/Feature'
+      <RaisedButton key='cancel' label='Cancel'
+        onClick={this.cancel.bind(this)}
+      />
+    ), (
+      <RaisedButton key='submit' label='Submit Bug/Feature'
         onClick={this.submit.bind(this)}
       />
     )]
@@ -58,7 +66,6 @@ export default class BugReport extends React.Component {
         actions={actions}
         modal={true}
         open={true}
-        onRequestClose={this.submit.bind(this)}
       >
         <div className='fields-container'>
           {fields}
