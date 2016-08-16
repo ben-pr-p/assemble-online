@@ -8,6 +8,8 @@ const BASE_DIMENSIONS = {x: 2700, y: 1700} // mostly arbitrary, but a little bit
 const USERS_PER_SCREEN = 4
 const spawnlog = debug('assemble:room-spawner')
 
+const colorScale = ['#01df00', '#daff02', '#fe6634', '#008e82', '#00cfe2', '#fb0528', '#9b6304', '#532696', '#b53284', '#ff7ba6']
+
 module.exports = function (io, room, destroySelf) {
   spawnlog('Spawning room %s...', room)
   return new Room(io, room, destroySelf)
@@ -35,6 +37,7 @@ class Room {
     this.bindEvents()
 
     this.log('I am risen!')
+    this.colorIdx = 0
   }
 
   onConnect (socket) {
@@ -60,7 +63,12 @@ class Room {
       return this.nsp.emit('users', [...this.users])
     }
 
+    user.color = colorScale[this.colorIdx]
+    this.colorIdx = (this.colorIdx + 1) % colorScale.length
+
     this.log('Got new user %s', user.id)
+    this.log('Assigned %s color %s', user.id, user.color)
+
     this.users.set(user.id, user)
     this.sockets.set(user.id, socket)
     this.userIdFromSocketId.set(socket.id, user.id)

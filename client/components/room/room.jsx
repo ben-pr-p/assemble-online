@@ -123,8 +123,7 @@ export default class Room extends React.Component {
         <UserBlob user={user}
           location={locations.has(uid) ? locations.get(uid) : {x: 0, y: 0} }
           volume={volumes.has(uid) ? volumes.get(uid) : 0 }
-          idx={idx}
-          key={uid}
+          idx={idx} key={uid}
           me={locations.get(me.id)}
           translate={translate}
           isMe={uid == me.id}

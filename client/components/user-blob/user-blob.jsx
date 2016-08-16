@@ -37,7 +37,11 @@ export default class UserBlob extends React.Component {
     if (isNaN(y)) y = 0
 
     this.fill = `url(#avatar-${user.id})`
-    this.color = colorScale(this.props.idx)
+    this.color = user.color
+    if (!this.color) {
+      this.color = colorScale(this.props.idx)
+      this.props.setMyColor(this.color)
+    }
 
     const adj = {
       x: x + translate.x,
