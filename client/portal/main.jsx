@@ -125,10 +125,10 @@ export default class Portal extends React.Component {
             <span className='big-header'>assemble.live</span>
             <br/>
             <br/>
-            <span>In the future, this will be a secure, real time, audio and text based online meeting platform based on the exploitation of <em>space</em>.</span>
+            <span className='simple-text'>In the future, this will be a secure, real time, audio and text based online meeting platform based on the exploitation of <em>space</em>.</span>
             <br/>
             <br/>
-            <span>For now, please mess around with your friends, report bugs, and suggest features.</span>
+            <span className='simple-text'>For now, please mess around with your friends, report bugs, and suggest features.</span>
 
             <div className='room-status'>
               <h3>Publicly Joinable Rooms</h3>
