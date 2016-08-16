@@ -122,6 +122,13 @@ export default class Portal extends React.Component {
         <div className='center-with-padding'>
           <div className='overlay'></div>
           <Paper className='room-status-container' zDepth={5} >
+            <span className='big-header'>assemble.live</span>
+            <br/>
+            <br/>
+            <span>In the future, this will be a secure, real time, audio and text based online meeting platform based on the exploitation of <em>space</em>.</span>
+            <br/>
+            <br/>
+            <span>For now, please mess around with your friends, report bugs, and suggest features.</span>
 
             <div className='room-status'>
               <h3>Publicly Joinable Rooms</h3>
