@@ -154,6 +154,10 @@ export default class Portal extends React.Component {
               onClick={this.createAndEnterRoom.bind(this)}
             />
 
+          <br/>
+          <br/>
+          <span>Want a private room? That's coming soon. If you really want it, <a style={{color: '#80d4ff'}} href='mailto:ben.paul.ryan.packer@gmail.com'>email me</a></span>
+
           </Paper>
         </div>
       </MuiThemeProvider>
