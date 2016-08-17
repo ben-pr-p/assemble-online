@@ -18,6 +18,7 @@ import Boss from '../lib/boss'
   * see who posted announcements
   * kick out / mute for facillitator
   * mode where only facillitator can make announcements
+  * location reference for squares
   * Arrow key movement
   * Extended user profiles
     * view other users
