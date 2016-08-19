@@ -103,6 +103,9 @@ function announceLocation (loc) {
 }
 
 function announceAnnouncement (msg) {
+  msg.author = me.id
+  msg.authorAvatar = me.avatar
+  msg.authorName = me.name
   socket.emit('my-announcement', msg)
 }
 

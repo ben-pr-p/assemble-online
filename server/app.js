@@ -40,8 +40,12 @@ app.get('/', function (req, res) {
 
 app.get('/room-status', function (req, res) {
   const result = {}
-  for (let room in rooms)
-    result[room] = rooms[room].getNumOccupants()
+
+  for (let room in rooms) {
+    let numOccupants = rooms[room].getNumOccupants()
+    if (numOccupants > 0)
+      result[room] = numOccupants
+  }
 
   res.json(result)
 })
@@ -55,6 +59,10 @@ app.post('/bug-report', function (req, res) {
 app.get('/room/:room', rejectBadRooms, preventDuplicateJoin, ensureRoom, function (req, res) {
   log('Request GET /%s', req.params.room)
   res.render('room', {room: req.params.room})
+})
+
+app.get('/room', function (req, res) {
+  res.redirect('/')
 })
 
 /*

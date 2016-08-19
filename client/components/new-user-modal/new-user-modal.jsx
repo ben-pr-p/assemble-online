@@ -94,10 +94,14 @@ export default class NewUserModal extends React.Component {
   }
 
   renderField (attr) {
+    const {avatar} = this.state
+
+    const goodAvatar = avatar.indexOf('http:') > -1 || avatar.indexOf('data:') > -1
+
     if (attr == 'avatar') {
       return (
         <div className='avatar-field-container' key={attr}>
-          <Avatar src={this.state.avatar} style={{minHeight: '60px', minWidth: '60px'}} />
+          <Avatar src={goodAvatar ? avatar : null} style={{minHeight: '60px', minWidth: '60px'}} />
           <TextField id={attr}
             name={attr}
             value={this.state[attr]}

@@ -12,6 +12,7 @@ import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField'
 import CreateIcon from 'material-ui/svg-icons/content/add'
 import IconButton from 'material-ui/IconButton'
+import randomString from 'random-string'
 
 /**
  * TO DO:
@@ -84,7 +85,10 @@ export default class Portal extends React.Component {
   }
 
   createAndEnterRoom () {
-    this.enterRoom(this.state.newRoomUrl)
+    let {newRoomUrl} = this.state
+    if (!newRoomUrl)
+      newRoomUrl = randomString({numeric: false})
+    this.enterRoom(newRoomUrl)
   }
 
   render () {

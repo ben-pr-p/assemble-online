@@ -6,27 +6,35 @@ const GitHubApi = require('github')
 const username = process.env.GITHUB_USERNAME
 const password = process.env.GITHUB_PASSWORD
 
+let disabled = null
+
 if (!username) {
-  log('Missing GITHUB_USERNAME - exiting...')
-  process.exit()
+  disabled = 'Missing GITHUB_USERNAME - exiting...'
+  log('Missing GITHUB_USERNAME - disabled...')
 }
 
 if (!password) {
-  log('Missing GITHUB_PASSWORD - exiting...')
-  process.exit()
+  disabled = 'Missing GITHUB_PASSWORD - exiting...'
+  log('Missing GITHUB_PASSWORD - disabled...')
 }
 
 const github = new GitHubApi({
   debug: true
 })
 
-github.authenticate({
-  type: 'basic',
-  username,
-  password
-})
+if (!disabled) {
+  github.authenticate({
+    type: 'basic',
+    username,
+    password
+  })
+}
 
 module.exports.issue = function (body) {
+  if (disabled) {
+    return log('Doing nothing, disabled with message %s', disabled)
+  }
+
   github.issues.create({
     user: 'assemble-live',
     repo: 'assemble',

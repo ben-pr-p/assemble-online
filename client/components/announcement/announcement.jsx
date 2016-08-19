@@ -34,7 +34,10 @@ export default class Announcement extends React.Component {
       },
       responses: {},
       responseModalShown: false,
-      reasonsShown: false
+      reasonsShown: false,
+      text: null,
+      authorName: null,
+      authorAvatar: null
     }
 
     this.prev = {
@@ -47,6 +50,7 @@ export default class Announcement extends React.Component {
 
   componentWillMount () {
     this.state.text = `Welcome to ${this.props.roomName}`
+    this.state.authorName = 'System'
     Boss.on('announcement', this.handleAnnouncement.bind(this), 'Announcement')
   }
 
@@ -89,6 +93,8 @@ export default class Announcement extends React.Component {
 
     this.setState({
       text: data.text,
+      authorName: data.authorName,
+      authorAvatar: data.authorAvatar,
       feedback: data.feedback,
       feedOptions: data.feedOptions,
       responses: data.responses,
@@ -172,7 +178,7 @@ export default class Announcement extends React.Component {
   }
 
   renderContents () {
-    const { text, editing, feedOptions, feedback, responses } = this.state
+    const {text, editing, feedOptions, feedback, responses, authorName, authorAvatar} = this.state
 
     let result = []
     if (editing) {
@@ -188,8 +194,13 @@ export default class Announcement extends React.Component {
       )),
       result.push((<IconButton key='save' className='save-icon' onClick={this.saveEdit.bind(this)} ><SaveIcon /></IconButton>))
     } else {
+      let textContents
+      if (feedback)
+        textContents = `${authorName} asks: ${text}`
+      else
+        textContents = `${authorName} says: ${text}`
       result.push(this.renderEditIcon()),
-      result.push((<span key='text' >{text}</span>))
+      result.push((<span key='text' >{textContents}</span>))
     }
 
     for (let o in feedOptions) {

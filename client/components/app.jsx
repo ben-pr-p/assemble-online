@@ -129,7 +129,7 @@ export default class App extends React.Component {
 
     let requiresMe = []
     if (me) {
-      requiresMe.push(( <AudioController users={users} key='audio-controller' me={me} roomName={roomName} setEasyRTCId={this.setEasyRTCId.bind(this)} /> ))
+      requiresMe.push(( <AudioController key='audio-controller' me={me} roomName={roomName} setEasyRTCId={this.setEasyRTCId.bind(this)} /> ))
       requiresMe.push(( <Room key='room' me={me} users={users} /> ))
     }
 
