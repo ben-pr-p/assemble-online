@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import d3 from 'd3'
 import { Motion, spring } from 'react-motion'
 import lineIntersect from 'line-intersect'
 import Boss from '../../lib/boss'
+import VolumeIndicator from './volume-indicator'
 
 /*
  * Motion in this component is modeled off of https://github.com/chenglou/react-motion/blob/master/demos/demo1-chat-heads/Demo.jsx
@@ -23,13 +23,42 @@ export default class UserBlob extends React.Component {
   constructor () {
     super()
     this.state = {
-      showCard: false
+      showCard: false,
+      location: {x: 0, y: 0}
     }
+
+    this.handleLocation = this.handleLocation.bind(this)
+  }
+
+  componentWillMount () {
+    Boss.on(`location-${this.props.user.id}`, this.handleLocation, `blob-${this.props.user.id}`)
+  }
+
+  componentWillUnmount () {
+    Boss.offAllByCaller(`blob-${this.props.user.id}`)
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    if (this.state.location.x != nextState.location.x || this.state.location.y != nextState.location.y)
+      return true
+    if (this.state.showCard != nextState.showCard)
+      return true
+    if (this.props.user.id != nextProps.user.id || this.props.user.avatar != nextProps.user.avatar)
+      return true
+    if (this.props.volume != nextProps.volume)
+      return true
+    return false
+  }
+
+  handleLocation (data) {
+    this.setState({
+      location: data
+    })
   }
 
   render () {
     const {user, location, volume, idx, translate, me, isMe} = this.props
-    let { x, y } = location
+    let { x, y } = this.state.location
 
     if (isNaN(x)) x = 0
     if (isNaN(y)) y = 0
@@ -79,7 +108,7 @@ export default class UserBlob extends React.Component {
     let p, intersectingWall
     for (let wall in intersects) {
       if (intersects[wall].type == 'intersecting') {
-        p= intersects[wall].point
+        p = intersects[wall].point
         intersectingWall = wall
       }
     }
@@ -113,8 +142,8 @@ export default class UserBlob extends React.Component {
 
     return (
       <Motion
-        defaultStyle={{x: 0, y: 0, z: 0}}
-        style={{x: spring(p.x + dx, params), y: spring(p.y + dy, params), z: spring(volume || 0, {stiffness: 300, damping: 50})}}
+        defaultStyle={{x: 0, y: 0}}
+        style={{x: spring(p.x + dx, params), y: spring(p.y + dy, params)}}
       >
         {pos =>
           <g className='user-blob offscreen' id={user.id} >
@@ -130,12 +159,7 @@ export default class UserBlob extends React.Component {
             <line x1={pos.x} y1={pos.y}
               x2={p.x + (dx / 4)} y2={p.y + (dy / 4)}
               className='arrow' markerEnd='url(#arrow)' />
-            <path
-              transform={`translate(${pos.x},${pos.y})`}
-              strokeWidth='6px'
-              stroke={this.color}
-              d={d3.svg.arc().innerRadius(sr).outerRadius(sr+1).startAngle(0).endAngle(pos.z / 20 * Math.PI)()}
-             />
+            <VolumeIndicator x={pos.x} y={pos.y} r={sr} color={this.color} user={user} />
           </g>
         }
       </Motion>
@@ -147,8 +171,8 @@ export default class UserBlob extends React.Component {
 
     return (
       <Motion
-        defaultStyle={{x: 0, y: 0, z: 0}}
-        style={{x: spring(x, params), y: spring(y, params), z: spring(volume || 0, {stiffness: 300, damping: 50})}}
+        defaultStyle={{x: 0, y: 0}}
+        style={{x: spring(x, params), y: spring(y, params)}}
       >
         {pos =>
           <g className='user-blob'  id={user.id} >
@@ -158,12 +182,7 @@ export default class UserBlob extends React.Component {
               </pattern>
             </defs>
             <circle transform={`translate(${pos.x},${pos.y})`} r={r} fill={this.fill} strokeWidth='6px' stroke='black' />
-            <path
-              transform={`translate(${pos.x},${pos.y})`}
-              strokeWidth='6px'
-              stroke={this.color}
-              d={d3.svg.arc().innerRadius(r).outerRadius(r+1).startAngle(0).endAngle(pos.z / 20 * Math.PI)()}
-             />
+            <VolumeIndicator x={pos.x} y={pos.y} r={r} color={this.color} user={user} />
           </g>
         }
       </Motion>

@@ -3,7 +3,8 @@
 const debug = require('debug')
 const LocationManager = require('./helpers/location-manager')
 const identifyUserBrowser = require('./helpers/user-browser-id')
-const UPDATE_INTERVAL = 100
+
+const UPDATE_INTERVAL = 50
 const BASE_DIMENSIONS = {x: 2700, y: 1700} // mostly arbitrary, but a little bit smaller than macbook pro 15 inch screen
 const USERS_PER_SCREEN = 4
 const spawnlog = debug('assemble:room-spawner')
@@ -16,7 +17,7 @@ module.exports = function (io, room, destroySelf) {
 }
 
 class Room {
-  constructor (io, room, destroySelf) {
+  constructor (io, room, parentEraseMe) {
     this.log = debug('assemble:room:' + room)
 
     this.lm = new LocationManager()
@@ -33,19 +34,45 @@ class Room {
     this.dimensions = Object.assign({}, BASE_DIMENSIONS)
 
     this.updateIntervalId = null
-    this.destroySelf = destroySelf
+    this.destroyTimeoutId = null
+
+    this.parentEraseMe = parentEraseMe
     this.bindEvents()
 
     this.log('I am risen!')
     this.colorIdx = 0
   }
 
+  resetDefaults () {
+    this.users = new Map()
+    this.volumes = new Map()
+    this.announcement = null
+    this.sockets = new Map()
+    this.userIdFromSocketId = new Map()
+
+    this.dimGrowth = 1
+    this.dimensions = Object.assign({}, BASE_DIMENSIONS)
+
+    this.log('I am reset!')
+    this.colorIdx = 0
+  }
+
+  destroySelf () {
+    this.resetDefaults()
+
+    this.destroyTimeoutId = setTimeout(() => {
+      Object.keys(this.nsp.connected).forEach(id => {
+        this.nsp.connected[id].disconnect()
+        this.nsp.connected[id].close()
+      })
+
+      this.nsp.removeAllListeners()
+      this.parentEraseMe(this.room)
+    }, 5000)
+  }
+
   onConnect (socket) {
-    this.log('New connection, sending users')
-    this.nsp.emit('users', [...this.users])
-    this.nsp.emit('dimensions', this.dimensions)
-    this.nsp.emit('location', this.lm.getLocations())
-    this.nsp.emit('volumes', [...this.volumes])
+    this.log('New connection')
   }
 
   onMe (socket, user) {
@@ -150,7 +177,7 @@ class Room {
     if (this.users.size == 0) { // Stop sending updates
       this.log('No users left - cancelling updates')
       this.stopUpdates()
-      this.destroySelf(this.room)
+      this.destroySelf()
     } else {
       this.nsp.emit('users', [...this.users])
     }
@@ -158,6 +185,12 @@ class Room {
 
   bindEvents () {
     this.nsp.on('connection', (socket) => {
+      if (this.destroyTimeoutId) {
+        this.log('Cancelling self destroy')
+        clearTimeout(this.destroyTimeoutId)
+        this.destroyTimeoutId = null
+      }
+
       this.log('Connected to namespace %s', this.room)
       socket.on('connect', this.onConnect.bind(this, socket))
       socket.on('me', this.onMe.bind(this, socket))
@@ -187,6 +220,7 @@ class Room {
     this.lm.removeUser(user.id)
     this.sockets.delete(user.id)
     this.users.delete(user.id)
+    socket.disconnect()
   }
 
   /**

@@ -118,6 +118,11 @@ log('Listening on PORT %d', PORT)
 server.listen(PORT)
 
 function destroyRoom (roomName) {
+  log('Destroying room %s', roomName)
+
+  socketServer.nsps[roomName] = null
+  delete socketServer.nsps[roomName]
+
   rooms[roomName] = null
   delete rooms[roomName]
 }
@@ -129,6 +134,8 @@ function rejectBadRooms (req, res, next) {
 }
 
 function ensureRoom (req, res, next) {
+  log('Current have rooms %j', Object.keys(rooms))
+
   if (rooms[req.params.room]) return next()
 
   log('Creating room %s', req.params.room)

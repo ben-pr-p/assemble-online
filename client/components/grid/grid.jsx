@@ -5,6 +5,12 @@ export default class Grid extends React.Component {
     super()
   }
 
+  shouldComponentUpdate (nextProps) {
+    if (this.props.dimensions.x != nextProps.dimensions.x || this.props.dimensions.y != nextProps.dimensions.y)
+      return true
+    return false
+  }
+
   render () {
     const {dimensions} = this.props
 

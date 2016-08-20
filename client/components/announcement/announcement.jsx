@@ -17,6 +17,7 @@ import FeedbackIcon from 'material-ui/svg-icons/action/feedback'
 import CommentIcon from 'material-ui/svg-icons/editor/insert-comment'
 import {responseOptions, icons} from './response-options/response-options'
 import ResponseListTabs from './response-list-tabs/response-list-tabs'
+import shallowUpdateCompare from '../../lib/shallow-update-compare'
 
 export default class Announcement extends React.Component {
   constructor () {
@@ -46,6 +47,10 @@ export default class Announcement extends React.Component {
     }
 
     this.current = null
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowUpdateCompare(this.props, this.state, nextProps, nextState)
   }
 
   componentWillMount () {
@@ -142,10 +147,10 @@ export default class Announcement extends React.Component {
   }
 
   respond (reason) {
-    const {text, feedback, feedOptions, responses} = this.state
+    const {authorName, authorAvatar, text, feedback, feedOptions, responses} = this.state
     const date = Date.now()
     const type = this.responseType
-    const announcement = {text, feedback, feedOptions, responses}
+    const announcement = {authorName, authorAvatar, text, feedback, feedOptions, responses}
     Boss.post('my-response', {announcement, type, reason, date})
   }
 

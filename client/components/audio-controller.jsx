@@ -4,6 +4,7 @@ import easyrtcClient from '../lib/easyrtc'
 import dom from 'component-dom'
 import io from 'socket.io-client'
 import Boss from '../lib/boss'
+import shallowUpdateCompare from '../lib/shallow-update-compare'
 
 const UPDATE_INTERVAL = 100
 
@@ -35,6 +36,10 @@ export default class AudioController extends React.Component {
 
     window.io = io
     this.registeredStreams = new Set()
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowUpdateCompare(this.props, this.state, nextProps, nextState)
   }
 
   componentWillMount () {

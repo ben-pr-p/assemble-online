@@ -16,6 +16,7 @@ import Boss from '../lib/boss'
 /**
  * TO DO
   * see who posted announcements
+  * doodle / scheduling system
   * kick out / mute for facillitator
   * mode where only facillitator can make announcements
   * location reference for squares
@@ -29,8 +30,10 @@ import Boss from '../lib/boss'
   * Agenda setting widget
   * Barriers
   * Documents
+  * MS Paint
   * Full accessibility - voice, keys, and mouse exclusive navigation
   * WebRTC to PSTN signaling
+  * Disappearing trails
  */
 
 /**
@@ -66,6 +69,11 @@ export default class App extends React.Component {
       me: null,
       editingUser: false,
     }
+
+    const boundMethods = 'setEditUserState setEasyRTCId closeNewUserModal clearLocal'
+    boundMethods.split(' ').forEach(m => {
+      this[m] = this[m].bind(this)
+    })
   }
 
   componentWillMount () {
@@ -124,12 +132,12 @@ export default class App extends React.Component {
 
     let newUserModal
     if (!me || editingUser) {
-      newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal.bind(this)} me={me} />)
+      newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal} me={me} />)
     }
 
     let requiresMe = []
     if (me) {
-      requiresMe.push(( <AudioController key='audio-controller' me={me} roomName={roomName} setEasyRTCId={this.setEasyRTCId.bind(this)} /> ))
+      requiresMe.push(( <AudioController key='audio-controller' me={me} roomName={roomName} setEasyRTCId={this.setEasyRTCId} /> ))
       requiresMe.push(( <Room key='room' me={me} users={users} /> ))
     }
 
@@ -137,9 +145,9 @@ export default class App extends React.Component {
       <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
         <div id='main-app'>
           {requiresMe}
-          <AppBar
-            clearLocal={this.clearLocal.bind(this)}
-            setEditUserState={this.setEditUserState.bind(this)} />
+          <AppBar key='app-bar'
+            clearLocal={this.clearLocal}
+            setEditUserState={this.setEditUserState} />
           <Announcement roomName={roomName} />
           {newUserModal}
         </div>

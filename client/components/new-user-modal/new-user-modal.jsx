@@ -5,6 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton'
 import Avatar from 'material-ui/Avatar'
 import store from 'store'
 import randomString from 'random-string'
+import shallowUpdateCompare from '../../lib/shallow-update-compare'
 
 const labelMap = {
   avatar: 'Paste a Image Address to be your Avatar',
@@ -19,6 +20,10 @@ export default class NewUserModal extends React.Component {
       name: '',
       id: null
     }
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowUpdateCompare(this.props, this.state, nextProps, nextState)
   }
 
   onChange (ev) {

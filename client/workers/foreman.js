@@ -28,7 +28,7 @@ function handleRoomName (roomName) {
 function initialize () {
   on('me', announceMe)
   on('trash-me', trashMe)
-  on('my-location', announceLocation)
+  on('my-delta', announceLocation)
   on('my-volume', announceVolume)
   on('my-announcement', announceAnnouncement)
   on('my-response', announceResponse)
@@ -98,8 +98,19 @@ function trashMe () {
   socket.emit('trash-me')
 }
 
-function announceLocation (loc) {
-  socket.emit('my-location', loc)
+function constrain (x, min, max) {
+  return Math.min(Math.max(x, min), max)
+}
+
+function announceLocation (data) {
+  const {dx, dy} = data
+  const base = locations.get(me.id)
+  if (!base.x) base.x = 0
+  if (!base.y) base.y = 0
+  const x = constrain(base.x + dx, 0, dimensions.x)
+  const y = constrain(base.y + dy, 0, dimensions.y)
+
+  socket.emit('my-location', {x, y})
 }
 
 function announceAnnouncement (msg) {
@@ -132,7 +143,9 @@ function handleLocations (data) {
   if (!me) return null
 
   locations = new Map(data)
-  emit('locations', [...locations])
+  locations.forEach((value, uid) => {
+    emit(`location-${uid}`, value)
+  })
 
   const myLocation = locations.get(me.id)
   if (isInFourth(myLocation)) {
@@ -143,7 +156,9 @@ function handleLocations (data) {
 
 function handleVolumes (data) {
   volumes = new Map(data)
-  emit('volumes', [...volumes])
+  volumes.forEach((value, uid) => {
+    emit(`volume-${uid}`, value)
+  })
 }
 
 function handleDimensions (data) {

@@ -8,6 +8,7 @@ import AccountBox from 'material-ui/svg-icons/action/account-box'
 import BugIcon from 'material-ui/svg-icons/action/bug-report'
 import Paper from 'material-ui/Paper'
 import BugReport from '../bug-report/bug-report'
+import shallowUpdateCompare from '../../lib/shallow-update-compare'
 
 export default class AppBar extends React.Component {
   constructor () {
@@ -15,6 +16,10 @@ export default class AppBar extends React.Component {
     this.state = {
       bugreport: false
     }
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowUpdateCompare(this.props, this.state, nextProps, nextState)
   }
 
   initializeBugReport () {

@@ -6,9 +6,13 @@ import Boss from '../../lib/boss'
 
 // movement attenuation constant
 const MAC = .1
-const UPDATE_INTERVAL = 50
+const UPDATE_INTERVAL = 30
 const STIFFNESS = 50
 const DAMPING = 60
+
+function mapValuesSum (map) {
+  return Array.from(map.values()).reduce((a, b) => a + b)
+}
 
 export default class Room extends React.Component {
   constructor () {
@@ -28,8 +32,6 @@ export default class Room extends React.Component {
   }
 
   componentWillMount () {
-    Boss.on('locations', this.handleLocations.bind(this), 'Room')
-    Boss.on('volumes', this.handleVolumes.bind(this), 'Room')
     Boss.on('dimensions', this.handleDimensions.bind(this), 'Room')
     Boss.on('translate', this.handleTranslate.bind(this), 'Room')
 
@@ -49,22 +51,15 @@ export default class Room extends React.Component {
     this.myBlob = document.querySelector(query)
   }
 
-  handleVolumes (data) {
-    this.setState({
-      volumes: new Map(data)
-    })
-  }
-
   handleDimensions (data) {
     this.setState({
       dimensions: data
     })
   }
 
-  handleLocations (data) {
-    let map = new Map(data)
+  handleTranslate (data) {
     this.setState({
-      locations: map,
+      translate: data
     })
   }
 
@@ -96,20 +91,7 @@ export default class Room extends React.Component {
     // need to subtract radius
     const dx = (this.mousePos.x - 50 - posOfMe.left) * MAC
     const dy = (this.mousePos.y - 50 - posOfMe.top) * MAC
-
-    const base = locations.get(me.id)
-    if (!base.x) base.x = 0
-    if (!base.y) base.y = 0
-    const x = constrain(base.x + dx, 0, dimensions.x)
-    const y = constrain(base.y + dy, 0, dimensions.y)
-
-    Boss.post('my-location', {x, y})
-  }
-
-  handleTranslate (data) {
-    this.setState({
-      translate: data
-    })
+    Boss.post('my-delta', {dx, dy})
   }
 
   render () {
@@ -121,7 +103,6 @@ export default class Room extends React.Component {
     users.forEach((user, uid) => {
       blobs.push((
         <UserBlob user={user}
-          location={locations.has(uid) ? locations.get(uid) : {x: 0, y: 0} }
           volume={volumes.has(uid) ? volumes.get(uid) : 0 }
           idx={idx} key={uid}
           me={locations.get(me.id)}
@@ -152,6 +133,3 @@ export default class Room extends React.Component {
   }
 }
 
-function constrain (x, min, max) {
-  return Math.min(Math.max(x, min), max)
-}
