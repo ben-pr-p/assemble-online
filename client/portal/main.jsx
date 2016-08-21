@@ -169,6 +169,16 @@ export default class Portal extends React.Component {
           <br/>
           <span>Want a private room? That's coming soon. If you really want it, <a style={{color: '#80d4ff'}} href='mailto:ben.paul.ryan.packer@gmail.com'>email me</a></span>
 
+          <br/>
+          <br/>
+
+          <RaisedButton style={{marginLeft: 'auto', marginRight: 'auto', display: 'block', width: '125px'}}
+            label='Blog/About'
+            labelPosition='before'
+            primary={true}
+            href='/blog'
+          />
+
           </Paper>
         </div>
       </MuiThemeProvider>
