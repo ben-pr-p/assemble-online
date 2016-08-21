@@ -1,7 +1,7 @@
 import React from 'react'
 import PhoneIcon from 'material-ui/svg-icons/action/settings-phone'
 
-export default class extends React.Component {
+export default class ConnectionStatus extends React.Component {
   constructor () {
     super()
 

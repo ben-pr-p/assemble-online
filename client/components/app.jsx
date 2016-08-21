@@ -8,7 +8,7 @@ import Dialog from 'material-ui/Dialog'
 import AppBar from './app-bar/app-bar'
 import Announcement from './announcement/announcement'
 import NewUserModal from './new-user-modal/new-user-modal'
-import AudioController from './audio-controller'
+import AudioController from './audio/controller'
 import Room from './room/room'
 import customTheme from '../lib/custom-theme.js'
 import Boss from '../lib/boss'
@@ -127,7 +127,7 @@ export default class App extends React.Component {
 
   render () {
     const {me, users, editingUser, browser, roomName} = this.state
-    if (browser.bad) 
+    if (browser.bad)
       return this.renderBadBrowser()
 
     let newUserModal

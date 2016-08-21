@@ -45,7 +45,7 @@ export default class UserBlob extends React.Component {
       return true
     if (this.props.user.id != nextProps.user.id || this.props.user.avatar != nextProps.user.avatar)
       return true
-    if (this.props.volume != nextProps.volume)
+    if (this.props.translate.x != nextProps.translate.x || this.props.translate.y != nextProps.translate.y)
       return true
     return false
   }

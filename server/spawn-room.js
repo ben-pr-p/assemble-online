@@ -82,10 +82,14 @@ class Room {
       this.log('Got existing user %s update', user.id)
 
       let existing = this.users.get(user.id)
-      user.x = existing.x
-      user.y = existing.y
-      user.easyrtcid = existing.easyrtcid
-      user.color = existing.color
+      if (existing.x)
+        user.x = existing.x
+      if (existing.y)
+        user.y = existing.y
+      if (existing.easyrtcid)
+        user.easyrtcid = existing.easyrtcid
+      if (existing.color)
+        user.color = existing.color
 
       this.users.set(user.id, user)
       this.log('Serving users %j', [...this.users])

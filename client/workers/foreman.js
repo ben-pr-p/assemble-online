@@ -175,11 +175,12 @@ function handleAnnouncement (data) {
 function handleDistances (data) {
   if (data) {
     let copy = {}
-    for (let uid in data) {
+    for (let uid in data)
       copy[easyrtcids.get(uid)] = data[uid]
-    }
-    emit('distances', copy)
+
     distances = copy
+    for (let easyrtcid in copy)
+      emit(`distance-to-${easyrtcid}`, distances[easyrtcid])
   }
 }
 
