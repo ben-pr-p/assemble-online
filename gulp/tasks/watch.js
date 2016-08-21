@@ -1,12 +1,16 @@
 var gulp = require('gulp')
 var gutil = require('gulp-util')
+var clientapps = require('./client-apps')
 
-var noWorkers = './client/!(workers)/*.js'
 
 gulp.task('watch', function() {
   gulp.watch('./client/workers/*.js', ['workers'])
-  gulp.watch(noWorkers, ['browserify'])
-  gulp.watch('./client/**/*.jsx', ['browserify'])
   gulp.watch('./client/**/*.png', ['images'])
   gulp.watch('./client/**/*.styl', ['styles'])
+
+  clientapps.forEach(root => {
+    var glob = `./client/${root}/**/*.jsx`
+    var task = `${root}.js`
+    gulp.watch(glob, [task])
+  })
 })

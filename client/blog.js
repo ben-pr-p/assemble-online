@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import Main from './room/main'
+import Blog from './blog/main'
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // Needed for onTouchTap
@@ -8,5 +8,5 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
 window.onload = () => {
-  ReactDOM.render(<Main/>, document.querySelector('#reactAppContainer'))
+  ReactDOM.render(<Blog/>, document.querySelector('#reactAppContainer'))
 }

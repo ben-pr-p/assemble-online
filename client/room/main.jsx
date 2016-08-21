@@ -15,7 +15,7 @@ import Boss from '../lib/boss'
 
 const goodBrowsers = ['Chrome', 'Chromium', 'Firefox', 'Mozilla', 'Opera', 'Bowser', 'Canary']
 
-export default class App extends React.Component {
+export default class Main extends React.Component {
   constructor () {
     super()
     this.state = {

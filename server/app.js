@@ -38,6 +38,10 @@ app.get('/', function (req, res) {
   res.render('portal')
 })
 
+app.get('/blog', function (req, res) {
+  res.render('blog')
+})
+
 app.get('/room-status', function (req, res) {
   const result = {}
 

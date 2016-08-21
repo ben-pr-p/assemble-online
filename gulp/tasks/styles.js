@@ -1,6 +1,7 @@
 var gulp = require('gulp')
 var stylus = require('gulp-stylus')
 var handleErrors = require('../util/handleErrors')
+var clientapps = require('./client-apps')
 
 var dest = './build'
 
@@ -13,7 +14,7 @@ function generate (stylname) {
   }
 }
 
-var stylroots = ['room.styl', 'portal.styl']
+var stylroots = clientapps.map(root => `${root}.styl`)
 stylroots.forEach(styl => {
   gulp.task(styl, generate(styl))
 })

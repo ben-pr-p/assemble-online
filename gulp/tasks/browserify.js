@@ -6,6 +6,7 @@ var handleErrors = require('../util/handleErrors')
 var source = require('vinyl-source-stream')
 var buffer = require('vinyl-buffer')
 var uglify = require('gulp-uglify')
+var clientapps = require('./client-apps')
 
 var dest = './build'
 
@@ -32,9 +33,9 @@ function generate (jsname) {
   }
 }
 
-var clientapps = ['room.js', 'portal.js']
-clientapps.forEach(js => {
+var jsroots = clientapps.map(root => `${root}.js`)
+jsroots.forEach(js => {
   gulp.task(js, generate(js))
 })
 
-gulp.task('browserify', clientapps)
+gulp.task('browserify', jsroots)
