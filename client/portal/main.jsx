@@ -177,6 +177,7 @@ export default class Portal extends React.Component {
             labelPosition='before'
             primary={true}
             href='/blog'
+            onClick={() => window.location.pathname = '/blog'}
           />
 
           </Paper>
