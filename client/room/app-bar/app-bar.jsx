@@ -6,6 +6,7 @@ import MenuItem from 'material-ui/MenuItem'
 import DeleteIcon from 'material-ui/svg-icons/action/delete'
 import AccountBox from 'material-ui/svg-icons/action/account-box'
 import BugIcon from 'material-ui/svg-icons/action/bug-report'
+import SettingsIcon from 'material-ui/svg-icons/action/settings'
 import Paper from 'material-ui/Paper'
 import BugReport from '../bug-report/bug-report'
 import shallowUpdateCompare from '../../lib/shallow-update-compare'
@@ -16,6 +17,8 @@ export default class AppBar extends React.Component {
     this.state = {
       bugreport: false
     }
+
+    this.initializeBugReport = this.initializeBugReport.bind(this)
   }
 
   shouldComponentUpdate (nextProps, nextState) {
@@ -34,41 +37,25 @@ export default class AppBar extends React.Component {
     this.props.setEditUserState(true)
   }
 
-  seeUsers () {
-    console.log('TO WRITE')
-  }
-
   render () {
     let bugmodal
     if (this.state.bugreport) bugmodal = (<BugReport endBugReport={this.endBugReport.bind(this)} />)
 
     return (
       <div className='app-bar'>
-        <Paper className='floating-button' circle={true} zDepth={5} style={{left: 'auto', right: 20}} >
+        <Paper className='floating-button' circle={true} zDepth={5} style={{left: 20, right: 'auto'}} >
           <IconMenu
             iconButtonElement={
               <IconButton className='circle-button' >
-                <AccountBox />
+                <SettingsIcon />
               </IconButton>
             }
-            targetOrigin={{horizontal: 'right', vertical: 'bottom'}}
-            anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+            targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
+            anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
           >
-            <MenuItem primaryText='Edit Me' onClick={this.editUser.bind(this)} />
-            <MenuItem primateText='See Users' onClick={this.seeUsers.bind(this)} />
+            <MenuItem leftIcon={<AccountBox color='white' />} primaryText='Edit Me' onClick={this.editUser.bind(this)} />
+            <MenuItem leftIcon={<BugIcon color='white' />} primaryText='File Bug Report / Feature Request' onClick={this.initializeBugReport} />
           </IconMenu>
-        </Paper>
-
-        <Paper className='floating-button' circle={true} zDepth={5} style={{left: 20, right: 'auto'}} >
-          <IconButton onClick={this.props.clearLocal} className='circle-button'  >
-            <DeleteIcon />
-          </IconButton>
-        </Paper>
-
-        <Paper className='floating-button' circle={true} zDepth={5} style={{left: 90, right: 'auto'}} >
-          <IconButton onClick={this.initializeBugReport.bind(this)} className='circle-button'  >
-            <BugIcon />
-          </IconButton>
         </Paper>
 
         {bugmodal}

@@ -7,7 +7,7 @@ export default [
     subtitle: 'design philosophy, goals, and roadmap',
     body: (
       <CardText style={{position: 'relative'}} expandable={true} >
-        Welcome to assemble.live, a new platform for online interaction that aims to facillitate enjoyable, immersive, inclusive, and productive electronically facillitated  meetings.
+        <p> Welcome to assemble.live, a new platform for online interaction that aims to facillitate enjoyable, immersive, inclusive, and productive electronically facillitated  meetings. </p>
 
         {/*<h3>Inspiration</h3>*/}
 
