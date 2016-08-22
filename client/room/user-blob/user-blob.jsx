@@ -4,6 +4,7 @@ import { Motion, spring } from 'react-motion'
 import lineIntersect from 'line-intersect'
 import Boss from '../../lib/boss'
 import VolumeIndicator from './volume-indicator'
+import Badge from './badge'
 
 /*
  * Motion in this component is modeled off of https://github.com/chenglou/react-motion/blob/master/demos/demo1-chat-heads/Demo.jsx
@@ -43,11 +44,16 @@ export default class UserBlob extends React.Component {
       return true
     if (this.state.showCard != nextState.showCard)
       return true
-    if (this.props.user.id != nextProps.user.id || this.props.user.avatar != nextProps.user.avatar)
-      return true
     if (this.props.translate.x != nextProps.translate.x || this.props.translate.y != nextProps.translate.y)
       return true
-    return false
+
+    const userProps = ['id', 'avatar', 'badge']
+    let userChanged = false
+    userProps.forEach(prop => {
+      if (this.props.user[prop] != nextProps.user[prop])
+        userChanged = true
+    })
+    return userChanged
   }
 
   handleLocation (data) {
@@ -140,6 +146,10 @@ export default class UserBlob extends React.Component {
 
     const params = {stiffness: STIFFNESS, damping: DAMPING}
 
+    let badge
+    if (user.badge)
+      badge = (<Badge x={pos.x} y={pos.y} user={user} />)
+
     return (
       <Motion
         defaultStyle={{x: 0, y: 0}}
@@ -160,6 +170,7 @@ export default class UserBlob extends React.Component {
               x2={p.x + (dx / 4)} y2={p.y + (dy / 4)}
               className='arrow' markerEnd='url(#arrow)' />
             <VolumeIndicator x={pos.x} y={pos.y} r={sr} color={this.color} user={user} />
+            <Badge x={pos.x} y={pos.y} user={user} r={r} />
           </g>
         }
       </Motion>
@@ -168,7 +179,6 @@ export default class UserBlob extends React.Component {
 
   renderClose (user, volume, x, y) {
     const params = {stiffness: STIFFNESS, damping: DAMPING}
-
     return (
       <Motion
         defaultStyle={{x: 0, y: 0}}
@@ -183,6 +193,7 @@ export default class UserBlob extends React.Component {
             </defs>
             <circle transform={`translate(${pos.x},${pos.y})`} r={r} fill={this.fill} strokeWidth='6px' stroke='black' />
             <VolumeIndicator x={pos.x} y={pos.y} r={r} color={this.color} user={user} />
+            <Badge x={pos.x} y={pos.y} user={user} r={r} />
           </g>
         }
       </Motion>

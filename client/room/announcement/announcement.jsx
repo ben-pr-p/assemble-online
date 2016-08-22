@@ -15,7 +15,7 @@ import SaveIcon from 'material-ui/svg-icons/content/save'
 import ClearIcon from 'material-ui/svg-icons/content/clear'
 import FeedbackIcon from 'material-ui/svg-icons/action/feedback'
 import CommentIcon from 'material-ui/svg-icons/editor/insert-comment'
-import {responseOptions, icons} from './response-options/response-options'
+import {responseOptions, icons} from '../common/response-options/response-options'
 import ResponseListTabs from './response-list-tabs/response-list-tabs'
 import shallowUpdateCompare from '../../lib/shallow-update-compare'
 

@@ -3,7 +3,7 @@
 importScripts('https://cdn.socket.io/socket.io-1.1.0.js')
 
 let events = {}
-let port, socket, roomName, namespace, users, me, locations, volumes, dimensions, screen, distances
+let port, socket, roomName, namespace, users, me, locations, volumes, dimensions, screen, distances, announcement
 
 let easyrtcids = new Map()
 
@@ -129,6 +129,9 @@ function announceResponse (data) {
   const userName = me.name
   announcement.responses[type].push({user, reason, date, userAvatar, userName})
   socket.emit('my-announcement', announcement)
+
+  me.badge = type
+  socket.emit('me', me)
 }
 
 function requestAnnouncement () {
@@ -169,6 +172,18 @@ function handleDimensions (data) {
 function handleAnnouncement (data) {
   if (data) {
     emit('announcement', data)
+
+    let changed = false
+    if (announcement && data.text != announcement.text) {
+      changed = true
+    }
+
+    announcement = data
+
+    if (changed) {
+      me.badge = null
+      socket.emit('me', me)
+    }
   }
 }
 

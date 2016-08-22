@@ -55,8 +55,6 @@ export default class AudioController extends React.Component {
   }
 
   onConnectSuccess (easyrtcid) {
-    console.log('here')
-    console.log(easyrtcid)
     this.props.setEasyRTCId(easyrtcid)
     this.setState({msg: {code: 'conn_sucess', text: `...connected with easyrtcid ${easyrtcid}`}})
   }

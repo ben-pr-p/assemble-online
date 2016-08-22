@@ -1,4 +1,5 @@
 # All Ideas
+
 ## All Unsorted
 * doodle / scheduling system
 * kick out / mute for facillitator
@@ -44,3 +45,4 @@
 
 ## MVP
 * Landing page / better packaging, as well as blog style thing
+

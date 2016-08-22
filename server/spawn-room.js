@@ -43,23 +43,7 @@ class Room {
     this.colorIdx = 0
   }
 
-  resetDefaults () {
-    this.users = new Map()
-    this.volumes = new Map()
-    this.announcement = null
-    this.sockets = new Map()
-    this.userIdFromSocketId = new Map()
-
-    this.dimGrowth = 1
-    this.dimensions = Object.assign({}, BASE_DIMENSIONS)
-
-    this.log('I am reset!')
-    this.colorIdx = 0
-  }
-
   destroySelf () {
-    this.resetDefaults()
-
     this.destroyTimeoutId = setTimeout(() => {
       Object.keys(this.nsp.connected).forEach(id => {
         this.nsp.connected[id].disconnect()
@@ -82,14 +66,12 @@ class Room {
       this.log('Got existing user %s update', user.id)
 
       let existing = this.users.get(user.id)
-      if (existing.x)
-        user.x = existing.x
-      if (existing.y)
-        user.y = existing.y
-      if (existing.easyrtcid)
-        user.easyrtcid = existing.easyrtcid
-      if (existing.color)
-        user.color = existing.color
+
+      const propsToTransfer = ['x', 'y', 'easyrtcid', 'color', 'badge']
+      propsToTransfer.forEach(prop => {
+        if (existing[prop])
+          user[prop] = existing[prop]
+      })
 
       this.users.set(user.id, user)
       this.log('Serving users %j', [...this.users])
@@ -165,7 +147,7 @@ class Room {
   }
 
   onRequestAnnouncement (socket) {
-    this.log('User %s requested announcement', this.getUserId(socket))
+    this.log('User %s requested announcement: %j', this.getUserId(socket), this.announcement)
     this.nsp.emit('announcement', this.announcement)
   }
 

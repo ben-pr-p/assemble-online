@@ -28,7 +28,7 @@ export default class Main extends React.Component {
       editingUser: false,
     }
 
-    const boundMethods = 'setEditUserState setEasyRTCId closeNewUserModal clearLocal'
+    const boundMethods = 'setEditUserState setEasyRTCId closeNewUserModal clearLocal handleUsers'
     boundMethods.split(' ').forEach(m => {
       this[m] = this[m].bind(this)
     })
@@ -40,7 +40,7 @@ export default class Main extends React.Component {
       return this.state.browser.bad = true
 
     this.state.me = store.get('me')
-    Boss.on('users', this.handleUsers.bind(this), 'App')
+    Boss.on('users', this.handleUsers, 'App')
     if (this.state.me)
       this.announceMe()
 

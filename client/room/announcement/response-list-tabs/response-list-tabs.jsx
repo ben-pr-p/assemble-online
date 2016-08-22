@@ -1,7 +1,7 @@
 import React from 'react'
 import {Tabs, Tab} from 'material-ui/Tabs'
 import {List, ListItem} from 'material-ui/List'
-import {responseOptions, icons} from '../response-options/response-options'
+import {responseOptions, icons} from '../../common/response-options/response-options'
 import Avatar from 'material-ui/Avatar'
 
 export default class ResponseListTabs extends React.Component {
