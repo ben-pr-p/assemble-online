@@ -1,17 +1,15 @@
-/**
- * Module dependencies.
- */
+'use strict'
 
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var Schema = mongoose.Schema
-var ObjectId = Schema.ObjectId
+const Schema = mongoose.Schema
+const ObjectId = Schema.ObjectId
 
 /**
  * User Schema
  */
 
-var UserSchema = new Schema({
+const UserSchema = new Schema({
   name: { type: String, required: true },
   avatar: { type: String, default: null }
 })

@@ -1,14 +1,16 @@
-var mongoose = require('mongoose')
-var log = require('debug')('assemble:db-setup')
+'use strict'
+
+const mongoose = require('mongoose')
+const log = require('debug')('assemble:db-setup')
 
 /*
  * Get MONGOLAB_URI or use localhost
  */
 
-var MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017'
+let MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017'
 MONGODB_URI += '/pulse'
 
-var models = 'user announcement'.split(' ')
+const models = 'user announcement action-item agenda-item announcement room session'.split(' ')
 
 /*
  * Start the connection and load the models

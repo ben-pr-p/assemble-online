@@ -2,11 +2,11 @@
 
 /*
  * KNOWN ERRORS
-  * If the server goes down while a client is still connected to a room, the
-    * socket will have no record of that rooms namespace (only created on a GET
-    * request) and so will be unable to connect
  */
 
+/*
+ * Dependencies
+ */
 const log = require('debug')('assemble:app')
 const path = require('path')
 const express = require('express')
@@ -14,10 +14,21 @@ const io = require('socket.io')
 const pug = require('pug')
 const easyrtc = require('easyrtc')
 const http = require('http')
+const bodyParser = require('body-parser')
+
+// Register mongoose models
+require('./models')()
+
+/*
+ * Local dependencies
+ */
 const spawnRoom = require('./spawn-room')
 const identifyUserBrowser = require('./helpers/user-browser-id')
 const github = require('./helpers/github')
-const bodyParser = require('body-parser')
+
+/*
+ * Begin config
+ */
 const app = express()
 
 const staticDir = path.resolve(__dirname + '/../build')

@@ -1,32 +1,30 @@
-/**
- * Module dependencies.
- */
+'use strict'
 
-var mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-var Schema = mongoose.Schema
-var ObjectId = Schema.ObjectId
+const Schema = mongoose.Schema
+const ObjectId = Schema.ObjectId
 
 /**
  * Response Schema
  */
-var ResponseSchema = new Schema({
+const ResponseSchema = new Schema({
+  user: {type: ObjectId, ref: 'User'},
   date: {type: Date, required: true },
   userAvatar: {type: String, required: false},
   userName: {type: String, required: true},
-  user: {type: ObjectId, ref: 'User'},
   reason: {type: String, required: true}
 })
 
 /**
  * Announcement Schema
  */
-var AnnouncementSchema = new Schema({
+const AnnouncementSchema = new Schema({
+  author: {type: ObjectId, ref: 'User'},
   text: {type: String, required: true },
   feedOptions: {type: Boolean, default: false },
   feedback: {type: Boolean, default: false },
   responses: [{type: ResponseSchema}],
-  author: {type: ObjectId, ref: 'User'},
   authorAvatar: {type: String, required: false},
   authorName: {type: String, required: true},
 })

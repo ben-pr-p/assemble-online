@@ -3,6 +3,7 @@
 const debug = require('debug')
 const LocationManager = require('./helpers/location-manager')
 const identifyUserBrowser = require('./helpers/user-browser-id')
+const db = require('./db-api')
 
 const UPDATE_INTERVAL = 50
 const BASE_DIMENSIONS = {x: 2700, y: 1700} // mostly arbitrary, but a little bit smaller than macbook pro 15 inch screen
