@@ -223,7 +223,7 @@ export default class Announcement extends React.Component {
   renderClearIcon () {
     return (
       <IconButton key='left-icon' className='discard-icon' onClick={this.discardEdit.bind(this)} >
-        <ClearIcon color='white' />
+        <ClearIcon />
       </IconButton>
     )
   }
@@ -231,7 +231,7 @@ export default class Announcement extends React.Component {
   renderEditIcon () {
     return (
       <IconButton key='left-icon' className='edit-icon' onClick={this.setEdit.bind(this)} >
-        <EditIcon color='white' />
+        <EditIcon />
       </IconButton>
     )
   }
@@ -239,7 +239,7 @@ export default class Announcement extends React.Component {
   renderViewReasonsIcon () {
     return (
       <IconButton key='view-reasons-icon' className='view-reasons-icon' onClick={this.viewReasons.bind(this)}>
-        <CommentIcon color='white' />
+        <CommentIcon />
       </IconButton>
     )
   }
@@ -274,7 +274,7 @@ export default class Announcement extends React.Component {
             {'Allow feedback for this announcement/question'}
           </div>
           <div className='icon-container'>
-            <FeedbackIcon color='white' />
+            <FeedbackIcon />
           </div>
         </div>
         {options}

@@ -3,6 +3,7 @@ import {Motion, spring} from 'react-motion'
 import Grid from '../grid/grid'
 import UserBlob from '../user-blob/user-blob'
 import Boss from '../../lib/boss'
+import {plaza} from '../../lib/custom-theme'
 
 // movement attenuation constant
 const MAC = .1
@@ -116,7 +117,7 @@ export default class Room extends React.Component {
     const springParams = {stiffness: STIFFNESS, damping: DAMPING}
 
     return (
-      <svg id='plaza' onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} onMouseMove={this.onMouseMove.bind(this)} >
+      <svg id='plaza' onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} onMouseMove={this.onMouseMove.bind(this)} style={{backgroundColor: plaza.palette.canvasColor}} >
         <Motion
           defaultStyle={{x: translate.x, y: translate.y}}
           style={{x: spring(translate.x, springParams), y: spring(translate.y, springParams)}}

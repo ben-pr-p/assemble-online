@@ -53,8 +53,8 @@ export default class AppBar extends React.Component {
             targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
             anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
           >
-            <MenuItem leftIcon={<AccountBox color='white' />} primaryText='Edit Me' onClick={this.editUser.bind(this)} />
-            <MenuItem leftIcon={<BugIcon color='white' />} primaryText='File Bug Report / Feature Request' onClick={this.initializeBugReport} />
+            <MenuItem leftIcon={<AccountBox />} primaryText='Edit Me' onClick={this.editUser.bind(this)} />
+            <MenuItem leftIcon={<BugIcon />} primaryText='File Bug Report / Feature Request' onClick={this.initializeBugReport} />
           </IconMenu>
         </Paper>
 

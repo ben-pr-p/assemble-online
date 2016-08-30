@@ -10,7 +10,7 @@ import {
 import {fade} from 'material-ui/utils/colorManipulator'
 import spacing from 'material-ui/styles/spacing'
 
-export default {
+const grayScale = {
   spacing: spacing,
   fontFamily: 'Roboto, sans-serif',
   palette: {
@@ -30,3 +30,67 @@ export default {
     clockCircleColor: fade(fullWhite, 0.12)
   }
 }
+
+
+const solarized = {
+  base03: '#002b36',
+  base02: '#073642',
+  base01: '#586e75',
+  base00: '#657b83',
+  base0: '#839496',
+  base1: '#93a1a1',
+  base2: '#eee8d5',
+  base3: '#fdf6e3',
+  yellow: '#b58900',
+  orange: '#cb4b16',
+  red: '#dc322f',
+  magenta: '#d33682',
+  violet: '#6c71c4',
+  blue: '#268bd2',
+  cyan: '#2aa198',
+  green: '#859900'
+}
+
+const solarizedDark = {
+  spacing: spacing,
+  fontFamily: 'Roboto, sans-serif',
+  palette: {
+    primary1Color: solarized.green,
+    primary2Color: solarized.green,
+    primary3Color: solarized.green,
+    accent1Color: fade(solarized.green, 0.5),
+    accent2Color: fade(solarized.green, 0.5),
+    accent3Color: fade(solarized.green, 0.5),
+    textColor: solarized.base1,
+    alternateTextColor: solarized.base02,
+    canvasColor: solarized.base03,
+    borderColor: fade(solarized.base1, 0.3),
+    disabledColor: fade(solarized.base1, 0.3),
+    pickerHeaderColor: fade(solarized.base1, 0.3),
+    clockCircleColor: fade(solarized.base1, 0.3)
+  }
+}
+
+const solarizedLight = {
+  spacing: spacing,
+  fontFamily: 'Roboto, sans-serif',
+  palette: {
+    primary1Color: solarized.green,
+    primary2Color: solarized.green,
+    primary3Color: solarized.green,
+    accent1Color: solarized.yellow,
+    accent2Color: solarized.yellow,
+    accent3Color: solarized.yellow,
+    textColor: solarized.base03,
+    alternateTextColor: solarized.base02,
+    canvasColor: solarized.base3,
+    borderColor: fade(solarized.base03, 0.3),
+    disabledColor: fade(solarized.base03, 0.3),
+    pickerHeaderColor: fade(solarized.base03, 0.3),
+    clockCircleColor: fade(solarized.base03, 0.3)
+  }
+}
+
+
+export {solarizedDark as menus, solarizedLight as plaza}
+

@@ -10,7 +10,7 @@ import Announcement from './announcement/announcement'
 import NewUserModal from './new-user-modal/new-user-modal'
 import AudioController from './audio/controller'
 import Room from './room/room'
-import customTheme from '../lib/custom-theme.js'
+import {menus} from '../lib/custom-theme.js'
 import Boss from '../lib/boss'
 
 const goodBrowsers = ['Chrome', 'Chromium', 'Firefox', 'Mozilla', 'Opera', 'Bowser', 'Canary']
@@ -100,7 +100,7 @@ export default class Main extends React.Component {
     }
 
     return (
-      <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
+      <MuiThemeProvider muiTheme={getMuiTheme(menus)}>
         <div id='main-app'>
           {requiresMe}
           <AppBar key='app-bar'
@@ -115,7 +115,7 @@ export default class Main extends React.Component {
 
   renderBadBrowser () {
     return (
-      <MuiThemeProvider muiTheme={getMuiTheme(customTheme)}>
+      <MuiThemeProvider muiTheme={getMuiTheme(menus)}>
         <Dialog open={true} >
           {`assemble.live uses WebRTC technology for its audio transfer and SharedWorkers for performance, which has only been implemented in Firefox, Chrome, and Opera.`}
           <br />
