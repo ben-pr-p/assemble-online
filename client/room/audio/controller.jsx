@@ -159,6 +159,7 @@ export default class AudioController extends React.Component {
     const {audioStreams, msg}  = this.state
 
     let connectionEls = []
+
     audioStreams.forEach((stream, m) => {
       connectionEls.push((
         <AudioConnection key={m} easyrtcid={m} stream={stream} />

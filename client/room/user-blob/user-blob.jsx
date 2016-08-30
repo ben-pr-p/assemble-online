@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { Motion, spring } from 'react-motion'
 import lineIntersect from 'line-intersect'
+import Color from 'color'
 import Boss from '../../lib/boss'
 import VolumeIndicator from './volume-indicator'
 import Badge from './badge'
@@ -158,9 +159,7 @@ export default class UserBlob extends React.Component {
         {pos =>
           <g className='user-blob offscreen' id={user.id} >
             <defs>
-              <pattern id={`avatar-${user.id}`} preserveAspectRatio='none' x='0' y='0' height='100%' width='100%' height='1' width='1' viewBox={`0 0 ${sd} ${sd}`}>
-                <image preserveAspectRatio='none' x='0' y='0' width={sd} height={sd} xlinkHref={user.avatar}></image>
-              </pattern>
+              {this.renderInsides(user, sd)}
               <marker id='arrow' viewBox='0 -5 10 10' refX='5' refY='0' markerWidth='20' markerHeight='16' orient='auto'>
                 <path d='M0,-5L10,0L0,5' className='arrowHead' stroke={this.color} fill={this.color} />
               </marker>
@@ -187,9 +186,7 @@ export default class UserBlob extends React.Component {
         {pos =>
           <g className='user-blob'  id={user.id} >
             <defs>
-              <pattern id={`avatar-${user.id}`} preserveAspectRatio='none' x='0' y='0' height='100%' width='100%' height='1' width='1' viewBox={`0 0 ${d} ${d}`}>
-                <image preserveAspectRatio='none' x='0' y='0' width={d} height={d} xlinkHref={user.avatar}></image>
-              </pattern>
+              {this.renderInsides(user, d)}
             </defs>
             <circle transform={`translate(${pos.x},${pos.y})`} r={r} fill={this.fill} strokeWidth='6px' stroke='black' />
             <VolumeIndicator x={pos.x} y={pos.y} r={r} color={this.color} user={user} />
@@ -199,4 +196,33 @@ export default class UserBlob extends React.Component {
       </Motion>
     )
   }
+
+  renderInsides (user, d) {
+    if (user.avatar && user.avatar != '') {
+      return (
+        <pattern id={`avatar-${user.id}`} preserveAspectRatio='none' x='0' y='0' height='100%' width='100%' viewBox={`0 0 ${d} ${d}`}>
+          <image preserveAspectRatio='none' x='0' y='0' width={d} height={d} xlinkHref={user.avatar}></image>
+        </pattern>
+      )
+    }
+
+    else {
+      let initials = user.name.split(' ').map(s => s.charAt(0).toUpperCase()).join('')
+      if (initials.length > 2)
+        initials = [initials[0], initials[initials.length - 1]]
+
+      const lighter = Color(this.color).alpha(0.5).lighten(0.5)
+      const darker = Color(this.color).darken(0.5)
+
+      return (
+        <pattern id={`avatar-${user.id}`} x='0' y='0' height='100%' width='100%' viewBox={`0 0 ${d} ${d}`}>
+          <rect width={d} height={d} fill={lighter.hslString()} stroke='none' />
+          <text x={d/2} y={d/2} textAnchor='middle' stroke={this.color} fontSize={d/2 + 'px'} dy={d == 100 ? 15 : 10} stroke='none' fill={darker.hslString()} >
+            {initials}
+          </text>
+        </pattern>
+      )
+    }
+  }
 }
+

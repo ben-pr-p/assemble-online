@@ -19,6 +19,7 @@
     "babelify": "^7.2.0",
     "body-parser": "^1.15.2",
     "browserify": "^13.0.0",
+    "color": "^0.11.3",
     "component-dom": "^1.0.8",
     "d3": "^3.5.17",
     "del": "^2.2.1",

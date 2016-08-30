@@ -23,7 +23,8 @@ export default class AudioConnection extends React.Component {
   }
 
   handleDistance (dist) {
-    this.refs.root.volume = this.calcVolume(dist)
+    if (this.refs.root)
+      this.refs.root.volume = this.calcVolume(dist)
   }
 
   calcVolume (d) {

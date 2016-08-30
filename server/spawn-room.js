@@ -69,7 +69,7 @@ class Room {
 
       const propsToTransfer = ['x', 'y', 'easyrtcid', 'color', 'badge']
       propsToTransfer.forEach(prop => {
-        if (existing[prop])
+        if (existing[prop] && !user[prop])
           user[prop] = existing[prop]
       })
 
