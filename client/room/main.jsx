@@ -10,6 +10,7 @@ import Announcement from './announcement/announcement'
 import NewUserModal from './new-user-modal/new-user-modal'
 import AudioController from './audio/controller'
 import Room from './room/room'
+import Colors from './colors/colors'
 import {menus} from '../lib/custom-theme.js'
 import Boss from '../lib/boss'
 
@@ -26,9 +27,11 @@ export default class Main extends React.Component {
       users: new Map(),
       me: null,
       editingUser: false,
+      editingColor: false,
+      theme: JSON.parse(JSON.stringify(menus))
     }
 
-    const boundMethods = 'setEditUserState setEasyRTCId closeNewUserModal clearLocal handleUsers'
+    const boundMethods = 'setEditUserState setEasyRTCId closeNewUserModal clearLocal handleUsers openColorModal setColors closeColorModal'
     boundMethods.split(' ').forEach(m => {
       this[m] = this[m].bind(this)
     })
@@ -67,6 +70,18 @@ export default class Main extends React.Component {
     this.setEditUserState(false)
   }
 
+  openColorModal () {
+    this.setState({
+      editingColor: true
+    })
+  }
+
+  closeColorModal () {
+    this.setState({
+      editingColor: false
+    })
+  }
+
   setEasyRTCId (easyrtcid) {
     this.state.me.easyrtcid = easyrtcid
     this.announceMe()
@@ -74,6 +89,14 @@ export default class Main extends React.Component {
 
   setEditUserState (value) {
     this.setState({editingUser: value})
+  }
+
+  setColors (colors) {
+    for (let color in colors) {
+      this.state.theme.palette[color] = colors[color]
+    }
+
+    this.forceUpdate()
   }
 
   clearLocal () {
@@ -84,13 +107,18 @@ export default class Main extends React.Component {
   }
 
   render () {
-    const {me, users, editingUser, browser, roomName} = this.state
+    const {me, users, editingColor, editingUser, browser, roomName, theme} = this.state
     if (browser.bad)
       return this.renderBadBrowser()
 
     let newUserModal
     if (!me || editingUser) {
       newUserModal = (<NewUserModal closeNewUserModal={this.closeNewUserModal} me={me} />)
+    }
+
+    let colorModal
+    if (editingColor) {
+      colorModal = (<Colors setColors={this.setColors} palette={theme.palette} closeColorModal={this.closeColorModal} />)
     }
 
     let requiresMe = []
@@ -100,14 +128,16 @@ export default class Main extends React.Component {
     }
 
     return (
-      <MuiThemeProvider muiTheme={getMuiTheme(menus)}>
+      <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
         <div id='main-app'>
           {requiresMe}
           <AppBar key='app-bar'
             clearLocal={this.clearLocal}
+            openColorModal={this.openColorModal}
             setEditUserState={this.setEditUserState} />
           <Announcement roomName={roomName} />
           {newUserModal}
+          {colorModal}
         </div>
       </MuiThemeProvider>
     )

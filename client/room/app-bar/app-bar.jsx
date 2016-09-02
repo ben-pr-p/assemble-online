@@ -7,9 +7,11 @@ import DeleteIcon from 'material-ui/svg-icons/action/delete'
 import AccountBox from 'material-ui/svg-icons/action/account-box'
 import BugIcon from 'material-ui/svg-icons/action/bug-report'
 import SettingsIcon from 'material-ui/svg-icons/action/settings'
+import ColorIcon from 'material-ui/svg-icons/image/color-lens'
 import Paper from 'material-ui/Paper'
 import BugReport from '../bug-report/bug-report'
 import shallowUpdateCompare from '../../lib/shallow-update-compare'
+import {menus} from '../../lib/custom-theme'
 
 export default class AppBar extends React.Component {
   constructor () {
@@ -38,6 +40,8 @@ export default class AppBar extends React.Component {
   }
 
   render () {
+    const iconColor = menus.palette.textColor
+
     let bugmodal
     if (this.state.bugreport) bugmodal = (<BugReport endBugReport={this.endBugReport.bind(this)} />)
 
@@ -53,8 +57,9 @@ export default class AppBar extends React.Component {
             targetOrigin={{horizontal: 'left', vertical: 'bottom'}}
             anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
           >
-            <MenuItem leftIcon={<AccountBox />} primaryText='Edit Me' onClick={this.editUser.bind(this)} />
-            <MenuItem leftIcon={<BugIcon />} primaryText='File Bug Report / Feature Request' onClick={this.initializeBugReport} />
+            <MenuItem leftIcon={<AccountBox color={iconColor} />} primaryText='Edit Me' onClick={this.editUser.bind(this)} />
+            <MenuItem leftIcon={<BugIcon color={iconColor} />} primaryText='File Bug Report / Feature Request' onClick={this.initializeBugReport} />
+            <MenuItem leftIcon={<ColorIcon color={iconColor} />} primaryText='Edit the Color Schema' onClick={this.props.openColorModal} />
           </IconMenu>
         </Paper>
 

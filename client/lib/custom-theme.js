@@ -55,19 +55,20 @@ const solarizedDark = {
   spacing: spacing,
   fontFamily: 'Roboto, sans-serif',
   palette: {
-    primary1Color: solarized.green,
-    primary2Color: solarized.green,
-    primary3Color: solarized.green,
-    accent1Color: fade(solarized.green, 0.5),
-    accent2Color: fade(solarized.green, 0.5),
-    accent3Color: fade(solarized.green, 0.5),
+    primary1Color: solarized.base2,
+    primary2Color: fade(solarized.base2, 0.3),
+    primary3Color: fade(solarized.base2, 0.5),
+    accent1Color: solarized.base1,
+    accent2Color: fade(solarized.base1, 0.3),
+    accent3Color: fade(solarized.base1, 0.5),
     textColor: solarized.base1,
-    alternateTextColor: solarized.base02,
+    alternateTextColor: solarized.base01,
     canvasColor: solarized.base03,
     borderColor: fade(solarized.base1, 0.3),
     disabledColor: fade(solarized.base1, 0.3),
     pickerHeaderColor: fade(solarized.base1, 0.3),
-    clockCircleColor: fade(solarized.base1, 0.3)
+    clockCircleColor: fade(solarized.base1, 0.3),
+    solarized: solarized
   }
 }
 

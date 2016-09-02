@@ -41,6 +41,7 @@
 ## MVP
 * Landing page / better packaging, as well as blog style thing
 * Arrow key movement
+* Refresh requirement bug might still be there, not sure
 
 ## Immediate
 * Agenda setting widget
