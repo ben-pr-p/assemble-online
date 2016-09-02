@@ -23,7 +23,7 @@ if (process.env.DB)
 /*
  * Local dependencies
  */
-const spawnRoom = require('./spawn-room')
+const spawnSession = require('./socket')
 const identifyUserBrowser = require('./helpers/user-browser-id')
 const github = require('./helpers/github')
 
@@ -37,7 +37,7 @@ const staticDir = path.resolve(__dirname + '/../build')
 const server = http.createServer(app)
 const socketServer = io.listen(server, {'log level':1})
 
-const rooms = {}
+const sessions = {}
 const remoteLocations = new Map()
 
 app.use(bodyParser.json())
@@ -57,8 +57,8 @@ app.get('/blog', function (req, res) {
 app.get('/room-status', function (req, res) {
   const result = {}
 
-  for (let room in rooms) {
-    let numOccupants = rooms[room].getNumOccupants()
+  for (let room in sessions) {
+    let numOccupants = sessions[room].getNumOccupants()
     if (numOccupants > 0)
       result[room] = numOccupants
   }
@@ -82,7 +82,7 @@ app.get('/room', function (req, res) {
 })
 
 /*
- * Create rooms when necessary
+ * Create sessions when necessary
  */
 
 easyrtc.setOption('logLevel', 'error')
@@ -139,8 +139,8 @@ function destroyRoom (roomName) {
   socketServer.nsps[roomName] = null
   delete socketServer.nsps[roomName]
 
-  rooms[roomName] = null
-  delete rooms[roomName]
+  sessions[roomName] = null
+  delete sessions[roomName]
 }
 
 function rejectBadRooms (req, res, next) {
@@ -150,12 +150,12 @@ function rejectBadRooms (req, res, next) {
 }
 
 function ensureRoom (req, res, next) {
-  log('Current have rooms %j', Object.keys(rooms))
+  log('Current have sessions %j', Object.keys(sessions))
 
-  if (rooms[req.params.room]) return next()
+  if (sessions[req.params.room]) return next()
 
-  log('Creating room %s', req.params.room)
-  rooms[req.params.room] = spawnRoom(socketServer, req.params.room, destroyRoom)
+  log('Creating session for room %s', req.params.room)
+  sessions[req.params.room] = spawnSession(socketServer, req.params.room, destroyRoom)
   next()
 }
 
@@ -181,14 +181,14 @@ function preventDuplicateJoin (req, res, next) {
   }
 
   // if the room they were in doesn't exist, we're good
-  if (!rooms[prevroom]) {
+  if (!sessions[prevroom]) {
     log('Previous room %s destroyed - we good', prevroom)
     remoteLocations.set(ubid, req.params.room)
     return next()
   }
 
   // otherwise, they better have left the room they were previously in
-  if (rooms[prevroom].containsUser(ubid)) {
+  if (sessions[prevroom].containsUser(ubid)) {
     log('User is still in %s - error, we bad', prevroom)
     return res.render('duplicate-join-error')
   } else {

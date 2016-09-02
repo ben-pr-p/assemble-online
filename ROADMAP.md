@@ -48,4 +48,5 @@
 * Agenda items contain announcements
 * Digest
 * Launch
+* Proper API-style Socket.io endpoints
 

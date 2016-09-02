@@ -65,6 +65,7 @@ export default class UserBlob extends React.Component {
 
   render () {
     const {user, location, volume, idx, translate, me, isMe} = this.props
+
     let { x, y } = this.state.location
 
     if (isNaN(x)) x = 0

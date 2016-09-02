@@ -89,13 +89,20 @@ function handleUsers (data) {
 }
 
 function announceMe (newme) {
+  let brandNew = true
+  if (me)
+    brandNew = false
+
   me = newme
-  socket.emit('me', me)
+  if (brandNew)
+    socket.emit('/user/new', me)
+  else
+    socket.emit('/user/update', me)
 }
 
 function trashMe () {
   me = null
-  socket.emit('trash-me')
+  socket.emit('/user/trash')
 }
 
 function constrain (x, min, max) {
@@ -110,36 +117,30 @@ function announceLocation (data) {
   const x = constrain(base.x + dx, 0, dimensions.x)
   const y = constrain(base.y + dy, 0, dimensions.y)
 
-  socket.emit('my-location', {x, y})
+  socket.emit('/location/mine', {x, y})
 }
 
 function announceAnnouncement (msg) {
   msg.author = me.id
   msg.authorAvatar = me.avatar
   msg.authorName = me.name
-  socket.emit('my-announcement', msg)
+  socket.emit('/announcement/mine', msg)
 }
 
 function announceResponse (data) {
   if (!me) return handleError('Cannot announce response - me is not defined')
 
-  const {announcement, type, reason, date} = data
-  const user = me.id
-  const userAvatar = me.avatar
-  const userName = me.name
-  announcement.responses[type].push({user, reason, date, userAvatar, userName})
-  socket.emit('my-announcement', announcement)
-
-  me.badge = type
-  socket.emit('me', me)
+  socket.emit('/announcement/response', data)
+  me.badge = data.type
+  socket.emit('/user/update', me)
 }
 
 function requestAnnouncement () {
-  socket.emit('request-announcement')
+  socket.emit('/announcement/request')
 }
 
 function announceVolume (vol) {
-  socket.emit('my-volume', vol)
+  socket.emit('/volume/mine', vol)
 }
 
 function handleLocations (data) {

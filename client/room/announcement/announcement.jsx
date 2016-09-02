@@ -147,11 +147,9 @@ export default class Announcement extends React.Component {
   }
 
   respond (reason) {
-    const {authorName, authorAvatar, text, feedback, feedOptions, responses} = this.state
     const date = Date.now()
     const type = this.responseType
-    const announcement = {authorName, authorAvatar, text, feedback, feedOptions, responses}
-    Boss.post('my-response', {announcement, type, reason, date})
+    Boss.post('my-response', {type, reason, date})
   }
 
   render () {
