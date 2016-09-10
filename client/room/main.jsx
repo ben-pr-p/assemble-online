@@ -6,12 +6,12 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import Dialog from 'material-ui/Dialog'
 import AppBar from './app-bar/app-bar'
-import Announcement from './announcement/announcement'
+import Agenda from './agenda/agenda'
 import NewUserModal from './new-user-modal/new-user-modal'
 import AudioController from './audio/controller'
 import Room from './room/room'
 import Colors from './colors/colors'
-import {menus} from '../lib/custom-theme.js'
+import {solarizedDark, solarizedLight} from '../lib/custom-theme.js'
 import Boss from '../lib/boss'
 
 const goodBrowsers = ['Chrome', 'Chromium', 'Firefox', 'Mozilla', 'Opera', 'Bowser', 'Canary']
@@ -28,7 +28,7 @@ export default class Main extends React.Component {
       me: null,
       editingUser: false,
       editingColor: false,
-      theme: JSON.parse(JSON.stringify(menus))
+      theme: JSON.parse(JSON.stringify(solarizedDark))
     }
 
     const boundMethods = 'setEditUserState setEasyRTCId closeNewUserModal clearLocal handleUsers openColorModal setColors closeColorModal'
@@ -44,16 +44,17 @@ export default class Main extends React.Component {
 
     this.state.me = store.get('me')
     Boss.on('users', this.handleUsers, 'App')
-    if (this.state.me)
-      this.announceMe()
 
     this.state.roomName = dom('#reactAppContainer').attr('data')
     if (this.state.roomName)
       Boss.post('room-name', this.state.roomName)
+
+    if (this.state.me)
+      this.announceMe()
   }
 
   announceMe () {
-    Boss.post('me', this.state.me)
+    Boss.post('user/new', this.state.me)
   }
 
   handleUsers (users) {
@@ -91,18 +92,16 @@ export default class Main extends React.Component {
     this.setState({editingUser: value})
   }
 
-  setColors (colors) {
-    for (let color in colors) {
-      this.state.theme.palette[color] = colors[color]
-    }
-
-    this.forceUpdate()
+  setColors (theme) {
+    this.setState({
+      theme: JSON.parse(JSON.stringify(theme))
+    })
   }
 
   clearLocal () {
     store.clear()
     this.state.me = null
-    Boss.post('trash-me')
+    Boss.post('user/trash')
     this.forceUpdate()
   }
 
@@ -124,18 +123,18 @@ export default class Main extends React.Component {
     let requiresMe = []
     if (me) {
       requiresMe.push(( <AudioController key='audio-controller' me={me} roomName={roomName} setEasyRTCId={this.setEasyRTCId} /> ))
-      requiresMe.push(( <Room key='room' me={me} users={users} /> ))
     }
 
     return (
       <MuiThemeProvider muiTheme={getMuiTheme(theme)}>
         <div id='main-app'>
           {requiresMe}
+          <Room key='room' me={me} users={users} />
           <AppBar key='app-bar'
             clearLocal={this.clearLocal}
             openColorModal={this.openColorModal}
             setEditUserState={this.setEditUserState} />
-          <Announcement roomName={roomName} />
+          <Agenda roomName={roomName} />
           {newUserModal}
           {colorModal}
         </div>
@@ -156,3 +155,4 @@ export default class Main extends React.Component {
     )
   }
 }
+

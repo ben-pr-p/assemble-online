@@ -17,7 +17,7 @@ function generate (jsname) {
     var js = browserify({
       entries: [`./client/${jsname}`],
       extensions: ['.js', '.jsx'],
-      paths: ['./node_modules','./client/js/'],
+      paths: ['./node_modules','./client'],
       debug: true
     })
     .transform(babelify, {presets: ['es2015', 'react']})

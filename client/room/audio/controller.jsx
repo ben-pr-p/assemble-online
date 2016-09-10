@@ -47,7 +47,7 @@ export default class AudioController extends React.Component {
   }
 
   announceVolume (vol) {
-    Boss.post('my-volume', vol)
+    Boss.post('volume/mine', vol)
   }
 
   componentDidMount () {

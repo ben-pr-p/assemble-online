@@ -1,37 +1,31 @@
 var gulp = require('gulp')
-var del = require('del')
 var gutil = require('gulp-util')
 var handleErrors = require('../util/handleErrors')
+var source = require('vinyl-source-stream')
 var buffer = require('vinyl-buffer')
 var uglify = require('gulp-uglify')
-var babel = require('gulp-babel')
-var pump = require('pump')
+var browserify = require('browserify')
+var babelify = require('babelify')
 
 var dest = './build/workers'
-var workerPath = './client/workers/*'
-var builtWorker = './build/workers/*'
 
 var shouldUglify = process.env.ENV == 'production'
 
-gulp.task('worker-copy', function(cb) {
+gulp.task('workers', function (cb) {
+  var js = browserify({
+    entries: ['./client/workers/foreman.js'],
+    extensions: ['.js'],
+    paths: ['./node_modules','./client'],
+    debug: true
+  })
+  .transform(babelify, {presets: ['es2015']})
+  .bundle()
+  .on('error', handleErrors)
+  .pipe(source('./client/workers/foreman.js'))
+
   if (shouldUglify) {
-    pump([
-      gulp.src(workerPath),
-      babel({presets: ['es2015']}),
-      uglify(),
-      gulp.dest(dest)
-    ], cb)
-  } else {
-    pump([
-      gulp.src(workerPath),
-      babel({presets: ['es2015']}),
-      gulp.dest(dest)
-    ], cb)
+    js = js.pipe(buffer()).pipe(uglify())
   }
-})
 
-gulp.task('worker-del', function (cb) {
-  del([builtWorker], cb)
+  return js.pipe(gulp.dest(dest))
 })
-
-gulp.task('workers', ['worker-copy'])

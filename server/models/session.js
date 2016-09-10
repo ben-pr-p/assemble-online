@@ -18,7 +18,7 @@ const AppearanceSchema = new Schema({
  * Session Schema
  */
 const SessionSchema = new Schema({
-  room: {type: ObjectId, ref: 'Room', required: true},
+  room: {type: String, required: true},
   agendaItems: [{type: ObjectId, ref: 'AgendaItem'}],
   actionItems: [{type: ObjectId, ref: 'ActionItem'}],
   announcements: [{type: ObjectId, ref: 'Announcement'}],

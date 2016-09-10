@@ -19,6 +19,7 @@ const createUserRouter = require('./user')
 const createLocationRouter = require('./location')
 const createVolumeRouter = require('./volume')
 const createAnnouncementRouter = require('./announcement')
+const createAgendaRouter = require('./agenda')
 
 module.exports = function (io, room, destroySelf) {
   spawnlog('Spawning session for room %s...', room)
@@ -27,7 +28,7 @@ module.exports = function (io, room, destroySelf) {
 
 /**
  * Routes:
- *    '${nsp}/announcement/mine'
+ *    '${nsp}/announcement/new'
  *    '${nsp}/announcement/response'
  *    '${nsp}/announcement/request'
  *
@@ -56,6 +57,7 @@ class Session {
       sockets: new Map(),
       userIdFromSocketId: new Map(),
       announcement: null,
+      agenda: [],
       dimGrowth: 1,
       dimensions: Object.assign({}, BASE_DIMENSIONS),
       colorIdx: 0,
@@ -79,8 +81,11 @@ class Session {
   destroySelf () {
     this.destroyTimeoutId = setTimeout(() => {
       Object.keys(this.nsp.connected).forEach(id => {
-        this.nsp.connected[id].disconnect()
-        this.nsp.connected[id].close()
+        this.log(this.nsp.connected[id])
+        if (this.nsp.connected[id].disconnect)
+          this.nsp.connected[id].disconnect()
+        if (this.nsp.connected[id].close)
+          this.nsp.connected[id].close()
       })
 
       this.nsp.removeAllListeners()
@@ -126,6 +131,13 @@ class Session {
     this.router.use('/location', createLocationRouter(this.data, emitAll))
     this.router.use('/volume', createVolumeRouter(this.data, emitAll))
     this.router.use('/announcement', createAnnouncementRouter(this.data, emitAll))
+    this.router.use('/agenda', createAgendaRouter(this.data, emitAll))
+
+    this.router.on('*', (sock, args, next) => {
+      this.log('Got undefined event %s', args[0])
+      this.log('with data %j', args[1])
+      next()
+    })
 
     this.nsp.use(this.router)
 
@@ -164,11 +176,13 @@ class Session {
 
   startUpdates () {
     if (!this.updateIntervalId) {
+      this.log('Starting updates')
       this.updateIntervalId = setInterval(this.sendUpdates.bind(this), UPDATE_INTERVAL)
     }
   }
 
   stopUpdates () {
+    this.log('Stopping updates')
     clearInterval(this.updateIntervalId)
     this.updateIntervalId = null
   }
@@ -214,7 +228,7 @@ class Session {
   containsUser (ubid) {
     for (let uid of this.data.users.keys()) {
       let socket = this.data.sockets.get(uid)
-      let ub = identifyUserBrowser(socket.handshake.address, socket.request.headers['user-agent'])
+      let ub = identifyUserBrowser(socket.sock.handshake.address, socket.sock.request.headers['user-agent'])
       if (ub == ubid) return true
     }
     return false

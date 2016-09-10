@@ -10,7 +10,7 @@ module.exports.getUserId = function (data, socket) {
   return data.userIdFromSocketId.get(socket.id)
 }
 
-module.exports = function (data, user, socket) {
+module.exports.removeUser = function (data, user, socket) {
   log('Removing all traces of %j', user)
   data.lm.removeUser(user.id)
   data.sockets.delete(user.id)

@@ -25,7 +25,6 @@ if (process.env.DB)
  */
 const spawnSession = require('./socket')
 const identifyUserBrowser = require('./helpers/user-browser-id')
-const github = require('./helpers/github')
 
 /*
  * Begin config
@@ -66,12 +65,6 @@ app.get('/room-status', function (req, res) {
   res.json(result)
 })
 
-app.post('/bug-report', function (req, res) {
-  log('Request POST /bug-report with bug %j', req.body)
-  github.issue(req.body)
-  res.sendStatus(200)
-})
-
 app.get('/room/:room', rejectBadRooms, preventDuplicateJoin, ensureRoom, function (req, res) {
   log('Request GET /%s', req.params.room)
   res.render('room', {room: req.params.room})
@@ -80,6 +73,8 @@ app.get('/room/:room', rejectBadRooms, preventDuplicateJoin, ensureRoom, functio
 app.get('/room', function (req, res) {
   res.redirect('/')
 })
+
+app.use('/api', require('./api'))
 
 /*
  * Create sessions when necessary

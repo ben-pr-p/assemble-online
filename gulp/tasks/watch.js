@@ -4,7 +4,7 @@ var clientapps = require('./client-apps')
 
 
 gulp.task('watch', function() {
-  gulp.watch('./client/workers/*.js', ['workers'])
+  gulp.watch('./client/workers/**/*.js', ['workers'])
   gulp.watch('./client/**/*.png', ['images'])
   gulp.watch('./client/**/*.styl', ['styles'])
 

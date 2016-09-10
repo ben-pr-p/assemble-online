@@ -1,13 +1,26 @@
 'use strict'
 
-importScripts('https://cdn.socket.io/socket.io-1.1.0.js')
+import io from 'socket.io-client'
+import patchFn from 'socketio-wildcard'
+import userDrone from './drones/user'
+import locationDrone from './drones/location'
+import dimensionDrone from './drones/dimension'
+import distanceDrone from './drones/distance'
+import volumeDrone from './drones/volume'
+import agendaDrone from './drones/agenda'
 
-let events = {}
-let port, socket, roomName, namespace, users, me, locations, volumes, dimensions, screen, distances, announcement
+const patch = patchFn(io.Manager)
+const events = {}
+let port, socket, roomName, namespace, locations, dimensions, distances, announcement
 
-let easyrtcids = new Map()
-
-let translate = {x: 0, y: 0}
+const state = {
+  me: null,
+  users: null,
+  easyrtcids: new Map(),
+  translate: {x: 0, y: 0},
+  locations: new Map(),
+  dimensions: null
+}
 
 function ready (p) {
   port = p
@@ -22,33 +35,41 @@ function handleRoomName (roomName) {
   roomName = roomName
   namespace = '/' + roomName
   socket = io(namespace)
+  patch(socket)
+
+  /*
+  socket.on('*', function (data) {
+    emit(`recieved-from-server: ${data.data[0]}: ${JSON.stringify(data.data[1])})`)
+  })
+  */
+
   initialize()
 }
 
 function initialize () {
-  on('me', announceMe)
-  on('trash-me', trashMe)
-  on('my-delta', announceLocation)
-  on('my-volume', announceVolume)
+  on('screen', receiveScreen)
+
+  userDrone(state, on, emit, socket)
+  locationDrone(state, on, emit, socket)
+  dimensionDrone(state, on, emit, socket)
+  distanceDrone(state, on, emit, socket)
+  volumeDrone(state, on, emit, socket)
+  agendaDrone(state, on, emit, socket)
+
+  /*
   on('my-announcement', announceAnnouncement)
   on('my-response', announceResponse)
   on('request-announcement', requestAnnouncement)
+ */
 
-  on('screen', receiveScreen)
-
-  socket.on('connect', handleUsers)
-  socket.on('users', handleUsers)
-  socket.on('locations', handleLocations)
-  socket.on('volumes', handleVolumes)
-  socket.on('dimensions', handleDimensions)
-  socket.on('announcement', handleAnnouncement)
-  socket.on('distances', handleDistances)
+  //socket.on('announcement', handleAnnouncement)
 }
 
 function on(event, fn) {
   if (!events[event]) {
     events[event] = []
   }
+
   events[event].push(fn)
 }
 
@@ -58,13 +79,19 @@ function off(event, fn) {
 
 function handleMessage (msg) {
   if (!msg.data.event) {
-    handleError(`Worker posted message without event descriptor: ${msg.data}`)
+    handleError(`Boss posted message without event descriptor: ${msg.data}`)
   }
 
+  let handled = false
   if (events[msg.data.event]) {
     events[msg.data.event].forEach(fn => {
+      handled = true
       fn(msg.data.data)
     })
+  }
+
+  if (!handled) {
+    handleError('Received unknown event', msg)
   }
 }
 
@@ -74,50 +101,6 @@ function handleError (err) {
 
 function emit (event, data) {
   port.postMessage({event, data})
-}
-
-function handleUsers (data) {
-  const map = new Map(data)
-  if (data) {
-    users = map
-    emit('users', [...users])
-  }
-
-  map.forEach((user, uid) => {
-    easyrtcids.set(uid, user.easyrtcid)
-  })
-}
-
-function announceMe (newme) {
-  let brandNew = true
-  if (me)
-    brandNew = false
-
-  me = newme
-  if (brandNew)
-    socket.emit('/user/new', me)
-  else
-    socket.emit('/user/update', me)
-}
-
-function trashMe () {
-  me = null
-  socket.emit('/user/trash')
-}
-
-function constrain (x, min, max) {
-  return Math.min(Math.max(x, min), max)
-}
-
-function announceLocation (data) {
-  const {dx, dy} = data
-  const base = locations.get(me.id)
-  if (!base.x) base.x = 0
-  if (!base.y) base.y = 0
-  const x = constrain(base.x + dx, 0, dimensions.x)
-  const y = constrain(base.y + dy, 0, dimensions.y)
-
-  socket.emit('/location/mine', {x, y})
 }
 
 function announceAnnouncement (msg) {
@@ -137,37 +120,6 @@ function announceResponse (data) {
 
 function requestAnnouncement () {
   socket.emit('/announcement/request')
-}
-
-function announceVolume (vol) {
-  socket.emit('/volume/mine', vol)
-}
-
-function handleLocations (data) {
-  if (!me) return null
-
-  locations = new Map(data)
-  locations.forEach((value, uid) => {
-    emit(`location-${uid}`, value)
-  })
-
-  const myLocation = locations.get(me.id)
-  if (isInFourth(myLocation)) {
-    translate = calcTranslate(myLocation)
-    emit('translate', translate)
-  }
-}
-
-function handleVolumes (data) {
-  volumes = new Map(data)
-  volumes.forEach((value, uid) => {
-    emit(`volume-${uid}`, value)
-  })
-}
-
-function handleDimensions (data) {
-  dimensions = data
-  emit('dimensions', dimensions)
 }
 
 function handleAnnouncement (data) {
@@ -201,43 +153,13 @@ function handleDistances (data) {
 }
 
 function receiveScreen (size) {
-  screen = {
+  state.screen = {
     x: size.x,
     y: size.y
   }
 }
 
-function calcTranslate (loc) {
-  if (loc) {
-    const x = (-1) * loc.x + (screen.x / 2) - 25
-    const y = (-1) * loc.y + (screen.y / 2) - 25
-    return {x, y}
-  } else {
-    return {x: 0, y: 0}
-  }
-}
-
-function isInFourth (loc) {
-  let display
-  let edge = {}
-  if (loc) {
-    display = {
-      x: loc.x + translate.x,
-      y: loc.y + translate.y
-    }
-  } else {
-    display = {x: 0, y: 0}
-  }
-
-  edge.w = screen.x / 6
-  edge.h = screen.y / 6
-  if ((display.x < edge.w) || (display.x > (screen.x - edge.w)))
-    return true
-  if ((display.y < edge.h) || (display.y > (screen.y - edge.h)))
-    return true
-  return false
-}
-
 onconnect = function (e) {
   ready(e.ports[0])
 }
+

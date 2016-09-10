@@ -16,7 +16,7 @@ module.exports = function createRouter (data, emitAll) {
    * Define functions with access to data
    */
 
-  function onMine (socket, args, next) {
+  function onDelta (socket, args, next) {
     const loc = args[1]
     const uid = help.getUserId(data, socket)
     data.lm.handleLocationUpdate(uid, loc)
@@ -24,7 +24,7 @@ module.exports = function createRouter (data, emitAll) {
 
   const router = Router()
 
-  router.on('mine', onMine)
+  router.on('delta', onDelta)
 
   return router
 }

@@ -10,6 +10,8 @@ const ObjectId = Schema.ObjectId
  */
 
 const UserSchema = new Schema({
+  ip: { type: String, required: true },
+  browser: { type: String, required: true },
   name: { type: String, required: true },
   avatar: { type: String, default: null }
 })

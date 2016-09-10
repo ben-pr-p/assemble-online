@@ -11,9 +11,8 @@ import ColorIcon from 'material-ui/svg-icons/image/color-lens'
 import Paper from 'material-ui/Paper'
 import BugReport from '../bug-report/bug-report'
 import shallowUpdateCompare from '../../lib/shallow-update-compare'
-import {menus} from '../../lib/custom-theme'
 
-export default class AppBar extends React.Component {
+class AppBar extends React.Component {
   constructor () {
     super()
     this.state = {
@@ -40,7 +39,7 @@ export default class AppBar extends React.Component {
   }
 
   render () {
-    const iconColor = menus.palette.textColor
+    const iconColor = this.context.muiTheme.palette.textColor
 
     let bugmodal
     if (this.state.bugreport) bugmodal = (<BugReport endBugReport={this.endBugReport.bind(this)} />)
@@ -68,3 +67,9 @@ export default class AppBar extends React.Component {
     )
   }
 }
+
+AppBar.contextTypes = {
+  muiTheme: React.PropTypes.object.isRequired
+}
+
+export default AppBar

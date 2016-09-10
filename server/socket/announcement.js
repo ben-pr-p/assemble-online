@@ -2,7 +2,7 @@
 
 /**
  * Handles:
- *   'announcement/mine'
+ *   'announcement/new'
  *   'announcement/response'
  *   'announcement/request'
  */
@@ -18,7 +18,7 @@ module.exports = function createRouter (data, emitAll) {
    * Define functions with access to data
    */
 
-  function onMine (socket, args, next) {
+  function onNew (socket, args, next) {
     const ann = args[1]
 
     /*
@@ -92,7 +92,7 @@ module.exports = function createRouter (data, emitAll) {
 
   const router = Router()
 
-  router.on('mine', onMine)
+  router.on('new', onNew)
   router.on('response', onResponse)
   router.on('request', onRequest)
 

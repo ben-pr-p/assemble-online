@@ -2,10 +2,6 @@
 
 /**
  * Methods to write:
- * Room
- *  .create(room)
- *  .get(rId)
- *  .addSession(sessionId)
  * Session
  *  .create(session)
  *  .get(sessionId)
@@ -18,6 +14,7 @@
  * AgendaItem
  *  .create(agendaItem)
  *  .edit(agId, agendaItem)
+ *  .delete(agId) *****
  *  .addAnnouncement(agId, announcement)
  *  .addActionItem(agId, actionItem)
  * Announcement
@@ -32,7 +29,7 @@
  *  .create(user)
  */
 
-const apisToExpose = 'room session agenda action announcement user'.split(' ')
+const apisToExpose = 'session agenda action announcement user'.split(' ')
 
 apisToExpose.forEach(api => {
  module.exports[api] = require('./' + api)

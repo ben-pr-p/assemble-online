@@ -1,7 +1,7 @@
 import React from 'react'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import {menus} from '../lib/custom-theme.js'
+import {solarizedDark} from '../lib/custom-theme.js'
 import posts from './posts'
 import {Card, CardActions, CardTitle, CardHeader, CardText} from 'material-ui/Card'
 import Paper from 'material-ui/Paper'
@@ -18,7 +18,7 @@ export default class Main extends React.Component {
     const posts = this.state.posts.map((p,idx) => this.renderPost(p, idx))
 
     return (
-      <MuiThemeProvider muiTheme={getMuiTheme(menus)}>
+      <MuiThemeProvider muiTheme={getMuiTheme(solarizedDark)}>
         <div className='page-container'>
           <div className='blog-post-containers'>
             {posts}

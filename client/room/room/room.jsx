@@ -3,7 +3,6 @@ import {Motion, spring} from 'react-motion'
 import Grid from '../grid/grid'
 import UserBlob from '../user-blob/user-blob'
 import Boss from '../../lib/boss'
-import {plaza} from '../../lib/custom-theme'
 
 // movement attenuation constant
 const MAC = .1
@@ -15,7 +14,7 @@ function mapValuesSum (map) {
   return Array.from(map.values()).reduce((a, b) => a + b)
 }
 
-export default class Room extends React.Component {
+class Room extends React.Component {
   constructor () {
     super()
     this.state = {
@@ -92,7 +91,7 @@ export default class Room extends React.Component {
     // need to subtract radius
     const dx = (this.mousePos.x - 50 - posOfMe.left) * MAC
     const dy = (this.mousePos.y - 50 - posOfMe.top) * MAC
-    Boss.post('my-delta', {dx, dy})
+    Boss.post('location/delta', {dx, dy})
   }
 
   render () {
@@ -106,9 +105,9 @@ export default class Room extends React.Component {
         <UserBlob user={user}
           volume={volumes.has(uid) ? volumes.get(uid) : 0 }
           idx={idx} key={uid}
-          me={locations.get(me.id)}
+          me={me ? locations.get(me.id) : translate}
           translate={translate}
-          isMe={uid == me.id}
+          isMe={me ? uid == me.id : false}
         />
       ))
       idx++
@@ -117,7 +116,7 @@ export default class Room extends React.Component {
     const springParams = {stiffness: STIFFNESS, damping: DAMPING}
 
     return (
-      <svg id='plaza' onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} onMouseMove={this.onMouseMove.bind(this)} style={{backgroundColor: plaza.palette.canvasColor}} >
+      <svg id='plaza' onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} onMouseMove={this.onMouseMove.bind(this)} style={{backgroundColor: this.context.muiTheme.inversePalette.canvasColor}} >
         <Motion
           defaultStyle={{x: translate.x, y: translate.y}}
           style={{x: spring(translate.x, springParams), y: spring(translate.y, springParams)}}
@@ -134,3 +133,8 @@ export default class Room extends React.Component {
   }
 }
 
+Room.contextTypes = {
+  muiTheme: React.PropTypes.object.isRequired
+}
+
+export default Room

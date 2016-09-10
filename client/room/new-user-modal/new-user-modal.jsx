@@ -6,6 +6,7 @@ import Avatar from 'material-ui/Avatar'
 import store from 'store'
 import randomString from 'random-string'
 import shallowUpdateCompare from '../../lib/shallow-update-compare'
+import Boss from '../../lib/boss'
 
 const labelMap = {
   avatar: 'Paste a Image Address to be your Avatar',
@@ -56,6 +57,7 @@ export default class NewUserModal extends React.Component {
       user.id = randomString({numeric: false})
 
     store.set('me', user)
+    this.announceMe()
     this.props.closeNewUserModal()
   }
 

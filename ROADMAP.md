@@ -37,6 +37,7 @@
 * Agenda setting widget
 * Permissions system with facillitator
 * History of announcements / digest
+* Stress testing
 
 ## MVP
 * Landing page / better packaging, as well as blog style thing
@@ -46,7 +47,14 @@
 ## Immediate
 * Agenda setting widget
 * Agenda items contain announcements
+* Color schema customization
 * Digest
+* Consistent logs
+* MVP
 * Launch
-* Proper API-style Socket.io endpoints
+
+## NOW!!!
+* User and session binding middleware
+* Store session so that i can store everything else
+
 

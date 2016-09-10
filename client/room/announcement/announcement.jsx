@@ -60,7 +60,7 @@ export default class Announcement extends React.Component {
   }
 
   componentDidMount () {
-    Boss.post('request-announcement')
+    Boss.post('announcement/request')
   }
 
   componentWillUnmount () {
@@ -87,7 +87,7 @@ export default class Announcement extends React.Component {
     }
 
     this.current = null
-    Boss.post('my-announcement', msg)
+    Boss.post('announcement/mine', msg)
   }
 
   handleAnnouncement (data) {
@@ -149,7 +149,7 @@ export default class Announcement extends React.Component {
   respond (reason) {
     const date = Date.now()
     const type = this.responseType
-    Boss.post('my-response', {type, reason, date})
+    Boss.post('announcement/response', {type, reason, date})
   }
 
   render () {
