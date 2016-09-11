@@ -2,18 +2,18 @@
 
 const log = require('debug')('assemble:socket:help')
 
-module.exports.getUser = function (data, socket) {
-  return data.users.get(exports.getUserId(data, socket))
+module.exports.getUser = function (state, socket) {
+  return state.users.get(exports.getUserId(state, socket))
 }
 
-module.exports.getUserId = function (data, socket) {
-  return data.userIdFromSocketId.get(socket.id)
+module.exports.getUserId = function (state, socket) {
+  return state.userIdFromSocketId.get(socket.id)
 }
 
-module.exports.removeUser = function (data, user, socket) {
+module.exports.removeUser = function (state, user, socket) {
   log('Removing all traces of %j', user)
-  data.lm.removeUser(user.id)
-  data.sockets.delete(user.id)
-  data.users.delete(user.id)
+  state.lm.removeUser(user.id)
+  state.sockets.delete(user.id)
+  state.users.delete(user.id)
   socket.disconnect()
 }

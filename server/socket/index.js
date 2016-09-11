@@ -5,10 +5,7 @@ const socketEvents = require('socket.io-events')
 const LocationManager = require('../helpers/location-manager')
 const identifyUserBrowser = require('../helpers/user-browser-id')
 const help = require('./help')
-
-let db
-if (process.env.DB)
-  db = require('./db-api')
+const db = require('../db-api')
 
 const UPDATE_INTERVAL = 50
 const BASE_DIMENSIONS = {x: 2700, y: 1700} // mostly arbitrary, but a little bit smaller than macbook pro 15 inch screen
@@ -47,17 +44,18 @@ class Session {
   constructor (io, room, parentEraseMe) {
     this.log = debug('assemble:room:' + room)
 
-    this.nsp = io.of('/' + room)
-    this.router = socketEvents()
-
-    this.data = {
+    this.sesh = {
+      _id: null,
       room: room,
+      announcements: [],
+      agenda: []
+    }
+
+    this.state = {
       users: new Map(),
       volumes: new Map(),
       sockets: new Map(),
       userIdFromSocketId: new Map(),
-      announcement: null,
-      agenda: [],
       dimGrowth: 1,
       dimensions: Object.assign({}, BASE_DIMENSIONS),
       colorIdx: 0,
@@ -65,17 +63,28 @@ class Session {
       modifyUpdates: this.modifyUpdates.bind(this)
     }
 
-    this.updateIntervalId = null
-    this.destroyTimeoutId = null
+    this.log('Creating self...')
+    db.session.create({room}, (err, sesh) => {
+      if (err) {
+        this.log('Could not create self: %j', err)
+        throw new Error('Could not create new session')
+      }
 
-    this.parentEraseMe = parentEraseMe
-    this.bindEvents()
+      for (let prop in sesh) {
+        this.sesh[prop] = sesh[prop]
+      }
 
-    this.log('I am risen!')
+      this.nsp = io.of('/' + room)
+      this.router = socketEvents()
 
-    /*
-     * DB TODO: register self / create
-     */
+      this.updateIntervalId = null
+      this.destroyTimeoutId = null
+
+      this.parentEraseMe = parentEraseMe
+      this.bindEvents()
+
+      this.log('I am risen!')
+    })
   }
 
   destroySelf () {
@@ -89,10 +98,17 @@ class Session {
       })
 
       this.nsp.removeAllListeners()
-      this.parentEraseMe(this.data.room)
-      /*
-       * DB TODO: End self
-       */
+
+      db.session.end(this.sesh._id, (err, ended) => {
+        if (err) {
+          this.log('Could not end self: %j', err)
+          throw new Error('Could not end session %', this.sesh._id)
+        }
+
+        this.log('Successfully ended session %s', ended.id)
+        this.parentEraseMe(this.sesh.room)
+      })
+
     }, 5000)
   }
 
@@ -105,20 +121,20 @@ class Session {
      * DB TODO: Session.registerUserExit
      */
 
-    const user = help.getUser(this.data, socket)
+    const user = help.getUser(this.state, socket)
     if (!user) {
       this.log('Unknown user disconnect')
     } else {
       this.log('User %s disconnected', user.id)
-      help.removeUser(this.data, user, socket)
+      help.removeUser(this.state, user, socket)
     }
 
-    if (this.data.users.size == 0) { // Stop sending updates
+    if (this.state.users.size == 0) { // Stop sending updates
       this.log('No users left - cancelling updates')
       this.stopUpdates()
       this.destroySelf()
     } else {
-      this.nsp.emit('users', [...this.data.users])
+      this.nsp.emit('users', [...this.state.users])
     }
   }
 
@@ -127,11 +143,11 @@ class Session {
       this.nsp.emit(eventName, data)
     }
 
-    this.router.use('/user', createUserRouter(this.data, emitAll))
-    this.router.use('/location', createLocationRouter(this.data, emitAll))
-    this.router.use('/volume', createVolumeRouter(this.data, emitAll))
-    this.router.use('/announcement', createAnnouncementRouter(this.data, emitAll))
-    this.router.use('/agenda', createAgendaRouter(this.data, emitAll))
+    this.router.use('/user', createUserRouter(this.sesh, this.state, emitAll))
+    this.router.use('/location', createLocationRouter(this.sesh, this.state, emitAll))
+    this.router.use('/volume', createVolumeRouter(this.sesh, this.state, emitAll))
+    this.router.use('/announcement', createAnnouncementRouter(this.sesh, this.state, emitAll))
+    this.router.use('/agenda', createAgendaRouter(this.sesh, this.state, emitAll))
 
     this.router.on('*', (sock, args, next) => {
       this.log('Got undefined event %s', args[0])
@@ -149,7 +165,7 @@ class Session {
         this.destroyTimeoutId = null
       }
 
-      this.log('Connected to namespace %s', this.data.room)
+      this.log('Connected to namespace %s', this.sesh.room)
       socket.on('connect', this.onConnect.bind(this, socket))
       socket.on('disconnect', this.onDisconnect.bind(this, socket))
     })
@@ -161,15 +177,15 @@ class Session {
   */
 
   emitTo (uid, event, data) {
-    this.nsp.to(this.data.sockets.get(uid).id).emit(event, data)
+    this.nsp.to(this.state.sockets.get(uid).id).emit(event, data)
   }
 
   modifyUpdates () {
-    if (!this.updateIntervalId && this.data.users.size > 0) {
+    if (!this.updateIntervalId && this.state.users.size > 0) {
       this.startUpdates()
     }
 
-    if (this.updateIntervalId && this.data.users.size == 0) {
+    if (this.updateIntervalId && this.state.users.size == 0) {
       this.stopUpdates()
     }
   }
@@ -192,10 +208,10 @@ class Session {
   }
 
   sendUpdates () {
-    this.nsp.emit('locations', this.data.lm.getLocations())
-    this.nsp.emit('volumes', [...this.data.volumes])
-    this.data.sockets.forEach((socket, uid) => {
-      this.nsp.to(socket.id).emit('distances', this.data.lm.distancesFor(uid))
+    this.nsp.emit('locations', this.state.lm.getLocations())
+    this.nsp.emit('volumes', [...this.state.volumes])
+    this.state.sockets.forEach((socket, uid) => {
+      this.nsp.to(socket.id).emit('distances', this.state.lm.distancesFor(uid))
     })
   }
 
@@ -208,8 +224,8 @@ class Session {
     if (newDimGrowth == this.dimGrowth) {
       return false
     } else {
-      this.data.dimGrowth = newDimGrowth
-      this.data.dimensions = {
+      this.state.dimGrowth = newDimGrowth
+      this.state.dimensions = {
         x: BASE_DIMENSIONS.x * this.dimGrowth,
         y: BASE_DIMENSIONS.y * this.dimGrowth
       }
@@ -222,12 +238,12 @@ class Session {
    */
 
   getNumOccupants () {
-    return this.data.users.size
+    return this.state.users.size
   }
 
   containsUser (ubid) {
-    for (let uid of this.data.users.keys()) {
-      let socket = this.data.sockets.get(uid)
+    for (let uid of this.state.users.keys()) {
+      let socket = this.state.sockets.get(uid)
       let ub = identifyUserBrowser(socket.sock.handshake.address, socket.sock.request.headers['user-agent'])
       if (ub == ubid) return true
     }

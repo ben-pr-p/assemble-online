@@ -17,8 +17,7 @@ const http = require('http')
 const bodyParser = require('body-parser')
 
 // Register mongoose models
-if (process.env.DB)
-  require('./models')()
+require('./models')()
 
 /*
  * Local dependencies

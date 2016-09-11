@@ -11,8 +11,8 @@ const debug = require('debug')
 const Router = require('socket.io-events')
 const help = require('./help')
 
-module.exports = function createRouter (data, emitAll) {
-  const log = debug('assemble:' + data.room + ':agenda')
+module.exports = function createRouter (sesh, state, emitAll) {
+  const log = debug('assemble:' + sesh.room + ':agenda')
 
   /**
    * Define functions with access to data
@@ -26,8 +26,8 @@ module.exports = function createRouter (data, emitAll) {
      */
 
     log('Got new agenda item %j', item)
-    data.agenda.push(item)
-    emitAll('agenda', data.agenda)
+    sesh.agenda.push(item)
+    emitAll('agenda', sesh.agenda)
   }
 
   const router = Router()

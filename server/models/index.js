@@ -8,9 +8,9 @@ const log = require('debug')('assemble:db-setup')
  */
 
 let MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017'
-MONGODB_URI += '/pulse'
+MONGODB_URI += '/assemble'
 
-const models = 'user announcement action-item agenda-item announcement room session'.split(' ')
+const models = 'user announcement action-item agenda-item announcement session'.split(' ')
 
 /*
  * Start the connection and load the models

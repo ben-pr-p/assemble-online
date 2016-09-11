@@ -30,7 +30,7 @@ exports.get = function (sId, fn) {
     })
 }
 
-exports.endSession = function (sId, fn) {
+exports.end = function (sId, fn) {
   Session
     .findById(sId)
     .exec((err, session) => {
