@@ -26,7 +26,7 @@
  *  .edit(acId, actionItem)
  *  .addAssignee(acId, userId)
  * User
- *  .create(user)
+ *  .ensure(user)
  */
 
 const apisToExpose = 'session agenda action announcement user'.split(' ')

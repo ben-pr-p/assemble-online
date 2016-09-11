@@ -9,7 +9,7 @@ const ObjectId = Schema.ObjectId
  * Appearance Schema
  */
 const AppearanceSchema = new Schema({
-  user: {type: ObjectId, ref: 'User'},
+  user: {type: String, ref: 'User'},
   entrace: {type: Date, default: Date.now()},
   exit: {type: Date, required: false}
 })

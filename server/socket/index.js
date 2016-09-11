@@ -126,7 +126,9 @@ class Session {
       this.log('Unknown user disconnect')
     } else {
       this.log('User %s disconnected', user.id)
-      help.removeUser(this.state, user, socket)
+      help.removeUser(this.sesh, this.state, user, socket, (err, s) => {
+        this.log('Successfully registered %s leaving %s', user.id, s.id)
+      })
     }
 
     if (this.state.users.size == 0) { // Stop sending updates

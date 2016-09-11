@@ -107,7 +107,7 @@ exports.addAnnouncement = function (sId, announcement) {
     })
 }
 
-exports.registerUserEnter = function (sId, userId) {
+exports.registerUserEnter = function (sId, userId, fn) {
   Session
     .findById(sId)
     .select('appearances')
@@ -115,7 +115,7 @@ exports.registerUserEnter = function (sId, userId) {
     .exec((err, session) => {
       if (err) return log(err), fn(err)
 
-      session.push({user: userId, entrace: Date.now()})
+      session.appearances.push({user: userId, entrace: Date.now()})
       session.save(err => {
         if (err) return log(err), fn(err)
 
@@ -124,7 +124,7 @@ exports.registerUserEnter = function (sId, userId) {
     })
 }
 
-exports.registerUserExit = function (sId, userId) {
+exports.registerUserExit = function (sId, userId, fn) {
   Session
     .findById(sId)
     .select('appearances')
@@ -132,16 +132,23 @@ exports.registerUserExit = function (sId, userId) {
     .exec((err, session) => {
       if (err) return log(err), fn(err)
 
-      const existing = session.appearances.filter(app => {
-        return app.user == userId && app.exit == null
+      let existingIdx = null
+      session.appearances.forEach((app, idx) => {
+        if (app.user == userId && app.exit == null)
+          existingIdx = idx
       })
 
-      if (!existing)
+      if (existingIdx == null)
         return log('User %s entrace either not found or already exited session %s', sId), fn(null)
 
-      existing.exit = Date.now()
+      session.appearances[existingIdx].exit = Date.now()
+      session.markModified('appearances')
+
       session.save(err => {
         if (err) return log(err), fn(err)
+
+        log('Successfully registered %s exiting %s', userId, sId)
+        return fn(null, session)
       })
     })
 }

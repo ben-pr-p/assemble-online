@@ -10,6 +10,7 @@ const ObjectId = Schema.ObjectId
  */
 
 const UserSchema = new Schema({
+  _id: { type: String, required: true },
   ip: { type: String, required: true },
   browser: { type: String, required: true },
   name: { type: String, required: true },
