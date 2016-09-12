@@ -1,5 +1,8 @@
-export default function (state, on, emit, socket) {
+export default function (params) {
+  const {sesh, state, on, emit, socket} = params
+
   socket.on('distances', handle)
+
   function handle (raw) {
     if (raw) {
       let copy = {}

@@ -29,3 +29,21 @@ module.exports.removeUser = function (sesh, state, user, socket, fn) {
   })
 }
 
+module.exports.handleUndefined = function (name) {
+  return function (sock, args, next) {
+    log('%s: got undefined event %s', name, args[0])
+    log('had data %j', args[1])
+    throw new Error()
+    next()
+  }
+}
+
+module.exports.socketEventLogger = function (name, regex) {
+  return function (sock, args, next) {
+    if (regex && args[0].match(regex)) {
+      log('%s: got event %s', name, args[0])
+      log('had data %j', args[1])
+    }
+    next()
+  }
+}

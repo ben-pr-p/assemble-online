@@ -1,5 +1,8 @@
-export default function (state, on, emit, socket) {
+export default function (params) {
+  const {sesh, state, on, emit, socket} = params
+
   on('location/delta', announce)
+
   function announce (loc) {
     const {dx, dy} = loc
     const base = state.locations.get(state.me.id)
@@ -13,6 +16,7 @@ export default function (state, on, emit, socket) {
   }
 
   socket.on('locations', handle)
+
   function handle (raw) {
     state.locations = new Map(raw)
     state.locations.forEach((value, uid) => {

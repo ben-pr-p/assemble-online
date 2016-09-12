@@ -57,12 +57,11 @@ export default class NewUserModal extends React.Component {
       user.id = randomString({numeric: false})
 
     store.set('me', user)
-    this.announceMe()
-    this.props.closeNewUserModal()
+    this.props.closeNewUserModal({shouldSave: true})
   }
 
   cancel () {
-    this.props.closeNewUserModal()
+    this.props.closeNewUserModal({shouldSave: false})
   }
 
   render () {

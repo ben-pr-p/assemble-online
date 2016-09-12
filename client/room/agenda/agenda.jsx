@@ -24,7 +24,7 @@ export default class Agenda extends React.Component {
       drawerOpen: false
     }
 
-    const boundMethods = 'onEditClick onDrawerRequestChange newAgendaForm closeForm handleAgenda'.split(' ')
+    const boundMethods = 'onEditClick onDrawerRequestChange newAgendaForm setEditAgendaForm closeForm handleAgenda'.split(' ')
     boundMethods.forEach(m => {
       this[m] = this[m].bind(this)
     })
@@ -52,6 +52,12 @@ export default class Agenda extends React.Component {
     })
   }
 
+  setEditAgendaForm (item) {
+    this.setState({
+      editAgendaForm: item
+    })
+  }
+
   closeForm () {
     this.setState({
       editAgendaForm: false
@@ -73,8 +79,16 @@ export default class Agenda extends React.Component {
       form = (<AgendaItemForm item={editAgendaForm} closeForm={this.closeForm} />)
 
     let drawer
-    if (drawerOpen)
-      drawer = (<AgendaDrawer onDrawerRequestChange={this.onDrawerRequestChange} agenda={agenda} newAgendaForm={this.newAgendaForm} />)
+    if (drawerOpen) {
+      drawer = (
+        <AgendaDrawer
+          onDrawerRequestChange={this.onDrawerRequestChange}
+          agenda={agenda}
+          newAgendaForm={this.newAgendaForm}
+          setEditAgendaForm={this.setEditAgendaForm}
+        />
+      )
+    }
 
     return (
       <div className='agenda-container'>
@@ -95,6 +109,5 @@ export default class Agenda extends React.Component {
       </div>
     )
   }
-
 }
 

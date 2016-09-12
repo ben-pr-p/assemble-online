@@ -2,8 +2,6 @@
 
 const mongoose = require('mongoose')
 const log = require('debug')('assemble:db-api:session')
-const agendaApi = require('./agenda')
-const actionApi = require('./action')
 const announcementApi = require('./announcement')
 const Session = mongoose.model('Session')
 

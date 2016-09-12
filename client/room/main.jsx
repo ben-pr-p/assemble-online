@@ -65,9 +65,10 @@ export default class Main extends React.Component {
     }
   }
 
-  closeNewUserModal () {
+  closeNewUserModal (params) {
     this.state.me = store.get('me')
-    this.announceMe()
+    if (params.shouldSave)
+      this.announceMe()
     this.setEditUserState(false)
   }
 

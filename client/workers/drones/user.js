@@ -1,6 +1,6 @@
-'use strict'
+export default function (params) {
+  const {sesh, state, on, emit, socket} = params
 
-export default function (state, on, emit, socket) {
   on('user/new', announce)
   on('user/trash', trash)
 

@@ -145,17 +145,15 @@ class Session {
       this.nsp.emit(eventName, data)
     }
 
+    this.router.on('*', help.socketEventLogger('index', new RegExp('agenda*')))
+
     this.router.use('/user', createUserRouter(this.sesh, this.state, emitAll))
     this.router.use('/location', createLocationRouter(this.sesh, this.state, emitAll))
     this.router.use('/volume', createVolumeRouter(this.sesh, this.state, emitAll))
     this.router.use('/announcement', createAnnouncementRouter(this.sesh, this.state, emitAll))
     this.router.use('/agenda', createAgendaRouter(this.sesh, this.state, emitAll))
 
-    this.router.on('*', (sock, args, next) => {
-      this.log('Got undefined event %s', args[0])
-      this.log('with data %j', args[1])
-      next()
-    })
+    this.router.on('*', help.handleUndefined('index'))
 
     this.nsp.use(this.router)
 

@@ -1,4 +1,6 @@
-export default function (state, on, emit, socket) {
+export default function (params) {
+  const {sesh, state, on, emit, socket} = params
+
   on('agenda/new', announceNew)
   on('agenda/edit', announceEdit)
 
@@ -13,10 +15,11 @@ export default function (state, on, emit, socket) {
     if (!state.me) return handleError('Cannot announce agenda item - me is not defined')
 
     raw.author = state.me.id
-    socketEmit('/agenda/edit', raw)
+    socket.emit('/agenda/edit', raw)
   }
 
   socket.on('agenda', handle)
+
   function handle (raw) {
     if (raw) emit('agenda', raw)
   }

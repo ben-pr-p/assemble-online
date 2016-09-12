@@ -46,10 +46,12 @@ export default class AgendaItemForm extends React.Component {
       item[attr] = this.state[attr]
     }
 
-    if (typeof this.props.item == 'object')
+    if (typeof this.props.item == 'object') {
+      item._id = this.props.item._id
       Boss.post('agenda/edit', item)
-    else
+    } else {
       Boss.post('agenda/new', item)
+    }
 
     this.props.closeForm()
   }

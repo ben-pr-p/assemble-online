@@ -25,6 +25,7 @@ module.exports = function createRouter (sesh, state, emitAll) {
   const router = Router()
 
   router.on('delta', onDelta)
+  router.on('*', help.handleUndefined('location'))
 
   return router
 }

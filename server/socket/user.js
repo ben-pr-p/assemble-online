@@ -7,16 +7,10 @@
  *   'user/trash'
  */
 
-
-/*
- * DB TODO: User.create
- *  then ->
- *    Session.registerUserEnter
- */
-
 const debug = require('debug')
 const Router = require('socket.io-events')
 const db = require('../db-api')
+const help = require('./help')
 
 const propsToTransfer = ['x', 'y', 'easyrtcid', 'color', 'badge']
 const colorScale = ['#01df00', '#daff02', '#fe6634', '#008e82', '#00cfe2', '#fb0528', '#9b6304', '#532696', '#b53284', '#ff7ba6']
@@ -115,6 +109,8 @@ module.exports = function createRouter (sesh, state, emitAll) {
   router.on('/new', onNew)
   router.on('/update', onUpdate)
   router.on('/trash', onTrash)
+
+  router.on('*', help.handleUndefined('user'))
 
   return router
 }

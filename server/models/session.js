@@ -15,11 +15,22 @@ const AppearanceSchema = new Schema({
 })
 
 /**
+ * AgendaItem Schema
+ */
+const AgendaItemSchema = new Schema({
+  title: {type: String, required: true},
+  description: {type: String, required: true},
+  order: {type: Number, required: true},
+  announcements: [{type: ObjectId, ref: 'Announcement'}],
+  actionItems: [{type: ObjectId, ref: 'ActionItem'}]
+})
+
+/**
  * Session Schema
  */
 const SessionSchema = new Schema({
   room: {type: String, required: true},
-  agenda: [{type: ObjectId, ref: 'AgendaItem'}],
+  agenda: [AgendaItemSchema],
   actionItems: [{type: ObjectId, ref: 'ActionItem'}],
   announcements: [{type: ObjectId, ref: 'Announcement'}],
   beginning: {type: Date, default: Date.now()},

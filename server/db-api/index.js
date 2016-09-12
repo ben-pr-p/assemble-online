@@ -29,7 +29,7 @@
  *  .ensure(user)
  */
 
-const apisToExpose = 'session agenda action announcement user'.split(' ')
+const apisToExpose = 'session action announcement user'.split(' ')
 
 apisToExpose.forEach(api => {
  module.exports[api] = require('./' + api)

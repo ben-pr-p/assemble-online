@@ -24,11 +24,11 @@ export default class AgendaItem extends React.Component {
   }
 
   editItem () {
-    this.props.editItem(this.props.item.id)
+    this.props.setEditAgendaForm(this.props.item)
   }
 
   render () {
-    const {item, idx} = this.props
+    const {item} = this.props
 
     let icon
     switch (item.status) {
@@ -46,9 +46,9 @@ export default class AgendaItem extends React.Component {
     }
 
     return (
-      <div className='agenda-item' data={idx} >
+      <div className='agenda-item' data={item.order} >
         <div className='number'>
-          <Avatar size={30} className='agenda-order' >{idx + 1}</Avatar>
+          <Avatar size={30} className='agenda-order' >{item.order + 1}</Avatar>
         </div>
         <div className='text'>
           <div className='title'>

@@ -1,4 +1,6 @@
-export default function (data, on, emit, socketOn, socketEmit) {
+export default function (params) {
+  const {sesh, state, on, emit, socket} = params
+
   on('announcement/new', announce)
   on('announcement/edit', announce)
   on('announcement/respond', respond)

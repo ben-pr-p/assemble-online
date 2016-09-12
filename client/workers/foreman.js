@@ -13,6 +13,13 @@ const patch = patchFn(io.Manager)
 const events = {}
 let port, socket, roomName, namespace, locations, dimensions, distances, announcement
 
+const sesh = {
+  _id: null,
+  room: null,
+  announcements: [],
+  agenda: []
+}
+
 const state = {
   me: null,
   users: null,
@@ -49,12 +56,14 @@ function handleRoomName (roomName) {
 function initialize () {
   on('screen', receiveScreen)
 
-  userDrone(state, on, emit, socket)
-  locationDrone(state, on, emit, socket)
-  dimensionDrone(state, on, emit, socket)
-  distanceDrone(state, on, emit, socket)
-  volumeDrone(state, on, emit, socket)
-  agendaDrone(state, on, emit, socket)
+  const params = {sesh, state, on, emit, socket}
+
+  userDrone(params)
+  locationDrone(params)
+  dimensionDrone(params)
+  distanceDrone(params)
+  volumeDrone(params)
+  agendaDrone(params)
 
   /*
   on('my-announcement', announceAnnouncement)
@@ -80,6 +89,11 @@ function off(event, fn) {
 function handleMessage (msg) {
   if (!msg.data.event) {
     handleError(`Boss posted message without event descriptor: ${msg.data}`)
+  }
+
+  let matches = null
+  if (matches && msg.data.event.match(matches)) {
+    handleError('Logging...', msg.data)
   }
 
   let handled = false
@@ -137,18 +151,6 @@ function handleAnnouncement (data) {
       me.badge = null
       socket.emit('me', me)
     }
-  }
-}
-
-function handleDistances (data) {
-  if (data) {
-    let copy = {}
-    for (let uid in data)
-      copy[easyrtcids.get(uid)] = data[uid]
-
-    distances = copy
-    for (let easyrtcid in copy)
-      emit(`distance-to-${easyrtcid}`, distances[easyrtcid])
   }
 }
 

@@ -48,6 +48,7 @@ class AgendaDrawer extends React.Component {
         newOrder = parseInt(dom(sibling).attr('data')) - 1
       }
 
+      console.log(newOrder)
       this.drake.cancel(true)
     })
   }
@@ -68,7 +69,7 @@ class AgendaDrawer extends React.Component {
 
     for (let idx = 1; idx < agenda.length; idx++) {
       agendaEls.push((<Divider key={'divider-' + idx} />))
-      agendaEls.push(this.renderAgendaItem(agenda[idx], idx))
+      agendaEls.push(this.renderAgendaItem(agenda[idx]))
     }
 
     return (
@@ -97,9 +98,9 @@ class AgendaDrawer extends React.Component {
     )
   }
 
-  renderAgendaItem (item, idx) {
+  renderAgendaItem (item) {
     return (
-      <AgendaItem key={idx} item={item} idx={idx} />
+      <AgendaItem key={item.order} item={item} setEditAgendaForm={this.props.setEditAgendaForm} />
     )
   }
 }
