@@ -105,7 +105,7 @@ function handleMessage (msg) {
   }
 
   if (!handled) {
-    handleError('Received unknown event', msg)
+    handleError(`Received unknown event ${JSON.stringify(msg)}`)
   }
 }
 
