@@ -58,10 +58,11 @@ module.exports = function createRouter (data, emitAll) {
 
   function onResponse (socket, args, next) {
     const me = help.getUser(data, socket)
-    const {type, reason, date} = args[1]
     const user = me.id
     const userAvatar = me.avatar
     const userName = me.name
+
+    const response = args[1]
 
     let existingUserResponse, existingResponseIdx
     for (let type in data.announcement.responses) {
@@ -78,7 +79,7 @@ module.exports = function createRouter (data, emitAll) {
       data.announcement.responses[existingUserResponse.type].splice(existingResponseIdx, 1)
     }
 
-    const result = {user, type, reason, date, userAvatar, userName}
+    const result = {user, response.type, response.reason, response.date, userAvatar, userName}
     log('Adding response %j', result)
     data.announcement.responses[type].push(result)
 

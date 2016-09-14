@@ -21,6 +21,9 @@ export default function (params) {
   socket.on('agenda', handle)
 
   function handle (raw) {
-    if (raw) emit('agenda', raw)
+    if (raw) {
+      sesh.agenda = raw
+      emit('agenda', sesh.agenda)
+    }
   }
 }
