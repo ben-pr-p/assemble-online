@@ -79,7 +79,7 @@ module.exports = function createRouter (data, emitAll) {
       data.announcement.responses[existingUserResponse.type].splice(existingResponseIdx, 1)
     }
 
-    const result = {user, response.type, response.reason, response.date, userAvatar, userName}
+    const result = {user, type: response.type, reason: response.reason, date: response.date, userAvatar, userName}
     log('Adding response %j', result)
     data.announcement.responses[type].push(result)
 
