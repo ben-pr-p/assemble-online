@@ -68,12 +68,59 @@ module.exports = function createRouter (sesh, state, emitAll) {
     })
   }
 
+  function onReorder (socket, args, next) {
+    const data = args[1]
+    const item = data.item
+    const behind = data.behind
+
+    log('Got reorder request to move item %s to before %s', item, behind)
+
+    const orderlookup = {}
+    const copy = sesh.agenda.slice().map(i => {
+      orderlookup[i._id] = i.order
+      return {o: i.order, _id: i._id}
+    })
+    log('Old orders: %j', copy)
+
+    copy.forEach(c => {
+      if (item == c._id) {
+        if (typeof behind == 'string')
+          c.o = orderlookup[behind] - 0.5
+        else
+          c.o = copy.length + 10
+      }
+    })
+    log('Modified orders: %j', copy)
+
+    const sortedcopy = copy.sort((a,b) => a.o - b.o)
+    sortedcopy.forEach((c, idx) => {
+      orderlookup[c._id] = idx
+    })
+    log('New orders: %j', orderlookup)
+
+    for (let idx = 0; idx < sesh.agenda.length; idx++) {
+      sesh.agenda[idx].order = orderlookup[sesh.agenda[idx]._id]
+    }
+
+    sesh.markModified('agenda')
+    sesh.save(err => {
+      if (err) {
+        log('Found error %j', err)
+        return socket.emit('error', err)
+      }
+
+      log('Successfully reordered agenda items')
+      const sorted = sesh.agenda.concat().sort((a,b) => a.order - b.order)
+      emitAll('agenda', sorted)
+    })
+  }
+
   const router = Router()
 
   router.on('new', onNew)
   router.on('edit', onEdit)
+  router.on('reorder', onReorder)
   router.on('*', help.handleUndefined('agenda'))
 
   return router
 }
-

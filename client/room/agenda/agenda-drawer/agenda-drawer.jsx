@@ -9,17 +9,11 @@ import RaisedButton from 'material-ui/RaisedButton'
 import AddBoxIcon from 'material-ui/svg-icons/content/add-box'
 import Paper from 'material-ui/Paper'
 import AgendaItem from '../agenda-item/agenda-item'
+import Boss from '../../../lib/boss'
 
 class AgendaDrawer extends React.Component {
   constructor () {
     super()
-
-    /*
-    const boundMethods = 'onDrawerRequestChange'.split(' ')
-    boundMethods.forEach(m => {
-      this[m] = this[m].bind(this)
-    })
-    */
   }
 
   componentDidMount () {
@@ -41,14 +35,21 @@ class AgendaDrawer extends React.Component {
     })
 
     this.drake.on('drop', (el, target, source, sibling) => {
-      let oldOrder = parseInt(dom(el).attr('data'))
-      let newOrder = agenda.length - 1
+      let item = dom(el).attr('data').split('-')[1]
+      let behind
 
       if (sibling) {
-        newOrder = parseInt(dom(sibling).attr('data')) - 1
+        let data = dom(sibling).attr('data')
+        let sib = sibling
+        while (!data && sib) {
+          sib = sib.nextElementSibling
+          if (sib) data = dom(sib).attr('data')
+        }
+
+        if (data) behind = data.split('-')[1]
       }
 
-      console.log(newOrder)
+      Boss.post('agenda/reorder', {item, behind})
       this.drake.cancel(true)
     })
   }

@@ -145,7 +145,12 @@ class Session {
       this.nsp.emit(eventName, data)
     }
 
-    this.router.on('*', help.socketEventLogger('index', new RegExp('agenda*')))
+    //this.router.on('*', help.socketEventLogger('index', new RegExp('request*')))
+
+    this.router.on('request-sesh', (socket, args, next) => {
+      this.log('Serving session as exists')
+      socket.emit('sesh', this.sesh)
+    })
 
     this.router.use('/user', createUserRouter(this.sesh, this.state, emitAll))
     this.router.use('/location', createLocationRouter(this.sesh, this.state, emitAll))
@@ -153,7 +158,7 @@ class Session {
     this.router.use('/announcement', createAnnouncementRouter(this.sesh, this.state, emitAll))
     this.router.use('/agenda', createAgendaRouter(this.sesh, this.state, emitAll))
 
-    this.router.on('*', help.handleUndefined('index'))
+    //this.router.on('*', help.handleUndefined('index'))
 
     this.nsp.use(this.router)
 

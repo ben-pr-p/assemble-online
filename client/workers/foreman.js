@@ -42,11 +42,12 @@ function handleRoomName (roomName) {
   roomName = roomName
   namespace = '/' + roomName
   socket = io(namespace)
-  patch(socket)
 
   /*
+  patch(socket)
+  const exclude = 'locations volumes distances'.split(' ')
   socket.on('*', function (data) {
-    emit(`recieved-from-server: ${data.data[0]}: ${JSON.stringify(data.data[1])})`)
+    handleError(`recieved-from-server: ${data.data[0]}: ${JSON.stringify(data.data[1])})`)
   })
   */
 
@@ -65,13 +66,8 @@ function initialize () {
   volumeDrone(params)
   agendaDrone(params)
 
-  /*
-  on('my-announcement', announceAnnouncement)
-  on('my-response', announceResponse)
-  on('request-announcement', requestAnnouncement)
- */
-
-  //socket.on('announcement', handleAnnouncement)
+  socket.on('sesh', receiveSesh)
+  socket.emit('request-sesh')
 }
 
 function on(event, fn) {
@@ -159,6 +155,16 @@ function receiveScreen (size) {
     x: size.x,
     y: size.y
   }
+}
+
+function receiveSesh (serverSesh) {
+  const emitables = ['announcements', 'agenda']
+  for (let prop in serverSesh) {
+    sesh[prop] = serverSesh[prop]
+  }
+  emitables.forEach(prop => {
+    emit(prop, sesh[prop])
+  })
 }
 
 onconnect = function (e) {

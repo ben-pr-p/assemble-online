@@ -3,6 +3,7 @@ export default function (params) {
 
   on('agenda/new', announceNew)
   on('agenda/edit', announceEdit)
+  on('agenda/reorder', announceReorder)
 
   function announceNew (raw) {
     if (!state.me) return handleError('Cannot announce agenda item - me is not defined')
@@ -16,6 +17,10 @@ export default function (params) {
 
     raw.author = state.me.id
     socket.emit('/agenda/edit', raw)
+  }
+
+  function announceReorder (raw) {
+    socket.emit('/agenda/reorder', raw)
   }
 
   socket.on('agenda', handle)

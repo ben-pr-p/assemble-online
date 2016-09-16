@@ -45,8 +45,12 @@ export default class AgendaItem extends React.Component {
         break
     }
 
+    if (!item._id) {
+      console.log(item)
+    }
+
     return (
-      <div className='agenda-item' data={item.order} >
+      <div className='agenda-item' data={`id-${item._id}`} >
         <div className='number'>
           <Avatar size={30} className='agenda-order' >{item.order + 1}</Avatar>
         </div>

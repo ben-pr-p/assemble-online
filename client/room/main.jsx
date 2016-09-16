@@ -53,6 +53,10 @@ export default class Main extends React.Component {
       this.announceMe()
   }
 
+  componentWillUnmount () {
+    Boss.offAllByCaller('App')
+  }
+
   announceMe () {
     Boss.post('user/new', this.state.me)
   }

@@ -4,7 +4,10 @@ const log = require('debug')('assemble:location-manager')
 const crypto = require('crypto')
 
 function hash (keys) {
-  return crypto.createHash('md5').update(keys[0]).update(keys[1]).digest('hex')
+  if (typeof keys[0] == 'string' && typeof keys[1] == 'string')
+    return crypto.createHash('md5').update(keys[0]).update(keys[1]).digest('hex')
+  else
+    return null
 }
 
 function key(id1, id2) {
@@ -26,7 +29,9 @@ module.exports = class LocationManager {
     this.locations.set(uid1, loc)
     this.users.add(uid1)
     this.users.forEach(uid2 => {
-      this.distancePairs.set(key(uid1, uid2), distance(this.locations.get(uid1), this.locations.get(uid2)))
+      let k = key(uid1, uid2)
+      if (k)
+        this.distancePairs.set(k, distance(this.locations.get(uid1), this.locations.get(uid2)))
     })
   }
 

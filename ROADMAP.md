@@ -38,23 +38,48 @@
 * Permissions system with facillitator
 * History of announcements / digest
 * Stress testing
+* Normalize the audio
 
 ## MVP
 * Landing page / better packaging, as well as blog style thing
 * Arrow key movement
 * Refresh requirement bug might still be there, not sure
+* Reference points
+* Hard time seeing people when offscreen at top because of bar
+* Make bar go away sometimes
+* Someway to find lots of people at once
+* Offscreen person should they get smaller and smaller as they go away?
+* Collage and absorption for offscreen people on overlap
+  * Two people can only merge if they are a certain distance from each other
+  * Two people can only merge if they are a certain distance from each other
 
 ## Immediate
+* Sesh migration
 * Agenda setting widget
-* Agenda items contain announcements
+ * active, close, etc
+ * Agenda items contain announcements
 * Color schema customization
 * Digest
 * Consistent logs
-* MVP
-* Launch
 
-## NOW!!!
-* User and session binding middleware
-* Store session so that i can store everything else
-
-
+# Interested people
+Nikhil
+Ricky
+Yunhan
+Moumita
+That Ryan Guy
+Martin
+Hans
+Nidhi
+Irene
+Mair
+Megan Brophy
+DemocracyOS
+Democracy.Earth
+Simone
+Pritika
+Byrne
+Rachel
+Elizabeth Lee
+Zane
+ProgCode

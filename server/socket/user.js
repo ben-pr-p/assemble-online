@@ -64,11 +64,6 @@ module.exports = function createRouter (sesh, state, emitAll) {
 
       })
     })
-
-    /*
-     * Do I need to keep this?
-     */
-    socket.emit('done')
   }
 
   function onUpdate (socket, args, next) {
@@ -86,11 +81,6 @@ module.exports = function createRouter (sesh, state, emitAll) {
 
     log('Serving users %j', [...state.users])
     emitAll('users', [...state.users])
-
-    /*
-     * Do I need to keep this?
-     */
-    socket.emit('done')
   }
 
   function onTrash (socket, args, next) {
