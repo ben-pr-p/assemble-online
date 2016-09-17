@@ -32,12 +32,13 @@ export default class BugReport extends React.Component {
     }
 
     bug['user-agent'] = navigator.userAgent
+
     request
-      .post('/bug-report')
-      .send(bug)
-      .end((err, res) => {
-        this.props.endBugReport()
-      })
+    .post('/api/bug-report')
+    .send(bug)
+    .end((err, res) => {
+      this.props.endBugReport()
+    })
   }
 
   cancel () {

@@ -1,10 +1,27 @@
 import React from 'react'
 import Avatar from 'material-ui/Avatar'
 import IconButton from 'material-ui/IconButton'
-import CompleteIcon from 'material-ui/svg-icons/action/done-all'
+import DoneIcon from 'material-ui/svg-icons/action/done-all'
 import InProgressIcon from 'material-ui/svg-icons/notification/sync'
-import NotStartedIcon from 'material-ui/svg-icons/content/redo'
+import StartIcon from 'material-ui/svg-icons/av/play-circle-outline'
+import StopIcon from 'material-ui/svg-icons/av/stop'
 import EditIcon from 'material-ui/svg-icons/content/create'
+import {solarized} from '../../../lib/custom-theme'
+
+const statusIcons = {
+  'complete': (
+    <IconButton> <DoneIcon color={solarized.green} /> </IconButton>
+  ),
+  'in-progress': (
+    <IconButton> <InProgressIcon color={solarized.yellow} /> </IconButton>
+  ),
+  'start': (
+    <IconButton> <StartIcon color={solarized.cyan} /> </IconButton>
+  ),
+  'stop': (
+    <IconButton> <StopIcon color={solarized.red} /> </IconButton>
+  )
+}
 
 export default class AgendaItem extends React.Component {
   constructor () {
@@ -13,14 +30,10 @@ export default class AgendaItem extends React.Component {
       expanded: false
     }
 
-    const boundMethods = 'markComplete editItem'.split(' ')
+    const boundMethods = 'editItem'.split(' ')
     boundMethods.forEach(m => {
       this[m] = this[m].bind(this)
     })
-  }
-
-  markComplete () {
-    this.props.markComplete(this.props.item.id)
   }
 
   editItem () {
@@ -28,26 +41,7 @@ export default class AgendaItem extends React.Component {
   }
 
   render () {
-    const {item} = this.props
-
-    let icon
-    switch (item.status) {
-      case 'in-progress':
-        icon = (<IconButton onClick={this.markComplete} > <InProgressIcon /> </IconButton>)
-        break
-
-      case 'complete':
-        icon = (<IconButton > <CompleteIcon /> </IconButton>)
-        break
-
-      case 'not-started':
-        icon = (<IconButton > <NotStartedIcon /> </IconButton>)
-        break
-    }
-
-    if (!item._id) {
-      console.log(item)
-    }
+    const {item, status} = this.props
 
     return (
       <div className='agenda-item' data={`id-${item._id}`} >
@@ -63,7 +57,7 @@ export default class AgendaItem extends React.Component {
           </div>
         </div>
         <div className='options'>
-          {icon}
+          {statusIcons[status]}
           <IconButton onClick={this.editItem}> <EditIcon /> </IconButton>
         </div>
       </div>

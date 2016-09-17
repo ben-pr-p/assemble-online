@@ -48,7 +48,9 @@ class Session {
       _id: null,
       room: room,
       announcements: [],
-      agenda: []
+      agenda: [],
+      activeAgendaItem: null, // will be relative to order + 1
+      activeAnnouncement: null // will be ID
     }
 
     this.state = {
@@ -60,7 +62,7 @@ class Session {
       dimensions: Object.assign({}, BASE_DIMENSIONS),
       colorIdx: 0,
       lm: new LocationManager(),
-      modifyUpdates: this.modifyUpdates.bind(this)
+      modifyUpdates: this.modifyUpdates.bind(this),
     }
 
     this.log('Creating self...')

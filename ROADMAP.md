@@ -55,9 +55,13 @@
 
 ## Immediate
 * Sesh migration
+* Banner should go away on movement
 * Agenda setting widget
- * active, close, etc
+ * Activate and cycle through agenda item functionality
+ * aminate drawer opening / closing
+ * Additional response options - text response
  * Agenda items contain announcements
+* banner on new agenda item or really any changes not visible
 * Color schema customization
 * Digest
 * Consistent logs

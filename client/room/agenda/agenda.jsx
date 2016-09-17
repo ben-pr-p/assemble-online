@@ -21,6 +21,7 @@ export default class Agenda extends React.Component {
         editAgendaForm: null
       },
       agenda: [],
+      activeAgendaItem: null,
       drawerOpen: false
     }
 
@@ -32,6 +33,7 @@ export default class Agenda extends React.Component {
 
   componentWillMount () {
     Boss.on('agenda', this.handleAgenda, 'Agenda')
+    Boss.on('agenda-activity', this.handleAgendaActivity, 'Agenda')
   }
 
   onEditClick () {
@@ -65,14 +67,16 @@ export default class Agenda extends React.Component {
   }
 
   handleAgenda (agenda) {
-    this.setState({
-      agenda: agenda
-    })
+    this.setState({agenda})
+  }
+
+  handleAgendaActivity (activeAgendaItem) {
+    this.setState({activeAgendaItem})
   }
 
   render () {
     const {roomName} = this.props
-    const {current, drawerOpen, editAgendaForm, agenda} = this.state
+    const {current, drawerOpen, editAgendaForm, agenda, activeAgendaItem} = this.state
 
     let form
     if (editAgendaForm)
@@ -84,6 +88,7 @@ export default class Agenda extends React.Component {
         <AgendaDrawer
           onDrawerRequestChange={this.onDrawerRequestChange}
           agenda={agenda}
+          activeAgendaItem={activeAgendaItem}
           newAgendaForm={this.newAgendaForm}
           setEditAgendaForm={this.setEditAgendaForm}
         />

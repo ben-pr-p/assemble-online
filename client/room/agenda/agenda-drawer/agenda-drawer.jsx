@@ -100,8 +100,28 @@ class AgendaDrawer extends React.Component {
   }
 
   renderAgendaItem (item) {
+    const {activeAgendaItem} = this.props
+    let status
+
+    if (!activeAgendaItem && item.order == 0)
+      status = 'start'
+
+    if (activeAgendaItem && activeAgendaItem == item.order) {
+      if (item.order == this.props.agenda.length - 1)
+        status = 'stop'
+      else
+        status = 'in-progress'
+    }
+
+    if (activeAgendaItem && (activeAgendaItem + 1) == item.order)
+      status = 'start'
+
     return (
-      <AgendaItem key={item.order} item={item} setEditAgendaForm={this.props.setEditAgendaForm} />
+      <AgendaItem key={item.order}
+        item={item}
+        status={status}
+        setEditAgendaForm={this.props.setEditAgendaForm}
+      />
     )
   }
 }
