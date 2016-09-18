@@ -103,18 +103,23 @@ class AgendaDrawer extends React.Component {
     const {activeAgendaItem} = this.props
     let status
 
-    if (!activeAgendaItem && item.order == 0)
-      status = 'start'
+    if (activeAgendaItem != null) {
+      if (activeAgendaItem == item.order) {
+        if (item.order == this.props.agenda.length - 1)
+          status = 'stop'
+        else
+          status = 'in-progress'
+      }
 
-    if (activeAgendaItem && activeAgendaItem == item.order) {
-      if (item.order == this.props.agenda.length - 1)
-        status = 'stop'
-      else
-        status = 'in-progress'
+      if (activeAgendaItem + 1 == item.order) {
+        status = 'start'
+      }
+
+      if (activeAgendaItem > item.order) {
+        status = 'complete'
+      }
     }
 
-    if (activeAgendaItem && (activeAgendaItem + 1) == item.order)
-      status = 'start'
 
     return (
       <AgendaItem key={item.order}
@@ -131,3 +136,4 @@ AgendaDrawer.contextTypes = {
 }
 
 export default AgendaDrawer
+

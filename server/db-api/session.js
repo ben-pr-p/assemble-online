@@ -17,13 +17,13 @@ exports.create = function (session, fn) {
 exports.get = function (sId, fn) {
   Session
     .findById(sId)
-    .select('room agendaItems actionItems announcements beginning end appearances')
-    .populate('agendaItems actionItems announcements appearances')
+    .select('room agenda actionItems announcements beginning end appearances activeAgendaItem')
+    .populate('agenda actionItems announcements appearances')
     .exec((err, session) => {
       if (err) return log(err), fn(err)
       if (!session) return log('No session found with id %s', sId), fn(null)
 
-      log('Found session %s', sId)
+      log('Found session %s', session._id)
       return fn(null, session)
     })
 }
@@ -41,26 +41,6 @@ exports.end = function (sId, fn) {
 
         log('Ended session with id %s', sId)
         return fn(null, session)
-      })
-    })
-}
-
-exports.addAgendaItem = function (sId, agendaItem) {
-  Session
-    .findById(sId)
-    .select('agendaItems')
-    .exec((err, session) => {
-      if (err) return log(err), fn(err)
-
-      agendaApi.create(agendaItem, (err, ag) => {
-        if (err) return log(err), fn(err)
-
-        s.agendaItems.push(ag._id)
-        s.save(err => {
-          if (err) return log(err), fn(err)
-
-          return log('Created and registered new agenda item %s for session %s', ag._id, session._id), fn(null, ag)
-        })
       })
     })
 }
@@ -103,6 +83,20 @@ exports.addAnnouncement = function (sId, announcement) {
         })
       })
     })
+}
+
+exports.advanceAgenda = function (sId, fn) {
+  const query = {_id: sId}
+  const operation = {$inc: {activeAgendaItem: 1}}
+  const options = {}
+
+  Session
+  .update(query, operation, options, (err, result) => {
+    if (err) return log(err), fn(err)
+
+    log('Incremented activeAgendaItem for session %s', sId)
+    return exports.get(sId, fn)
+  })
 }
 
 exports.registerUserEnter = function (sId, userId, fn) {

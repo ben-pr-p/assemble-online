@@ -23,6 +23,7 @@ module.exports = function createRouter (sesh, state, emitAll) {
     const item = args[1]
 
     log('Got new agenda item %j', item)
+    log(sesh)
     item.order = sesh.agenda.length
     sesh.agenda.push(item)
 
@@ -115,11 +116,25 @@ module.exports = function createRouter (sesh, state, emitAll) {
     })
   }
 
+  function onAdvance (socket, args, next) {
+    db.session.advanceAgenda(sesh._id, (err, session) => {
+      if (err) {
+        log('Found error %j', err)
+        return socket.emit('error', err)
+      }
+
+      log('Successfully advanced agenda to %d', session.activeAgendaItem)
+      emitAll('activeAgendaItem', session.activeAgendaItem)
+    })
+  }
+
   const router = Router()
 
   router.on('new', onNew)
   router.on('edit', onEdit)
   router.on('reorder', onReorder)
+  router.on('advance', onAdvance)
+
   router.on('*', help.handleUndefined('agenda'))
 
   return router

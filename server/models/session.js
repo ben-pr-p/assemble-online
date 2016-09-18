@@ -35,7 +35,8 @@ const SessionSchema = new Schema({
   announcements: [{type: ObjectId, ref: 'Announcement'}],
   beginning: {type: Date, default: Date.now()},
   end: {type: Date, required: false},
-  appearances: [AppearanceSchema]
+  appearances: [AppearanceSchema],
+  activeAgendaItem: {type: Number, default: -1}
 })
 
 SessionSchema.set('toObject', {getters: true, virtuals: true})

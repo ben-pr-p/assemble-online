@@ -158,7 +158,7 @@ function receiveScreen (size) {
 }
 
 function receiveSesh (serverSesh) {
-  const emitables = ['announcements', 'agenda']
+  const emitables = ['announcements', 'agenda', 'activeAgendaItem']
   for (let prop in serverSesh) {
     sesh[prop] = serverSesh[prop]
   }

@@ -150,8 +150,14 @@ class Session {
     //this.router.on('*', help.socketEventLogger('index', new RegExp('request*')))
 
     this.router.on('request-sesh', (socket, args, next) => {
-      this.log('Serving session as exists')
-      socket.emit('sesh', this.sesh)
+      db.session.get(this.sesh._id, (err, result) => {
+        for (let prop in result) {
+          this.sesh[prop] = result[prop]
+        }
+
+        this.log('Serving session as exists: %j', this.sesh)
+        socket.emit('sesh', this.sesh)
+      })
     })
 
     this.router.use('/user', createUserRouter(this.sesh, this.state, emitAll))

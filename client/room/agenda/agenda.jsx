@@ -11,21 +11,27 @@ import AgendaDrawer from './agenda-drawer/agenda-drawer'
 import Announcement from '../announcement/announcement'
 import Boss from '../../lib/boss'
 
+const defaultCurrent = {
+  title: 'Welcome to a good meeting!',
+  description: 'You can begin your meeting anytime you\'d like. Click on the edit button on the right to set your agenda.',
+}
+
+const overCurrent = {
+  title: 'Hope you had a good meeting!',
+  description: 'Check out your digest at TODO',
+}
+
 export default class Agenda extends React.Component {
   constructor () {
     super()
     this.state = {
-      current: {
-        title: 'Welcome to a good meeting!',
-        description: 'You can begin your meeting anytime you\'d like. What happens if this description gets a little bit longer? I do believe everything will just continue to go outwards, which is a bad thing.',
-        editAgendaForm: null
-      },
-      agenda: [],
+      editAgendaForm: null,
       activeAgendaItem: null,
+      agenda: [],
       drawerOpen: false
     }
 
-    const boundMethods = 'onEditClick onDrawerRequestChange newAgendaForm setEditAgendaForm closeForm handleAgenda'.split(' ')
+    const boundMethods = 'onEditClick onDrawerRequestChange newAgendaForm setEditAgendaForm closeForm handleAgenda handleAgendaActivity'.split(' ')
     boundMethods.forEach(m => {
       this[m] = this[m].bind(this)
     })
@@ -33,7 +39,7 @@ export default class Agenda extends React.Component {
 
   componentWillMount () {
     Boss.on('agenda', this.handleAgenda, 'Agenda')
-    Boss.on('agenda-activity', this.handleAgendaActivity, 'Agenda')
+    Boss.on('activeAgendaItem', this.handleAgendaActivity, 'Agenda')
   }
 
   onEditClick () {
@@ -76,7 +82,17 @@ export default class Agenda extends React.Component {
 
   render () {
     const {roomName} = this.props
-    const {current, drawerOpen, editAgendaForm, agenda, activeAgendaItem} = this.state
+    const {drawerOpen, editAgendaForm, agenda, activeAgendaItem} = this.state
+
+    let current
+    if (activeAgendaItem != null) {
+      if (activeAgendaItem < agenda.length)
+        current = agenda[activeAgendaItem]
+      else
+        current = overCurrent
+    } else {
+      current = defaultCurrent
+    }
 
     let form
     if (editAgendaForm)

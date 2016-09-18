@@ -5,8 +5,7 @@
  * Session
  *  .create(session)
  *  .get(sessionId)
- *  .endSession(sessionId)
- *  .addAgendaItem(sessionId, agendaItem)
+ *  .end(sessionId)
  *  .addActionItem(sessionId, actionItem)
  *  .addAnnouncement(sessionid, announcement)
  *  .registerUserEnter(sessionId, userId)
