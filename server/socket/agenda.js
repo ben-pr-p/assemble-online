@@ -74,14 +74,20 @@ module.exports = function createRouter (sesh, state, emitAll) {
     const item = data.item
     const behind = data.behind
 
+    const itemOrder = {
+      prev: null,
+      next: null
+    }
+
     log('Got reorder request to move item %s to before %s', item, behind)
 
     const orderlookup = {}
     const copy = sesh.agenda.slice().map(i => {
       orderlookup[i._id] = i.order
+      if (i._id == item)
+        itemOrder.prev = i.order
       return {o: i.order, _id: i._id}
     })
-    log('Old orders: %j', copy)
 
     copy.forEach(c => {
       if (item == c._id) {
@@ -91,13 +97,29 @@ module.exports = function createRouter (sesh, state, emitAll) {
           c.o = copy.length + 10
       }
     })
-    log('Modified orders: %j', copy)
 
     const sortedcopy = copy.sort((a,b) => a.o - b.o)
     sortedcopy.forEach((c, idx) => {
+      if (c._id == item)
+        itemOrder.next = c.o
       orderlookup[c._id] = idx
     })
-    log('New orders: %j', orderlookup)
+
+    let shouldBlock = false
+    if (itemOrder.next <= sesh.activeAgendaItem) {
+      shouldBlock = true
+      log('This reorder should be blocked because item %s cannot move to before an active item')
+    }
+
+    else if (itemOrder.prev <= sesh.activeAgendaItem) {
+      shouldBlock = true
+      log('This reorder should be blocked because item %s cannot move after it has been activiated')
+    }
+
+    if (shouldBlock) {
+      const sorted = sesh.agenda.concat().sort((a,b) => a.order - b.order)
+      return emitAll('agenda', sorted)
+    }
 
     for (let idx = 0; idx < sesh.agenda.length; idx++) {
       sesh.agenda[idx].order = orderlookup[sesh.agenda[idx]._id]
@@ -123,6 +145,7 @@ module.exports = function createRouter (sesh, state, emitAll) {
         return socket.emit('error', err)
       }
 
+      sesh.activeAgendaItem = session.activeAgendaItem
       log('Successfully advanced agenda to %d', session.activeAgendaItem)
       emitAll('activeAgendaItem', session.activeAgendaItem)
     })

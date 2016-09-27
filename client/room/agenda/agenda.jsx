@@ -85,7 +85,7 @@ export default class Agenda extends React.Component {
     const {drawerOpen, editAgendaForm, agenda, activeAgendaItem} = this.state
 
     let current
-    if (activeAgendaItem != null) {
+    if (activeAgendaItem != null && activeAgendaItem != -1) {
       if (activeAgendaItem < agenda.length)
         current = agenda[activeAgendaItem]
       else

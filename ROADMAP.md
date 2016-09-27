@@ -54,19 +54,21 @@
   * Two people can only merge if they are a certain distance from each other
 
 ## Immediate
-* Sesh migration
 * Banner should go away on movement
+* border on wall
 * Agenda setting widget
+ * bug on chrome no mic
  * announcements back
- * lock past agenda items for ordering and editing
  * aminate drawer opening / closing
  * Additional response options - text response
  * Agenda items contain announcements
 * banner on new agenda item or really any changes not visible
 * agenda plus is fixed over, no scroll, 8+ agenda items
 * Color schema customization
+ * Color brewer
 * Digest
 * Consistent logs
+* Include in digest how much everyone talks
 
 # Interested people
 Nikhil
@@ -89,3 +91,5 @@ Rachel
 Elizabeth Lee
 Zane
 ProgCode
+David Duahalde
+
