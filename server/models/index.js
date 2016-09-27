@@ -16,7 +16,7 @@ const models = 'user announcement action-item session'.split(' ')
  * Start the connection and load the models
  */
 
-module.exports = function (app) {
+module.exports = function () {
   log('Connecting to MONGO on URI %s', MONGODB_URI)
   mongoose.connect(MONGODB_URI)
   models.forEach(m => {

@@ -24,7 +24,7 @@ const AnnouncementSchema = new Schema({
   text: {type: String, required: true },
   feedOptions: {type: Boolean, default: false },
   feedback: {type: Boolean, default: false },
-  responses: [{type: ResponseSchema}],
+  responses: [ResponseSchema],
   authorAvatar: {type: String, required: false},
   authorName: {type: String, required: true},
 })

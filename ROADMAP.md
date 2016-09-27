@@ -56,8 +56,8 @@
 ## Immediate
 * Banner should go away on movement
 * border on wall
+* bug on chrome no mic
 * Agenda setting widget
- * bug on chrome no mic
  * announcements back
  * aminate drawer opening / closing
  * Additional response options - text response
