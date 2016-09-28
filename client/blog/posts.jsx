@@ -1,7 +1,16 @@
 import React from 'react'
 import {CardText} from 'material-ui/Card'
 
-export default [
+const posts = [
+  {
+    title: 'coming soon',
+    subtitle: 'the blog section here is coming soon!',
+    body: (
+      <CardText style={{position: 'relative'}} expandable={true} >
+        <p> coming soon! </p>
+      </CardText>
+    )
+  },
   {
     title: 'an introduction',
     subtitle: 'design philosophy, goals, and roadmap',
@@ -31,3 +40,6 @@ export default [
     )
   }
 ]
+
+const toShow = [posts[0]]
+export default toShow
