@@ -59,7 +59,6 @@
 * bug on chrome no mic
 * Agenda setting widget
  * announcements back
- * aminate drawer opening / closing
  * Additional response options - text response
  * Agenda items contain announcements
 * banner on new agenda item or really any changes not visible

@@ -14,6 +14,12 @@ import Boss from '../../../lib/boss'
 class AgendaDrawer extends React.Component {
   constructor () {
     super()
+    this.state = {
+      width: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0)'
+    }
+
+    this.animateClosing = this.animateClosing.bind(this)
   }
 
   componentDidMount () {
@@ -23,6 +29,15 @@ class AgendaDrawer extends React.Component {
 
   componentWillUnmount () {
     this.destroyDrake()
+  }
+
+  componentDidMount () {
+    setTimeout(() => {
+      this.setState({
+        width: 300,
+        backgroundColor: 'rgba(0, 0, 0, 0.541176)'
+      })
+    }, 10)
   }
 
   bindDrake () {
@@ -59,7 +74,20 @@ class AgendaDrawer extends React.Component {
       this.drake.destroy()
   }
 
+  animateClosing (param) {
+    setTimeout(() => {
+      this.setState({
+        width: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0)'
+      })
+      setTimeout(() => {
+        this.props.onDrawerRequestChange(param)
+      }, 450)
+    }, 10)
+  }
+
   render () {
+    const {width, backgroundColor} = this.state
     const {agenda, onDrawerRequestChange} = this.props
 
     const agendaEls = []
@@ -77,7 +105,11 @@ class AgendaDrawer extends React.Component {
       <Drawer docked={false}
         openSecondary={true}
         open={true}
-        onRequestChange={onDrawerRequestChange}
+        width={width}
+        onRequestChange={this.animateClosing}
+        containerClassName='drawer'
+        overlayClassName='overlay'
+        overlayStyle={{backgroundColor}}
       >
 
         <Paper title='Agenda' className='drawer-header' zDepth={2} >
