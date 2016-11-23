@@ -24,6 +24,9 @@
 ## Dreamers
 * Documents, where you can select a few grids and it turns into a document
 * MS Paint style drawing with ability to draw sound barriers
+* When two people bump into each other, a video session is started - then on the
+  right there's the video chat
+* Dots instead of grid
 
 ## For fun
 * Voice art
@@ -39,6 +42,8 @@
 * History of announcements / digest
 * Stress testing
 * Normalize the audio
+* CLI
+* Latex build scenario
 
 ## MVP
 * Landing page / better packaging, as well as blog style thing
@@ -91,4 +96,3 @@ Elizabeth Lee
 Zane
 ProgCode
 David Duahalde
-
