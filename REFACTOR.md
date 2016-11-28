@@ -36,6 +36,3 @@ Why?
 * Easier expansion of elements
 * Hardware accelerated CSS animations with `transform`
 * Easier 3D
-
-
-

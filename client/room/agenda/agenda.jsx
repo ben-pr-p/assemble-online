@@ -1,15 +1,10 @@
-import React from 'react'
-import Paper from 'material-ui/Paper'
-import IconButton from 'material-ui/IconButton'
-import EditIcon from 'material-ui/svg-icons/content/create'
-import AgendaIcon from 'material-ui/svg-icons/hardware/developer-board'
-import MenuItem from 'material-ui/MenuItem'
-import AppBar from 'material-ui/AppBar'
-import Avatar from 'material-ui/Avatar'
-import AgendaItemForm from './agenda-item-form/agenda-item-form'
+import { Component, h } from 'preact'
 import AgendaDrawer from './agenda-drawer/agenda-drawer'
 import Announcement from '../announcement/announcement'
+import EditIcon from '../../common/icons/edit'
+import IconButton from '../../common/icon-button'
 import Boss from '../../lib/boss'
+import theme from '../../lib/theme-manager'
 
 const defaultCurrent = {
   title: 'Welcome to a good meeting!',
@@ -21,20 +16,12 @@ const overCurrent = {
   description: 'Check out your digest at TODO',
 }
 
-export default class Agenda extends React.Component {
-  constructor () {
-    super()
-    this.state = {
-      editAgendaForm: null,
-      activeAgendaItem: null,
-      agenda: [],
-      drawerOpen: false
-    }
-
-    const boundMethods = 'onEditClick onDrawerRequestChange newAgendaForm setEditAgendaForm closeForm handleAgenda handleAgendaActivity'.split(' ')
-    boundMethods.forEach(m => {
-      this[m] = this[m].bind(this)
-    })
+export default class Agenda extends Component {
+  state = {
+    editAgendaForm: null,
+    activeAgendaItem: null,
+    agenda: [],
+    drawerOpen: false
   }
 
   componentWillMount () {
@@ -42,93 +29,54 @@ export default class Agenda extends React.Component {
     Boss.on('activeAgendaItem', this.handleAgendaActivity, 'Agenda')
   }
 
-  onEditClick () {
-    this.setState({
-      drawerOpen: !this.state.drawerOpen
-    })
-  }
+  onEditClick = () =>
+    this.setState({ drawerOpen: !this.state.drawerOpen })
 
-  onDrawerRequestChange (open) {
-    this.setState({
-      drawerOpen: open
-    })
-  }
+  onDrawerRequestChange = (open) =>
+    this.setState({ drawerOpen: open })
 
-  newAgendaForm () {
-    this.setState({
-      editAgendaForm: true
-    })
-  }
+  newAgendaForm = () =>
+    this.setState({ editAgendaForm: true })
 
-  setEditAgendaForm (item) {
-    this.setState({
-      editAgendaForm: item
-    })
-  }
+  setEditAgendaForm = (item) =>
+    this.setState({ editAgendaForm: item })
 
-  closeForm () {
-    this.setState({
-      editAgendaForm: false
-    })
-  }
+  closeForm = () =>
+    this.setState({ editAgendaForm: false })
 
-  handleAgenda (agenda) {
+  handleAgenda = (agenda) =>
     this.setState({agenda})
-  }
 
-  handleAgendaActivity (activeAgendaItem) {
+  handleAgendaActivity = (activeAgendaItem) =>
     this.setState({activeAgendaItem})
-  }
 
-  render () {
-    const {roomName} = this.props
-    const {drawerOpen, editAgendaForm, agenda, activeAgendaItem} = this.state
+  render ({roomName}, {drawerOpen, editAgendaForm, agenda, activeAgendaItem}) {
+    const { closeForm, onDrawerRequestChange, newAgendaForm, setEditAgendaForm, onEditClick } = this
 
-    let current
-    if (activeAgendaItem != null && activeAgendaItem != -1) {
-      if (activeAgendaItem < agenda.length)
-        current = agenda[activeAgendaItem]
-      else
-        current = overCurrent
-    } else {
-      current = defaultCurrent
-    }
+    const current = (activeAgendaItem != null && activeAgendaItem != -1)
+      ? (activeAgendaItem < agenda.length)
+        ? agenda[activeAgendaItem]
+        : overCurrent
+      : defaultCurrent
 
-    let form
-    if (editAgendaForm)
-      form = (<AgendaItemForm item={editAgendaForm} closeForm={this.closeForm} />)
-
-    let drawer
-    if (drawerOpen) {
-      drawer = (
-        <AgendaDrawer
-          onDrawerRequestChange={this.onDrawerRequestChange}
-          agenda={agenda}
-          activeAgendaItem={activeAgendaItem}
-          newAgendaForm={this.newAgendaForm}
-          setEditAgendaForm={this.setEditAgendaForm}
-        />
-      )
-    }
+    const drawer = drawerOpen
+      ? <AgendaDrawer {...{onDrawerRequestChange, agenda, activeAgendaItem, newAgendaForm, setEditAgendaForm}} />
+      : null
 
     return (
-      <div className='agenda-container'>
-        {form}
-
-        <Paper key='main-bar' zDepth={3} className='agenda'>
-          <div className='agenda-text'>
+      <div className='agenda-container' style={{backgroundColor: theme.get('materialColor')}}>
+        <div className='agenda'>
+          <div className='agenda-text' style={{color: theme.get('textColor')}}>
             <div className='agenda-title'>{current.title}</div>
             <div className='agenda-description'>{current.description}</div>
           </div>
 
-          <div className='create-icon-container'>
-            <IconButton onClick={this.onEditClick} ><EditIcon /></IconButton>
-          </div>
-
-          {drawer}
-        </Paper>
+          <IconButton className='create-icon-container' onClick={onEditClick} >
+            <EditIcon color={theme.get('textColor')} />
+          </IconButton>
+        </div>
+        {drawer}
       </div>
     )
   }
 }
-

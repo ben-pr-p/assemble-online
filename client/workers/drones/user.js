@@ -4,13 +4,15 @@ export default function (params) {
   on('user/new', announce)
   on('user/trash', trash)
 
-  function announce (ev, newme) {
+  function announce (newme) {
     let brandNew = true
     if (state.me) brandNew = false
 
-    state.me = ev
-    if (brandNew) socket.emit('/user/new', state.me)
-    else socket.emit('/user/update', state.me)
+    state.me = newme
+    if (brandNew)
+      socket.emit('/user/new', state.me)
+    else
+      socket.emit('/user/update', state.me)
   }
 
   function trash () {

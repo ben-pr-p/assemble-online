@@ -1,4 +1,4 @@
-import React from 'react'
+import { Component, h } from 'preact'
 import ConnectionStatus from '../connection-status/connection-status'
 import easyrtcClient from '../../lib/easyrtc'
 import dom from 'component-dom'
@@ -18,25 +18,20 @@ const config = {
   enableCamera: false
 }
 
-export default class AudioController extends React.Component {
-  constructor () {
-    super()
-
-    this.state = {
-      audioStreams: new Map(),
-      msg: 'Initializing audio connection to room...'
-    }
-
-    this.myAudio = null
-    this.easyrtc = window.easyrtc
-    this.activeCalls = new Set()
-
-    this.rms = null
-    this.rmsIntervalId = null
-
-    window.io = io
-    this.registeredStreams = new Set()
+export default class AudioController extends Component {
+  state = {
+    audioStreams: new Map(),
+    msg: 'Initializing audio connection to room...'
   }
+
+  myAudio = null
+  easyrtc = window.easyrtc
+  activeCalls = new Set()
+
+  rms = null
+  rmsIntervalId = null
+
+  registeredStreams = new Set()
 
   shouldComponentUpdate (nextProps, nextState) {
     return shallowUpdateCompare(this.props, this.state, nextProps, nextState)
@@ -46,28 +41,24 @@ export default class AudioController extends React.Component {
     Boss.offAllByCaller('AudioController')
   }
 
-  announceVolume (vol) {
-    Boss.post('volume/mine', vol)
-  }
+  announceVolume = (vol) => Boss.post('volume/mine', vol)
 
   componentDidMount () {
     this.initialize()
   }
 
-  onConnectSuccess (easyrtcid) {
+  onConnectSuccess = (easyrtcid) => {
     this.props.setEasyRTCId(easyrtcid)
     this.setState({msg: {code: 'conn_sucess', text: `...connected with easyrtcid ${easyrtcid}`}})
   }
 
-  onRoomJoin (roomName) {
+  onRoomJoin = (roomName) =>
     this.setState({msg: {code: 'room_join', text: `...successfully connected to room ${roomName}`}})
-  }
 
-  onError (errCode, errMsg) {
+  onError = (errCode, errMsg) =>
     this.setState({msg: `Error ${errCode}: ${errMsg}`})
-  }
 
-  onMediaSuccess (stream) {
+  onMediaSuccess = (stream) => {
     this.setState({msg: {code: 'media_success', text: `Successfully retrieved user media` }})
     this.myAudio = stream
     this.initializeAudioContext()
@@ -75,59 +66,58 @@ export default class AudioController extends React.Component {
     easyrtc.joinRoom(this.props.roomName, null, this.onRoomJoin.bind(this), this.onError.bind(this))
   }
 
-  acceptStream (easyrtcid, stream) {
+  acceptStream = (easyrtcid, stream) => {
     this.state.audioStreams.set(easyrtcid, stream)
     this.setState({msg: {code: 'audio_from', text: `Now receiving audio from ${easyrtcid}`}})
   }
 
-  onStreamClose (easyrtcid) {
+  onStreamClose = (easyrtcid) => {
     this.state.audioStreams.delete(easyrtcid)
     easyrtc.hangup(easyrtcid)
     this.activeCalls.delete(easyrtcid)
     this.setState({msg: {code: 'audio_disconnect', text: `${easyrtcid} has disconnected`}})
   }
 
-  onCallSuccess (easyrtcid, mediaType) {
+  onCallSuccess = (easyrtcid, mediaType) => {
     this.activeCalls.add(easyrtcid)
     this.setState({msg: {code: 'call_success', text: `successfully called ${easyrtcid}`}})
   }
 
-  onCallFailure (easyrtcid, errMsg) {
+  onCallFailure = (easyrtcid, errMsg) => {
     this.setState({msg: {code: 'call_failure', text: `failed to established audio connection with ${easyrtcid}: ${errMsg}`}})
   }
 
-  onCallAnswer (wasAccepted, easyrtcid) {
+  onCallAnswer = (wasAccepted, easyrtcid) => {
     this.setState({msg: {code: 'call_answer', text: `${easyrtcid} answered and accepted the call`}})
   }
 
-  occupantListener (roomName, occupants) {
+  occupantListener = (roomName, occupants) => {
     const {easyrtc} = this
     for (let o in occupants) {
       this.setState({msg: {code: 'room_join', text: `${o} has joined the room`}})
       if (easyrtc.myEasyrtcid < o && !this.activeCalls.has(o)) {
-        easyrtc.call(o, this.onCallSuccess.bind(this), this.onCallFailure.bind(this), this.onCallAnswer.bind(this))
+        easyrtc.call(o, this.onCallSuccess, this.onCallFailure, this.onCallAnswer)
       }
     }
   }
 
-  shouldAccept (easyrtcid, fn) {
+  shouldAccept = (easyrtcid, fn) => {
     fn(true)
   }
 
-  initialize () {
+  initialize = () => {
     const {easyrtc} = this
-
     for (let opt in config) easyrtc[opt](config[opt])
 
-    easyrtc.setRoomOccupantListener(this.occupantListener.bind(this))
-    easyrtc.setStreamAcceptor(this.acceptStream.bind(this))
-    easyrtc.setAcceptChecker(this.shouldAccept.bind(this))
-    easyrtc.setOnStreamClosed(this.onStreamClose.bind(this))
+    easyrtc.setRoomOccupantListener(this.occupantListener)
+    easyrtc.setStreamAcceptor(this.acceptStream)
+    easyrtc.setAcceptChecker(this.shouldAccept)
+    easyrtc.setOnStreamClosed(this.onStreamClose)
 
-    easyrtc.initMediaSource(this.onMediaSuccess.bind(this), this.onError.bind(this))
+    easyrtc.initMediaSource(this.onMediaSuccess, this.onError)
   }
 
-  initializeAudioContext () {
+  initializeAudioContext = () => {
     let audioContext = window.AudioContext || window.webkitAudioContext
     this.ac = new audioContext()
     this.inputNode = this.ac.createMediaStreamSource(this.myAudio)
@@ -155,9 +145,7 @@ export default class AudioController extends React.Component {
     easyrtc.disconnect()
   }
 
-  render () {
-    const {audioStreams, msg}  = this.state
-
+  render (props, {audioStreams, msg}) {
     let connectionEls = []
 
     audioStreams.forEach((stream, m) => {

@@ -5,6 +5,8 @@ var clientapps = require('./client-apps')
 
 gulp.task('watch', function() {
   gulp.watch('./client/workers/**/*.js', ['workers'])
+  gulp.watch('./client/lib/**/*.js', ['browserify'])
+  gulp.watch('./client/common/**/*.js', ['browserify'])
   gulp.watch('./client/**/*.png', ['images'])
   gulp.watch('./client/**/*.styl', ['styles'])
 

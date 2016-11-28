@@ -101,12 +101,16 @@ function handleMessage (msg) {
   }
 
   if (!handled) {
-    handleError(`Received unknown event ${JSON.stringify(msg)}`)
+    handleError(`Received unknown event ${JSON.stringify(msg.data)}`)
   }
 }
 
 function handleError (err) {
-  emit('error', JSON.stringify(err))
+  emit('error', JSON.stringify({
+    err: err,
+    message: err.message,
+    stack: err.stack
+  }))
 }
 
 function emit (event, data) {
@@ -170,4 +174,3 @@ function receiveSesh (serverSesh) {
 onconnect = function (e) {
   ready(e.ports[0])
 }
-

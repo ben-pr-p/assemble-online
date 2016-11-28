@@ -73,8 +73,6 @@ app.get('/room', function (req, res) {
   res.redirect('/')
 })
 
-app.use('/api', require('./api'))
-
 /*
  * Create sessions when necessary
  */
@@ -191,4 +189,3 @@ function preventDuplicateJoin (req, res, next) {
     return next()
   }
 }
-

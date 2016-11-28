@@ -1,13 +1,7 @@
-import React from 'react'
+import { Component, h } from 'preact'
 import Boss from '../../lib/boss'
 
-export default class AudioConnection extends React.Component {
-  constructor () {
-    super()
-
-    this.handleDistance = this.handleDistance.bind(this)
-  }
-
+export default class AudioConnection extends Component {
   componentWillMount () {
     const {easyrtcid} = this.props
     Boss.on(`distance-to-${easyrtcid}`, this.handleDistance, `connection-to-${this.props.easyrtcid}`)
@@ -22,12 +16,11 @@ export default class AudioConnection extends React.Component {
     easyrtc.setVideoObjectSrc(this.refs.root, this.props.stream)
   }
 
-  handleDistance (dist) {
-    if (this.refs.root)
-      this.refs.root.volume = this.calcVolume(dist)
-  }
+  handleDistance = (dist) => this.refs.root
+    ? this.refs.root.volume = this.calcVolume(disk)
+    : null
 
-  calcVolume (d) {
+  calcVolume = (d) => {
     let v = Math.min(1 / (Math.pow(d - 70, 2) / 5000), 1)
     if (typeof v == 'number' && !isNaN(v)) {
       return v
@@ -36,9 +29,9 @@ export default class AudioConnection extends React.Component {
     }
   }
 
-  render () {
+  render ({easyrtcid}) {
     return (
-      <video key={this.props.easyrtcid} autoPlay='' width='0' height='0' ref='root' />
+      <video key={easyrtcid} autoPlay='' width='0' height='0' ref='root' />
     )
   }
 }

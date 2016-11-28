@@ -1,39 +1,28 @@
 .agenda-container
   position fixed
-  width 100%
-  height 70px
-  top 0px
-  flexbox(flex)
-  justify-content(center)
-  margin-top 5px
-  transition margin-top .25s ease-out
-  -moz-transition margin-top .25s ease-out
-  -o-transition margin-top .25s ease-out
-  -webkit-transition margin-top .25s ease-out
-
-  &.hidden
-    margin-top -80px
+  width 300px
+  top 10px
+  right 10px
+  display flex
+  justify-content center
+  flex-direction column
 
   .agenda
-    width 98%
-    height 100%
-    margin-top 2%
-    flexbox(flex)
-    justify-content(center)
-    align-items(center)
+    width 100%
     position relative
-    padding-left 20px
-    padding-right 20px
+    display flex
+    justify-content center
+    align-items center
 
     .agenda-items-container
-      flexbox(flex)
-      flex-direction(column)
+      display flex
+      flex-direction column
       padding-left 10px
       padding-right 10px
 
     .agenda-items
-      flexbox(flex)
-      flex-direction(column)
+      display flex
+      flex-direction column
       overflow-y scroll
 
     .drawer-header
@@ -58,14 +47,14 @@
 
     .create-icon-container
       width 10%
-      flexbox(flex)
-      justify-content(center)
-      align-items(center)
+      display flex
+      justify-content center
+      align-items center
 
     .agenda-text
-      flexbox(flex)
-      justify-content(center)
-      flex-direction(column)
+      display flex
+      justify-content center
+      flex-direction column
       height 50px
       width 90%
       margin-top 20px

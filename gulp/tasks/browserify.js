@@ -1,39 +1,23 @@
-var gulp = require('gulp')
-var gutil = require('gulp-util')
-var browserify = require('browserify')
-var babelify = require('babelify')
-var handleErrors = require('../util/handleErrors')
-var source = require('vinyl-source-stream')
-var buffer = require('vinyl-buffer')
-var uglify = require('gulp-uglify')
-var clientapps = require('./client-apps')
+const gulp = require('gulp')
+const babelify = require('babelify')
+const bro = require('gulp-bro')
+const uglify = require('gulp-uglify')
+const vfs = require('vinyl-fs')
+const clientapps = require('./client-apps')
 
-var dest = './build'
+const dest = './build'
 
-var shouldUglify = process.env.ENV == 'production'
+const shouldUglify = process.env.ENV == 'production'
 
-function generate (jsname) {
-  return function () {
-    var js = browserify({
-      entries: [`./client/${jsname}`],
-      extensions: ['.js', '.jsx'],
-      paths: ['./node_modules','./client'],
-      debug: true
-    })
-    .transform(babelify, {presets: ['es2015', 'react']})
-    .bundle()
-    .on('error', handleErrors)
-    .pipe(source(`./client/${jsname}`))
+const generate = (jsname) =>
+  () => vfs.src(`./client/${jsname}`)
+    .pipe(bro({
+      transform: babelify,
+      extensions: ['.js','.jsx']
+    }))
+    .pipe(gulp.dest(dest))
 
-    if (shouldUglify) {
-      js = js.pipe(buffer()).pipe(uglify())
-    }
-
-    return js.pipe(gulp.dest(dest))
-  }
-}
-
-var jsroots = clientapps.map(root => `${root}.js`)
+const jsroots = clientapps.map(root => `${root}.js`)
 jsroots.forEach(js => {
   gulp.task(js, generate(js))
 })

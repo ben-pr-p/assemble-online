@@ -1,56 +1,73 @@
-import React from 'react'
-import Avatar from 'material-ui/Avatar'
-import IconButton from 'material-ui/IconButton'
-import DoneIcon from 'material-ui/svg-icons/action/done-all'
-import InProgressIcon from 'material-ui/svg-icons/notification/sync'
-import StartIcon from 'material-ui/svg-icons/av/play-circle-outline'
-import StopIcon from 'material-ui/svg-icons/av/stop'
-import EditIcon from 'material-ui/svg-icons/content/create'
-import {solarized} from '../../../lib/custom-theme'
+import { Component, h } from 'preact'
+import DoneIcon from '../../../common/icons/done'
+import InProgressIcon from '../../../common/icons/in-progress'
+import StartIcon from '../../../common/icons/play'
+import StopIcon from '../../../common/icons/stop'
+import AddIcon from '../../../common/icons/add'
+import SaveIcon from '../../../common/icons/save'
+import EditIcon from '../../../common/icons/edit'
+import ThemeManager from '../../../lib/theme-manager'
 import Boss from '../../../lib/boss'
 
-export default class AgendaItem extends React.Component {
-  constructor () {
-    super()
-    this.state = {
-      expanded: false
-    }
+export default class AgendaItem extends Component {
+  state = {
+    expanded: false,
+    editing: false,
+    copy: {}
+  }
 
-    const boundMethods = 'advance editItem'.split(' ')
-    boundMethods.forEach(m => {
-      this[m] = this[m].bind(this)
+  onTitleChange = (ev) =>
+    this.setState({
+      copy: Object.assign({...this.state.copy}, {title: ev.target.value})
     })
+
+  onDescriptionChange = (ev) =>
+    this.setState({
+      copy: Object.assign({...this.state.copy}, {description: ev.target.value})
+    })
+
+  editItem = () => this.setState({editing: true})
+
+  saveItem = () =>
+    Boss.post(this.state.copy._id ? 'agenda/edit' : 'agenda/new', this.state.copy)
+
+  advance = () => Boss.post('agenda/advance')
+
+  componentWillMount () {
+    this.state.editing = this.props.item.order === null
+    this.state.copy = Object.assign({}, this.props.item)
   }
 
-  editItem () {
-    this.props.setEditAgendaForm(this.props.item)
-  }
-
-  advance () {
-    Boss.post('agenda/advance')
-  }
-
-  render () {
-    const {item, status} = this.props
-
-    const icon = this.renderStatusIcon(status)
-
+  render ({item, status}, {expanded, editing, copy}) {
     return (
       <div className='agenda-item' data={`id-${item._id}`} >
         <div className='number'>
-          <Avatar size={30} className='agenda-order' >{item.order + 1}</Avatar>
+          <div className='agenda-order' >
+            {item.order != null
+              ? item.order + 1
+              : '+'
+            }
+          </div>
         </div>
         <div className='text'>
           <div className='title'>
-            {item.title}
+            {editing
+              ? <input className='agenda-item-input' value={copy.title} onInput={this.onTitleChange} />
+              : item.title
+            }
           </div>
           <div className='description'>
-            {item.description}
+            {editing
+              ? <input className='agenda-item-input' value={copy.description} onInput={this.onDescriptionChange} />
+              : item.description
+            }
           </div>
         </div>
         <div className='options'>
-          {icon}
-          <IconButton onClick={this.editItem}> <EditIcon /> </IconButton>
+          {this.renderStatusIcon(status)}
+          <div className='icon' onClick={editing ? this.saveItem : this.editItem}>
+            {editing ? (copy._id ? <SaveIcon /> : <AddIcon />) : <EditIcon />}
+          </div>
         </div>
       </div>
     )
@@ -59,19 +76,19 @@ export default class AgendaItem extends React.Component {
   renderStatusIcon (type) {
     switch (type) {
       case 'complete':
-        return (<IconButton disabled={true} > <DoneIcon color={solarized.green} /> </IconButton>)
+        return (<div className='icon disabled'> <DoneIcon color={ThemeManager.get('green')} /> </div>)
         break
 
       case 'in-progress':
-        return (<IconButton disabled={true} > <InProgressIcon color={solarized.yellow} /> </IconButton>)
+        return (<div className='icon disabled'> <InProgressIcon color={ThemeManager.get('yellow')} /> </div>)
         break
 
       case 'start':
-        return (<IconButton onClick={this.advance} > <StartIcon color={solarized.cyan} /> </IconButton>)
+        return (<div className='icon' onClick={this.advance} > <StartIcon color={ThemeManager.get('cyan')} /> </div>)
         break
 
       case 'stop':
-        return (<IconButton onClick={this.advance} > <StopIcon color={solarized.red} /> </IconButton>)
+        return (<div className='icon' onClick={this.advance} > <StopIcon color={ThemeManager.get('red')} /> </div>)
         break
     }
   }

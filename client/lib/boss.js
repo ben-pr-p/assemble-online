@@ -2,10 +2,10 @@ class Boss {
   constructor () {
     this.events = {}
 
-    this.worker = new SharedWorker('/workers/client/workers/foreman.js')
+    this.worker = new SharedWorker('/workers/foreman.js')
     this.worker.port.onmessage = this.handleMessage.bind(this)
-    this.worker.port.onerror = this.handleError.bind(this)
-    this.worker.onerror = this.handleError.bind(this)
+    this.worker.port.onerror = this.handleError
+    this.worker.onerror = this.handleError
     this.worker.port.start()
   }
 
@@ -48,14 +48,11 @@ class Boss {
     }
 
     if (!handled) {
-      console.log(msg.data)
       throw new Error(`Received event ${JSON.stringify(msg.data)} with no handler`)
     }
   }
 
-  handleError (err) {
-    console.log(err)
-    console.log(arguments)
+  handleError (err, args) {
     throw new Error(`Worker encountered error: ${JSON.stringify(err)}`)
   }
 

@@ -1,23 +1,8 @@
-import React from 'react'
+import { h, Component } from 'preact'
 import request from 'superagent'
-import {List, ListItem} from 'material-ui/List'
-import Subheader from 'material-ui/Subheader'
-import Divider from 'material-ui/Divider'
-import Paper from 'material-ui/Paper'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-import getMuiTheme from 'material-ui/styles/getMuiTheme'
-import {solarizedDark, solarizedLight} from '../lib/custom-theme.js'
-import EnterIcon from 'material-ui/svg-icons/action/open-in-new'
-import RaisedButton from 'material-ui/RaisedButton'
-import TextField from 'material-ui/TextField'
-import CreateIcon from 'material-ui/svg-icons/content/add'
-import IconButton from 'material-ui/IconButton'
+import EnterIcon from '../common/icons/enter'
+import CreateIcon from '../common/icons/create'
 import randomString from 'random-string'
-
-/**
- * TO DO:
-  * make descriptions of what it is and how to use it
- */
 
 const hinttextoptions = [
   'Super Important Meeting',
@@ -29,79 +14,111 @@ const hinttextoptions = [
   'Joshua, We Can\'t Just Watch While You Ruin Your Life'
 ]
 
-function encodeName (name) {
-  const replacements = [
-    [' ', '-'],
-    ['\\.', ''],
-    ['\'', '']
-  ]
-  let result = name
-  replacements.forEach(r => {
-    result = result.replace(new RegExp(r[0], 'g'), r[1])
-  })
-  return encodeURI(result.toLowerCase())
-}
+const encodeName = name =>
+  encodeURI(name.replace(/ /g, '-').replace(/[\\.']/g, '').toLowerCase())
 
-export default class Portal extends React.Component {
-  constructor () {
-    super()
-    this.state = {
-      rooms: {},
-      hintidx: 0,
-      newRoomUrl: null,
-    }
-    this.updateIntervalId = null
+export default class Portal extends Component {
+  state = {
+    rooms: {},
+    hintidx: 0,
+    newRoomUrl: null,
   }
+
+  updateIntervalId = null
 
   componentWillMount () {
     this.update()
-    this.updateIntervalId = setInterval(this.update.bind(this), 3000)
-    this.hintIntervalId = setInterval(this.cycleHint.bind(this), 10000)
+    this.updateIntervalId = setInterval(this.update, 3000)
+    this.hintIntervalId = setInterval(this.cycleHint, 10000)
   }
 
-  update () {
+  update = () =>
     request
     .get('/room-status')
     .query({random: Math.random()})
     .end((err, res) => {
       this.setState({rooms: res.body})
     })
-  }
 
-  cycleHint () {
+  cycleHint = () =>
     this.setState({
       hintidx: (this.state.hintidx + 1) % hinttextoptions.length
     })
-  }
 
-  enterRoom (room) {
-    window.location.pathname = '/room/' + room
-  }
+  enterRoom = (room) =>
+    () => window.location.pathname = '/room/' + room
 
-  onNewRoomChange (ev) {
+  onNewRoomChange = (ev) =>
     this.setState({
       newRoomUrl: encodeName(ev.target.value)
     })
+
+  createAndEnterRoom = () => this.enterRoom(this.state.newRoom ? this.state.newRoom : randomString({numeric: false}))()
+
+  render (props, {rooms, hintidx, newRoomUrl}) {
+    return (
+      <div className='center-with-padding'>
+        <div className='overlay'></div>
+        <div className='room-status-container' >
+          <span className='big-header'>assemble.live</span>
+          <br/>
+          <br/>
+          <span className='simple-text'>In the future, this will be a secure, real time, audio and text based online meeting platform based on the use and manipulation  of <em>spatial metaphors</em>.</span>
+          <br/>
+          <br/>
+          <span className='simple-text'>For now, please mess around with your friends, report bugs, and suggest features.</span>
+
+          <div className='room-status'>
+            <h3>Publicly Joinable Rooms</h3>
+            <div className='divider' />
+            <div className='room-list-container'>
+              {this.renderRooms(rooms)}
+            </div>
+          </div>
+          <div className='divider' />
+
+          <h3>Create Your Own Room</h3>
+          <form className='room-form'>
+            <label> What would you like to name your room? </label>
+            <input placeholder={hinttextoptions[hintidx]}
+              onInput={this.onNewRoomChange}
+              maxLength='30'
+            />
+          </form>
+
+          {/* If they're typing in a new room */}
+          {(newRoomUrl && newRoomUrl != '') && <span>{`https://www.assemble.live/room/${newRoomUrl}`}</span>}
+
+          <br />
+          <br />
+
+          <div className='raised-button' onClick={this.createAndEnterRoom} >
+            <CreateIcon />
+            <span className='raised-button-text'> Create Room </span>
+          </div>
+
+        <br/>
+        <br/>
+        <span>Want a private room? That's coming soon. If you really want it, <a style={{color: '#80d4ff'}} href='mailto:ben.paul.ryan.packer@gmail.com'>email me</a></span>
+
+        <br/>
+        <br/>
+
+        <a href='/blog'>
+          <span className='button-label'> Blog/About </span>
+        </a>
+
+        </div>
+      </div>
+    )
   }
 
-  createAndEnterRoom () {
-    let {newRoomUrl} = this.state
-    if (!newRoomUrl)
-      newRoomUrl = randomString({numeric: false})
-    this.enterRoom(newRoomUrl)
-  }
-
-  render () {
-    const {rooms, hintidx, newRoomUrl} = this.state
-
-    let rs = []
-    for (let r in rooms) {
-      rs.push((
+  renderRooms = (rooms) => Object.keys(rooms).length != 0
+    ? Object.keys(rooms).map(r => (
         <div key={r} className='room-list-item'>
-          <Paper circle={true} className='enter-icon-container' zDepth={5}
-           onClick={this.enterRoom.bind(this, r)} >
+          <div className='enter-icon-container' onClick={this.enterRoom(r)} >
             <EnterIcon className='enter-icon' />
-          </Paper>
+          </div>
           <div className='text-container'>
             <span className='room-name'>{r}</span>
             <br/>
@@ -109,92 +126,13 @@ export default class Portal extends React.Component {
           </div>
         </div>
       ))
-    }
-
-    if (rs.length == 0)
-      rs = this.renderNoRooms()
-
-    let urlDisplay
-    if (newRoomUrl && newRoomUrl != '') {
-      urlDisplay = (
-        <span>{`https://www.assemble.live/room/${newRoomUrl}`}</span>
+    : (
+        <div className='room-list-item'>
+          <div className='text-container'>
+            <span className='room-name'>No rooms have been created yet.</span>
+            <br/>
+            <span className='room-users'>Make the first one yourself below! Don't forget to invite friends otherwise it's not fun.</span>
+          </div>
+        </div>
       )
-    }
-
-    return (
-      <MuiThemeProvider muiTheme={getMuiTheme(solarizedDark)}>
-        <div className='center-with-padding'>
-          <div className='overlay'></div>
-          <Paper className='room-status-container' zDepth={5} >
-            <span className='big-header'>assemble.live</span>
-            <br/>
-            <br/>
-            <span className='simple-text'>In the future, this will be a secure, real time, audio and text based online meeting platform based on the use and manipulation  of <em>spatial metaphors</em>.</span>
-            <br/>
-            <br/>
-            <span className='simple-text'>For now, please mess around with your friends, report bugs, and suggest features.</span>
-
-            <div className='room-status'>
-              <h3>Publicly Joinable Rooms</h3>
-              <Divider />
-              <div className='room-list-container'>
-                {rs}
-              </div>
-            </div>
-            <Divider />
-
-            <h3>Create Your Own Room</h3>
-            <TextField hintText={hinttextoptions[hintidx]}
-              floatingLabelText='What would you like to name your room?'
-              floatingLabelFixed={true}
-              style={{width:'100%'}}
-              onChange={this.onNewRoomChange.bind(this)}
-              maxLength='30'
-              id='room-name-input'
-              name='room'
-            />
-
-            {urlDisplay}
-            <br />
-            <br />
-
-            <RaisedButton label='Create'
-              labelPosition='before'
-              primary={true}
-              icon={<CreateIcon />}
-              onClick={this.createAndEnterRoom.bind(this)}
-            />
-
-          <br/>
-          <br/>
-          <span>Want a private room? That's coming soon. If you really want it, <a style={{color: '#80d4ff'}} href='mailto:ben.paul.ryan.packer@gmail.com'>email me</a></span>
-
-          <br/>
-          <br/>
-
-          <RaisedButton style={{marginLeft: 'auto', marginRight: 'auto', display: 'block', width: '125px'}}
-            label='Blog/About'
-            labelPosition='before'
-            primary={true}
-            href='/blog'
-            onClick={() => window.location.pathname = '/blog'}
-          />
-
-          </Paper>
-        </div>
-      </MuiThemeProvider>
-    )
-  }
-
-  renderNoRooms () {
-    return (
-      <div className='room-list-item'>
-        <div className='text-container'>
-          <span className='room-name'>No rooms have been created yet.</span>
-          <br/>
-          <span className='room-users'>Make the first one yourself below! Don't forget to invite friends otherwise it's not fun.</span>
-        </div>
-      </div>
-    )
-  }
 }

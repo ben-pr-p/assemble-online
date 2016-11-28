@@ -1,30 +1,17 @@
-import React from 'react'
-import Dialog from 'material-ui/Dialog'
-import RaisedButton from 'material-ui/RaisedButton'
-import Divider from 'material-ui/Divider'
-import {PhotoshopPicker} from 'react-color'
+import { Component, h } from 'preact'
+import Dialog from '../../common/dialog'
 
-export default class Colors extends React.Component {
-  constructor () {
-    super()
-
-    this.state = {
-      picking: null
-    }
-
-    const boundMethods = 'onColorChangeComplete onDone restore showPicker'.split(' ')
-    boundMethods.forEach(m => {
-      this[m] = this[m].bind(this)
-    })
+export default class Colors extends Component {
+  state = {
+    picking: null
   }
 
-  showPicker (ev) {
+  showPicker = (ev) =>
     this.setState({
       picking: ev.target.textContent
     })
-  }
 
-  onColorChangeComplete (color) {
+  onColorChangeComplete = (color) => {
     let newColors = {}
     newColors[this.state.picking] = color.hex
     this.props.setColors(newColors)
@@ -37,17 +24,13 @@ export default class Colors extends React.Component {
   restore () {
   }
 
-  onDone () {
+  onDone = () =>
     this.props.closeColorModal()
-  }
 
   handleClose () {
   }
 
-  render () {
-    const {picking} = this.state
-    const {palette} = this.props
-
+  render ({palette}, {picking}) {
     const fields = []
     for (let color in palette) {
       if (fields.length >= 1)
@@ -68,7 +51,7 @@ export default class Colors extends React.Component {
         fields.push((
           <div className='color-picker-container'>
             <PhotoshopPicker
-              color={palette[color]} 
+              color={palette[color]}
               onChangeComplete={this.onColorChangeComplete}
               handleClose={this.handleClose}
             />
@@ -96,4 +79,3 @@ export default class Colors extends React.Component {
     )
   }
 }
-

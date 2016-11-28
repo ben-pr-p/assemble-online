@@ -1,18 +1,15 @@
-import React from 'react'
-import PhoneIcon from 'material-ui/svg-icons/action/settings-phone'
+import { Component, h } from 'preact'
+import PhoneIcon from '../../common/icons/phone'
 
-export default class ConnectionStatus extends React.Component {
-  constructor () {
-    super()
+export default class ConnectionStatus extends Component {
 
-    this.state = {
-      msg: {code: null, text: null},
-      shown: false,
-      queue: []
-    }
-
-    this.prevMsg = null
+  state = {
+    msg: {code: null, text: null},
+    shown: false,
+    queue: []
   }
+
+  prevMsg = null
 
   componentWillMount () {
     this.state.msg = this.props.msg
@@ -33,7 +30,7 @@ export default class ConnectionStatus extends React.Component {
   }
 
   timeoutTick (duration) {
-    setTimeout(this.tick.bind(this), duration)
+    setTimeout(this.tick, duration)
   }
 
   timeoutFade () {
@@ -45,7 +42,7 @@ export default class ConnectionStatus extends React.Component {
     }, 1000)
   }
 
-  tick () {
+  tick = () => {
     let msg = this.state.queue.shift()
     this.setState({msg})
 
@@ -58,8 +55,7 @@ export default class ConnectionStatus extends React.Component {
     }
   }
 
-  render () {
-    const { msg, shown } = this.state
+  render (props, {msg, shown}) {
     const shownClass = (shown) ? 'shown' : 'hidden'
 
     if (msg)

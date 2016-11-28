@@ -1,17 +1,13 @@
-import React from 'react'
-import {Motion, spring} from 'react-motion'
-import d3 from 'd3'
+import { Component, h } from 'preact'
+import { arc } from 'd3-shape'
+import dom from 'component-dom'
 import Boss from '../../lib/boss'
 
-export default class VolumeIndicator extends React.Component {
-  constructor () {
-    super()
-    this.state = {
-      volume: 0
-    }
+const MAX_VOLUME = 10
+const NUM_CIRCLES = 10
 
-    this.handleVolume = this.handleVolume.bind(this)
-  }
+export default class VolumeIndicator extends Component {
+  counter = NUM_CIRCLES - 1
 
   componentWillMount () {
     Boss.on(`volume-${this.props.user.id}`, this.handleVolume, `volume-${this.props.user.id}`)
@@ -21,30 +17,26 @@ export default class VolumeIndicator extends React.Component {
     Boss.offAllByCaller(`volume-${this.props.user.id}`)
   }
 
-  handleVolume (vol) {
-    this.setState({
-      volume: vol
-    })
+  handleVolume = (vol) => {
+    this.counter = this.counter + 1
+    dom(`#v-${this.counter % NUM_CIRCLES}`).css('transform', `scale(${1 + vol/MAX_VOLUME})`)
+    dom(`#v-${(this.counter - (NUM_CIRCLES / 2)) % NUM_CIRCLES}`).css('transform', `scale(1)`)
   }
 
-  render () {
-    const {volume} = this.state
-    const {x, y, z, r, color} = this.props
-
+  render ({x, y, d, color}) {
     return (
-      <Motion
-        defaultStyle={{z:0}}
-        style={{z: spring(volume, {stiffness: 500, damping: 50})}}
-      >
-        {v =>
-          <path
-            transform={`translate(${x},${y})`}
-            strokeWidth='6px'
-            stroke={color}
-            d={d3.svg.arc().innerRadius(r).outerRadius(r+1).startAngle(0).endAngle(v.z / 20 * Math.PI)()}
+      <div className='volume-conatiners'>
+        {new Array(NUM_CIRCLES).fill(null).map((nil, idx) => (
+          <div key={idx} id={`v-${idx}`}
+            className='volume-indicator'
+            style={{
+              width: `${d}px`,
+              height: `${d}px`,
+              border: `2px solid ${color}`
+            }}
           />
-        }
-      </Motion>
+        ))}
+      </div>
     )
   }
 }

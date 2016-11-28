@@ -1,6 +1,6 @@
-import React from 'react'
-import ThumbIcon from 'material-ui/svg-icons/action/thumb-up'
-import BlockIcon from 'material-ui/svg-icons/content/report'
+import { h, Component } from 'preact'
+import ThumbIcon from '../../../common/icons/thumbs-up'
+import BlockIcon from '../../../common/icons/report'
 
 const responseOptions = [
   {label: 'Support', name: 'agree'},

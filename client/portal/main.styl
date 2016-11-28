@@ -2,21 +2,28 @@
   font-size bigger
 
 .center-with-padding
-  flexbox(flex)
-  justify-content(center)
-  align-items(center)
+  display flex
+  justify-content center
+  align-items center
   width 100%
   height 100%
-  background-image url('/img/screenshot-faded.jpg')
-  background-repeat no-repeat
-  background-size cover
-  opacity 1
+  // background-image url('/img/screenshot-faded.jpg')
+  // background-repeat no-repeat
+  // background-size cover
+  // opacity 1
 
   .room-status-container
     max-height 650px
     padding 20px
     width 650px
     border-radius 5px
+
+    .room-form
+      label
+        width 100%
+      input
+        width 100%
+        margin-top 10px
 
     .room-list-container
       max-height 200px
@@ -29,8 +36,8 @@
           font-size smaller
 
     .room-list-item
-      flexbox(flex)
-      align-items(center)
+      display flex
+      align-items center
       border-bottom 1px solid grey
       min-height 80px
 
@@ -39,14 +46,14 @@
         height 30px
         padding 5px
         background-color white !important
-        flexbox(flex)
-        align-items(center)
-        justify-content(center)
+        display flex
+        align-items center
+        justify-content center
         margin-left 10px
         margin-right 15px
         box-shadow 1px 1px 1px 1px grey
         cursor pointer
 
         .enter-icon
-          color black !important
-          fill black !important
+          color black
+          fill black

@@ -1,18 +1,39 @@
+const MAC = .1
+
 export default function (params) {
   const {sesh, state, on, emit, socket} = params
 
   on('location/delta', announce)
+  //
+  // function announce (loc) {
+  //   const {dx, dy} = loc
+  //   const base = state.locations.get(state.me.id)
+  //   if (!base.x) base.x = 0
+  //   if (!base.y) base.y = 0
+  //
+  //   const x = constrain(base.x + dx, 0, state.dimensions.x)
+  //   const y = constrain(base.y + dy, 0, state.dimensions.y)
+  //
+  //   socket.emit('/location/delta', {x, y})
+  // }
 
-  function announce (loc) {
-    const {dx, dy} = loc
+  // function announce (loc) {
+  //   const {dx, dy} = loc
+  //
+  //   const x = constrain(nx, 0, state.dimensions.x)
+  //   const y = constrain(ny, 0, state.dimensions.y)
+  //
+  //   socket.emit('/location/delta', {x, y})
+  // }
+  //
+
+  function announce (mouse) {
     const base = state.locations.get(state.me.id)
-    if (!base.x) base.x = 0
-    if (!base.y) base.y = 0
 
-    const x = constrain(base.x + dx, 0, state.dimensions.x)
-    const y = constrain(base.y + dy, 0, state.dimensions.y)
-
-    socket.emit('/location/delta', {x, y})
+    socket.emit('/location/delta', {
+      x: constrain((MAC * (mouse.x - (base.x || 0))), 0, state.dimensions.x),
+      y: constrain((MAC * (mouse.y - (base.y || 0))), 0, state.dimensions.y)
+    })
   }
 
   socket.on('locations', handle)
@@ -67,4 +88,3 @@ export default function (params) {
     return false
   }
 }
-

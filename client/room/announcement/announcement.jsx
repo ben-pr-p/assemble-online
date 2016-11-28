@@ -1,53 +1,39 @@
-import React from 'react'
+import { Component, h } from 'preact'
 import dom from 'component-dom'
 import closest from 'component-closest'
-import { Motion, spring } from 'react-motion'
 import Boss from '../../lib/boss'
-import Paper from 'material-ui/Paper'
-import Divider from 'material-ui/Divider'
-import TextField from 'material-ui/TextField'
-import Toggle from 'material-ui/Toggle'
-import IconButton from 'material-ui/IconButton'
-import Dialog from 'material-ui/Dialog'
-import RaisedButton from 'material-ui/RaisedButton'
-import EditIcon from 'material-ui/svg-icons/content/create'
-import SaveIcon from 'material-ui/svg-icons/content/save'
-import ClearIcon from 'material-ui/svg-icons/content/clear'
-import FeedbackIcon from 'material-ui/svg-icons/action/feedback'
-import CommentIcon from 'material-ui/svg-icons/editor/insert-comment'
+import ClearIcon from '../../common/icons/clear'
+import FeedbackIcon from '../../common/icons/feedback'
+import CommentIcon from '../../common/icons/comment'
 import {responseOptions, icons} from '../common/response-options/response-options'
 import ResponseListTabs from './response-list-tabs/response-list-tabs'
 import shallowUpdateCompare from '../../lib/shallow-update-compare'
 
-export default class Announcement extends React.Component {
-  constructor () {
-    super()
-
-    this.state = {
-      hidden: false,
-      opaque: true,
-      editing: false,
-      feedback: false,
-      feedOptions: {
-        agree: true,
-        reservations: true,
-        block: true
-      },
-      responses: {},
-      responseModalShown: false,
-      reasonsShown: false,
-      text: null,
-      authorName: null,
-      authorAvatar: null
-    }
-
-    this.prev = {
-      feedback: this.state.feedback,
-      feedOptions: this.state.feedOptions
-    }
-
-    this.current = null
+export default class Announcement extends Component {
+  state = {
+    hidden: false,
+    opaque: true,
+    editing: false,
+    feedback: false,
+    feedOptions: {
+      agree: true,
+      reservations: true,
+      block: true
+    },
+    responses: {},
+    responseModalShown: false,
+    reasonsShown: false,
+    text: null,
+    authorName: null,
+    authorAvatar: null
   }
+
+  prev = {
+    feedback: this.state.feedback,
+    feedOptions: this.state.feedOptions
+  }
+
+  current = null
 
   shouldComponentUpdate (nextProps, nextState) {
     return shallowUpdateCompare(this.props, this.state, nextProps, nextState)
@@ -67,30 +53,23 @@ export default class Announcement extends React.Component {
     Boss.offAllByCaller('Announcement')
   }
 
-  setEdit () {
+  setEdit = () =>
     this.setState({
       editing: true,
       feedback: false
     })
-  }
 
-  saveEdit () {
-    let msg = {
+  saveEdit = () => {
+    this.current = null
+    Boss.post('announcement/mine', {
       text: this.current,
       feedback: this.state.feedback,
       feedOptions: this.state.feedOptions,
-      responses: {}
-    }
-
-    for (let o in this.state.feedOptions) {
-      msg.responses[o] = []
-    }
-
-    this.current = null
-    Boss.post('announcement/mine', msg)
+      responses: Object.assign(...this.state.feedOptions.map(o => {return {o: []}}))
+    })
   }
 
-  handleAnnouncement (data) {
+  handleAnnouncement = (data) => {
     this.prev = {
       feedback: data.feedback,
       feedOptions: data.feedOptions
@@ -109,51 +88,45 @@ export default class Announcement extends React.Component {
     })
   }
 
-  handleInputChange (ev) {
-    this.current = ev.target.value
-  }
+  handleInputChange = (ev) => this.current = ev.target.value
 
-  discardEdit () {
+  discardEdit = () =>
     this.setState({
       editing: false,
       feedback: this.prev.feedback,
       feedOptions: this.prev.feedOptions
     })
-  }
 
-  toggleFeedback () {
+  toggleFeedback = () =>
     this.setState({
       feedback: !this.state.feedback
     })
-  }
 
-  onToggle (ev) {
+  onToggle = (ev) => {
     const type = dom(ev.nativeEvent.target).attr('data')
     this.state.feedOptions[type] = !this.state.feedOptions[type]
     this.forceUpdate()
   }
 
-  initializeResponse (ev) {
+  initializeResponse = (ev) => {
     this.responseType = dom(closest(ev.nativeEvent.target, '.response-option')).attr('data')
     this.setState({
       responseModalShown: true
     })
   }
 
-  saveOnEnter (ev) {
-    if (ev.keyCode == 13) {
-      this.saveEdit()
-    }
-  }
+  saveOnEnter = (ev) => (ev.keyCode == 13)
+    ? this.saveEdit()
+    : null
 
-  respond (reason) {
-    const date = Date.now()
-    const type = this.responseType
-    Boss.post('announcement/response', {type, reason, date})
-  }
+  respond = (reason) =>
+    Boss.post('announcement/response', {
+      type: this.responseType,
+      reason,
+      date: Date.now()
+    })
 
-  render () {
-    const {hidden, opaque, responseModalShown, reasonsShown} = this.state
+  render ({}, {hidden, opaque, responseModalShown, reasonsShown}) {
     const {shouldFade} = this
 
     let c_ac = ''
@@ -188,7 +161,7 @@ export default class Announcement extends React.Component {
       result.push(this.renderResponseOptionSelector()),
       result.push(this.renderClearIcon()),
       result.push((
-        <TextField key='input' 
+        <TextField key='input'
           style={{width: '100%'}}
           hintText='Type your announcement or question'
           ref='field' onChange={this.handleInputChange.bind(this)}

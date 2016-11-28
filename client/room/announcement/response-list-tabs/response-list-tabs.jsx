@@ -1,20 +1,12 @@
-import React from 'react'
-import {Tabs, Tab} from 'material-ui/Tabs'
-import {List, ListItem} from 'material-ui/List'
+import { Component, h } from 'preact'
 import {responseOptions, icons} from '../../common/response-options/response-options'
-import Avatar from 'material-ui/Avatar'
 
-export default class ResponseListTabs extends React.Component {
-  constructor () {
-    super()
-
-    this.state = {
-      selectedTab: null
-    }
+export default class ResponseListTabs extends Component {
+  state = {
+    selectedTab: null
   }
 
-  render () {
-    const {responses} = this.props
+  render ({responses}) {
 
     const tabs = responseOptions.map(o => (
       <Tab icon={icons[o.name]}
