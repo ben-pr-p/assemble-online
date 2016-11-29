@@ -5,7 +5,6 @@ import Menu from './menu'
 import Agenda from './agenda/agenda'
 import AudioController from './audio/controller'
 import Room from './room/room'
-import Colors from './colors/colors'
 import ThemeManager from '../lib/theme-manager'
 import Boss from '../lib/boss'
 

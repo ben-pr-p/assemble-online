@@ -7,12 +7,12 @@ import Boss from '../../lib/boss'
 import theme from '../../lib/theme-manager'
 
 const defaultCurrent = {
-  title: 'Welcome to a good meeting!',
-  description: 'You can begin your meeting anytime you\'d like. Click on the edit button on the right to set your agenda.',
+  title: 'Welcome!',
+  description: 'Set your agenda here',
 }
 
 const overCurrent = {
-  title: 'Hope you had a good meeting!',
+  title: 'Meetings over!',
   description: 'Check out your digest at TODO',
 }
 
@@ -64,9 +64,9 @@ export default class Agenda extends Component {
       : null
 
     return (
-      <div className='agenda-container' style={{backgroundColor: theme.get('materialColor')}}>
+      <div className='agenda-container'>
         <div className='agenda'>
-          <div className='agenda-text' style={{color: theme.get('textColor')}}>
+          <div className='agenda-text' >
             <div className='agenda-title'>{current.title}</div>
             <div className='agenda-description'>{current.description}</div>
           </div>

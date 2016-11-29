@@ -22,7 +22,6 @@ export default class Menu extends Component {
   config = [
     {label: 'Edit Me', action: this.editUser},
     {label: 'File a Bug Report', action: this.initializeBugReport},
-    {label: 'Edit the Colors', action: this.editColors}
   ]
 
 
@@ -45,12 +44,7 @@ export default class Menu extends Component {
 
     this.setState({editingUser: false})
   }
-
-  setColors = (theme) =>
-    this.setState({
-      theme: JSON.parse(JSON.stringify(theme))
-    })
-
+  
   render ({me}, {open, editingUser, bugReport, editingColor}) {
     return (
       <div className='menu'>
@@ -84,7 +78,7 @@ export default class Menu extends Component {
           onClick={b.action}
           style={{
             left: (data.split('-').length - 1) * 150,
-            bottom: idx * 20 + 20
+            bottom: idx * 40 + 40
           }}
         >
           {b.label}

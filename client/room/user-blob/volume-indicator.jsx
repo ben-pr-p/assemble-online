@@ -4,7 +4,7 @@ import dom from 'component-dom'
 import Boss from '../../lib/boss'
 
 const MAX_VOLUME = 10
-const NUM_CIRCLES = 10
+const NUM_CIRCLES = 20
 
 export default class VolumeIndicator extends Component {
   counter = NUM_CIRCLES - 1
@@ -19,8 +19,8 @@ export default class VolumeIndicator extends Component {
 
   handleVolume = (vol) => {
     this.counter = this.counter + 1
-    dom(`#v-${this.counter % NUM_CIRCLES}`).css('transform', `scale(${1 + vol/MAX_VOLUME})`)
-    dom(`#v-${(this.counter - (NUM_CIRCLES / 2)) % NUM_CIRCLES}`).css('transform', `scale(1)`)
+    dom(`#v-${this.counter % NUM_CIRCLES}`).css('transform', `scale(${1 + vol/MAX_VOLUME})`).addClass('animatable')
+    dom(`#v-${(this.counter - (NUM_CIRCLES / 2)) % NUM_CIRCLES}`).css('transform', `scale(1)`).removeClass('animatable')
   }
 
   render ({x, y, d, color}) {

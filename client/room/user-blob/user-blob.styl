@@ -3,14 +3,21 @@
   top 0
   left 0
   border-radius 50%
-  border 1px solid white
-  transition transform .2s ease-in-out
+  transition transform .2s linear
 
 .volume-indicator
   position absolute
   border-radius 50%
-  transition transform .5s ease-in-out
   z-index -1
+  &.animatable
+    animation pulse .5s linear infinite
+
+@keyframes pulse
+  0%
+    transform scale(1)
+    opacity 1
+  100%
+    opacity 0
 
 .name-text
   text-transform uppercase

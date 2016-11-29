@@ -11,17 +11,17 @@ export default class Grid extends Component {
     const height = dimensions && dimensions.y ? dimensions.y : '100%'
 
     return (
-      <svg {...{id: 'grid-container', width, height}} >
+      <svg className='grid' {...{id: 'grid-container', width, height}} >
         <defs>
           <pattern id='smallGrid' width='40' height='40' patternUnits='userSpaceOnUse'>
-            <path d='M 40 0 L 0 0 0 40' fill='none' stroke={theme.get('gridColor')} strokeWidth='1'/>
+            <path d='M 40 0 L 0 0 0 40' fill='none' stroke-width='1'/>
           </pattern>
           <pattern id='grid' width='200' height='200' patternUnits='userSpaceOnUse'>
-            <rect width='200' height='200' fill='url(#smallGrid)' strokeWidth='4' />
-            <path d='M 200 0 L 0 0 0 200' fill='none' stroke={theme.get('gridColor')} strokeWidth='4'/>
+            <rect width='200' height='200' fill='url(#smallGrid)' />
+            <path d='M 200 0 L 0 0 0 200' fill='none' stroke-width='4'/>
           </pattern>
         </defs>
-        <rect {...{id: 'grid-main', width, height, fill: theme.get('canvasColor')}}/>
+        <rect {...{id: 'grid-background', width, height}} />
         <rect {...{id: 'grid-main', width, height, fill: 'url(#grid)'}}/>
       </svg>
     )

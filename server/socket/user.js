@@ -13,7 +13,15 @@ const db = require('../db-api')
 const help = require('./help')
 
 const propsToTransfer = ['x', 'y', 'easyrtcid', 'color', 'badge']
-const colorScale = ['#01df00', '#daff02', '#fe6634', '#008e82', '#00cfe2', '#fb0528', '#9b6304', '#532696', '#b53284', '#ff7ba6']
+// const rachelScale = ['#01df00', '#daff02', '#fe6634', '#008e82', '#00cfe2', '#fb0528', '#9b6304', '#532696', '#b53284', '#ff7ba6']
+
+const retroScale = [
+  '#2ecc71', '#f1c40f', '#f39c12', '#9b59b6', '#16a085',
+  '#2980b9', '#d35400', '#e74c3c', '#8e44ad', '#1abc9c',
+  '#27ae60', '#3498db', '#e67e22', '#c0392b'
+]
+
+const colorScale = retroScale
 
 module.exports = function createRouter (sesh, state, emitAll) {
   const log = debug('assemble:' + sesh.room + ':user')
@@ -104,4 +112,3 @@ module.exports = function createRouter (sesh, state, emitAll) {
 
   return router
 }
-

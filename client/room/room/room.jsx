@@ -4,7 +4,6 @@ import UserBlob from '../user-blob'
 import Boss from '../../lib/boss'
 import theme from '../../lib/theme-manager'
 
-// movement attenuation constant
 const UPDATE_INTERVAL = 30
 
 export default class Room extends Component {
@@ -44,8 +43,8 @@ export default class Room extends Component {
 
   onMouseMove = (ev) =>
     this.mousePos = {
-      x: ev.offsetX,
-      y: ev.offsetY
+      x: ev.clientX,
+      y: ev.clientY
     }
 
   moveUser = () => Boss.post('location/delta', this.mousePos)
