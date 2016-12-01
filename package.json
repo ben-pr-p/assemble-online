@@ -27,6 +27,7 @@
     "easyrtc": "git+https://github.com/priologic/easyrtc.git",
     "express": "^4.14.0",
     "github": "^2.4.1",
+    "gulp-bro": "^0.3.1",
     "line-intersect": "^1.0.0",
     "mongoose": "^4.5.2",
     "preact": "^6.4.0",
