@@ -3,13 +3,18 @@ import Grid from '../grid'
 import UserBlob from '../user-blob'
 import Boss from '../../lib/boss'
 import theme from '../../lib/theme-manager'
+import VolumeDetector from './volume-detector'
 
 const UPDATE_INTERVAL = 30
+
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
 
 export default class Room extends Component {
   state = {
     dimensions: {},
-    translate: {x: 0, y: 0}
+    translate: {x: 0, y: 0},
+    localMedia: {audio: true, video: false},
+    localStream: null
   }
 
   mousePos = {}
@@ -22,13 +27,27 @@ export default class Room extends Component {
     Boss.on('translate', this.handleTranslate, 'Room')
 
     this.postScreen()
-  }
 
-  postScreen = () => Boss.post('screen', {x: window.innerWidth, y: window.innerHeight})
+    this.setStream()
+  }
 
   componentWillUnmount () {
     Boss.offAllByCaller('Room')
+    VolumeDetector.detach()
   }
+
+  setStream = () => navigator.getUserMedia(
+    this.state.localMedia,
+    // on success
+    stream => {
+      this.setState({localStream: stream})
+      VolumeDetector.register(stream, this.props.me.id)
+    },
+    // on failure
+    error => console.log(error)
+  )
+
+  postScreen = () => Boss.post('screen', {x: window.innerWidth, y: window.innerHeight})
 
   handleDimensions = (data) => this.setState({ dimensions: data })
 
@@ -49,7 +68,7 @@ export default class Room extends Component {
 
   moveUser = () => Boss.post('location/delta', this.mousePos)
 
-  render ({me, users}, {translate, dimensions}) {
+  render ({me, users}, {translate, dimensions, localStream}) {
     const blobs = []
     let idx = 0
     users.forEach((user, uid) => {
@@ -57,6 +76,7 @@ export default class Room extends Component {
         <UserBlob user={user}
           idx={idx} key={uid}
           me={me}
+          localStream={localStream}
           translate={translate}
           isMe={me ? uid == me.id : false}
         />

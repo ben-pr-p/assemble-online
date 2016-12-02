@@ -17,6 +17,7 @@ const createLocationRouter = require('./location')
 const createVolumeRouter = require('./volume')
 const createAnnouncementRouter = require('./announcement')
 const createAgendaRouter = require('./agenda')
+const createWebRTCRouter = require('./webrtc')
 
 module.exports = function (io, room, destroySelf) {
   spawnlog('Spawning session for room %s...', room)
@@ -165,6 +166,7 @@ class Session {
     this.router.use('/volume', createVolumeRouter(this.sesh, this.state, emitAll))
     this.router.use('/announcement', createAnnouncementRouter(this.sesh, this.state, emitAll))
     this.router.use('/agenda', createAgendaRouter(this.sesh, this.state, emitAll))
+    this.router.use('/webrtc', createWebRTCRouter(this.sesh, this.state, emitAll))
 
     //this.router.on('*', help.handleUndefined('index'))
 
@@ -224,7 +226,7 @@ class Session {
     this.nsp.emit('locations', this.state.lm.getLocations())
     this.nsp.emit('volumes', [...this.state.volumes])
     this.state.sockets.forEach((socket, uid) => {
-      this.nsp.to(socket.id).emit('distances', this.state.lm.distancesFor(uid))
+      this.nsp.to(socket.id).emit('attenuations', this.state.lm.attenuationsFor(uid))
     })
   }
 
@@ -263,4 +265,3 @@ class Session {
     return false
   }
 }
-

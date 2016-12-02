@@ -5,11 +5,12 @@ import patchFn from 'socketio-wildcard'
 import userDrone from './drones/user'
 import locationDrone from './drones/location'
 import dimensionDrone from './drones/dimension'
-import distanceDrone from './drones/distance'
+import attenuationDrone from './drones/attenuation'
 import volumeDrone from './drones/volume'
 import agendaDrone from './drones/agenda'
+import webrtcDrone from './drones/webrtc'
 
-const patch = patchFn(io.Manager)
+// const patch = patchFn(io.Manager)
 const events = {}
 let port, socket, roomName, namespace, locations, dimensions, distances, announcement
 
@@ -23,7 +24,7 @@ const sesh = {
 const state = {
   me: null,
   users: null,
-  easyrtcids: new Map(),
+  attenuations: {},
   translate: {x: 0, y: 0},
   locations: new Map(),
   dimensions: null
@@ -43,13 +44,14 @@ function handleRoomName (roomName) {
   namespace = '/' + roomName
   socket = io(namespace)
 
-  /*
-  patch(socket)
-  const exclude = 'locations volumes distances'.split(' ')
-  socket.on('*', function (data) {
-    handleError(`recieved-from-server: ${data.data[0]}: ${JSON.stringify(data.data[1])})`)
-  })
-  */
+  // patch(socket)
+  // const exclude = 'locations volumes distances announcements agenda webrtc-config'.split(' ')
+  // socket.on('*', function (data) {
+  //   let shouldThrow = !exclude.includes(data.data[0])
+  //
+  //   if (shouldThrow)
+  //     handleError(`recieved-from-server: ${data.data[0]}: ${JSON.stringify(data.data[1])}`)
+  // })
 
   initialize()
 }
@@ -62,9 +64,10 @@ function initialize () {
   userDrone(params)
   locationDrone(params)
   dimensionDrone(params)
-  distanceDrone(params)
+  attenuationDrone(params)
   volumeDrone(params)
   agendaDrone(params)
+  webrtcDrone(params)
 
   socket.on('sesh', receiveSesh)
   socket.emit('request-sesh')

@@ -12,8 +12,8 @@ export default function (params) {
   function handle (raw) {
     state.volumes = new Map(raw)
     state.volumes.forEach((value, uid) => {
-      emit(`volume-${uid}`, value)
+      if (uid)
+        emit(`volume-${uid}`, value)
     })
   }
 }
-

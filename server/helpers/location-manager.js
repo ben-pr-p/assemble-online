@@ -35,11 +35,11 @@ module.exports = class LocationManager {
     })
   }
 
-  distancesFor (uid1) {
+  attenuationsFor (uid1) {
     const result = {}
     this.users.forEach(uid2 => {
       if (uid1 != uid2) {
-        result[uid2] = this.distancePairs.get(key(uid1, uid2))
+        result[uid2] = Math.min(1 / (Math.pow(this.distancePairs.get(key(uid1, uid2)) - 70, 2) / 5000), 1)
       }
     })
     return result

@@ -4,6 +4,7 @@ import Avatar from '../../common/Avatar'
 import Boss from '../../lib/boss'
 import VolumeIndicator from './volume-indicator'
 import Badge from './badge'
+import WebRTC from './webrtc'
 
 const r = 50
 const d = r * 2
@@ -30,53 +31,52 @@ export default class UserBlob extends Component {
     Boss.offAllByCaller(`blob-${this.props.user.id}`)
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
-    if (this.state.location.x != nextState.location.x || this.state.location.y != nextState.location.y)
-      return true
-    if (this.state.showCard != nextState.showCard)
-      return true
-    if (this.props.translate.x != nextProps.translate.x || this.props.translate.y != nextProps.translate.y)
-      return true
-
-    const userProps = ['id', 'avatar', 'badge']
-    let userChanged = false
-    userProps.forEach(prop => {
-      if (this.props.user[prop] != nextProps.user[prop])
-        userChanged = true
-    })
-    return userChanged
-  }
-
   handleLocation = (data) => this.setState({ location: data })
 
-  render ({user, idx, translate, me, isMe}, {location}) {
+  render ({user, idx, translate, me, isMe, localStream}, {location}) {
     let { x, y } = location
     if (!x || isNaN(x)) x = 0
     if (!x || isNaN(y)) y = 0
-
-    this.color = user.color
-
-    if (!this.color) {
-      this.color = colorScale(this.props.idx)
-      this.props.setMyColor(this.color)
-    }
 
     const adj = {
       x: x + translate.x,
       y: y + translate.y
     }
 
-    if (!(isMe) && (adj.x < 0 || adj.x > window.innerWidth || adj.y < 0 || adj.y > window.innerHeight)) {
-      return this.renderFar(user, x, y, translate)
-    } else {
-      return this.renderClose(user, x, y)
-    }
+    const isFar = this.isFar({adj, isMe, x, y, translate})
+    const specificD = (isFar ? sd: d)
+
+    return (
+      <div className='user-blob' id={user.id}
+        style={Object.assign(
+          this.computeWidthHeight(isFar),
+          this.computeTransform(isFar, {x, y, translate})
+        )}
+      >
+        <Avatar src={user.avatar} letters={initialize(user.name)} style={{position:'absolute'}} />
+        <VolumeIndicator {...{d: specificD, user}} />
+        <WebRTC myId={me.id} partnerId={user.id} localStream={localStream} />
+        <Badge {...{x, y, d: specificD, user}} />
+      </div>
+    )
   }
 
-  renderFar (user, x, y, trans) {
+  isFar ({adj, isMe, x, y, translate}) {
+    return (!(isMe) && (adj.x < 0 || adj.x > window.innerWidth || adj.y < 0 || adj.y > window.innerHeight))
+  }
+
+  computeWidthHeight = (isFar) => !isFar
+    ? {width: `${d}px`, height: `${d}px`}
+    : {width: `${sd}px`, height: `${sd}px`}
+
+  computeTransform = (isFar, {x, y, translate}) => !isFar
+    ? {transform: `translate3d(${x}px,${y}px, 0px)`}
+    : this.computeFarTransform({x, y, translate})
+
+  computeFarTransform = ({x, y, translate}) => {
     const center = {
-      x: (window.innerWidth / 2) - trans.x,
-      y: (window.innerHeight / 2) - trans.y
+      x: (window.innerWidth / 2) - translate.x,
+      y: (window.innerHeight / 2) - translate.y
     }
 
     const halfW = window.innerWidth / 2
@@ -129,37 +129,9 @@ export default class UserBlob extends Component {
         break
     }
 
-    return (
-      <g className='user-blob offscreen' id={user.id} >
-        <defs>
-          {this.renderInsides(user, sd)}
-          <marker id='arrow' viewBox='0 -5 10 10' refX='5' refY='0' markerWidth='20' markerHeight='16' orient='auto'>
-            <path d='M0,-5L10,0L0,5' className='arrowHead' stroke={this.color} fill={this.color} />
-          </marker>
-        </defs>
-        <circle transform={`translate(${x},${y})`} r={sr} fill={this.fill} strokeWidth='6px' stroke='black' />
-        <line x1={x} y1={y}
-          x2={x + (dx / 4)} y2={y + (dy / 4)}
-          className='arrow' markerEnd='url(#arrow)' />
-        <VolumeIndicator {...{user, d: sd, color: this.color}} />
-        <Badge {...{x, y, r, user}} />
-      </g>
-    )
-  }
-
-  renderClose (user, x, y) {
-    return (
-      <div className='user-blob' id={user.id}
-        style={{
-          width: `${d}px`,
-          height: `${d}px`,
-          transform: `translate3d(${x}px,${y}px, 0px)`
-        }}
-      >
-        <Avatar src={user.avatar} letters={initialize(user.name)} style={{position:'absolute'}} />
-        <VolumeIndicator {...{d, user, color: this.color}} />
-        {/* <Badge {...{x, y, r, user}} /> */}
-      </div>
-    )
+    return {
+      x: p.x + dx,
+      y: p.y + dy
+    }
   }
 }

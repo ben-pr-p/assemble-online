@@ -3,12 +3,9 @@ import store from 'store'
 import dom from 'component-dom'
 import Menu from './menu'
 import Agenda from './agenda/agenda'
-import AudioController from './audio/controller'
 import Room from './room/room'
 import ThemeManager from '../lib/theme-manager'
 import Boss from '../lib/boss'
-
-const goodBrowsers = ['Chrome', 'Chromium', 'Firefox', 'Mozilla', 'Opera', 'Bowser', 'Canary']
 
 export default class Main extends Component {
   state = {
@@ -61,10 +58,6 @@ export default class Main extends Component {
 
     return (
       <div id='main-app'>
-        {me
-          ? <AudioController {...{me, roomName, setEasyRTCId}} />
-          : null
-        }
         <Room {...{me, users}} />
         <Menu {...{me, clearLocal}} />
         <Agenda {...{roomName}} />

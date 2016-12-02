@@ -102,6 +102,7 @@ module.exports = function createRouter (sesh, state, emitAll) {
       })
     }
   }
+
   const router = Router()
 
   router.on('/new', onNew)

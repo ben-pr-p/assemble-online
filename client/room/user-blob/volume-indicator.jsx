@@ -23,7 +23,7 @@ export default class VolumeIndicator extends Component {
     dom(`#v-${(this.counter - (NUM_CIRCLES / 2)) % NUM_CIRCLES}`).css('transform', `scale(1)`).removeClass('animatable')
   }
 
-  render ({x, y, d, color}) {
+  render ({x, y, d, user}) {
     return (
       <div className='volume-conatiners'>
         {new Array(NUM_CIRCLES).fill(null).map((nil, idx) => (
@@ -32,7 +32,7 @@ export default class VolumeIndicator extends Component {
             style={{
               width: `${d}px`,
               height: `${d}px`,
-              border: `2px solid ${color}`
+              border: `2px solid ${user.color}`
             }}
           />
         ))}
