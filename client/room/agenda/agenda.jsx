@@ -3,6 +3,7 @@ import AgendaDrawer from './agenda-drawer/agenda-drawer'
 import Announcement from '../announcement/announcement'
 import EditIcon from '../../common/icons/edit'
 import IconButton from '../../common/icon-button'
+import Window from '../../common/window'
 import Boss from '../../lib/boss'
 import theme from '../../lib/theme-manager'
 
@@ -64,19 +65,21 @@ export default class Agenda extends Component {
       : null
 
     return (
-      <div className='agenda-container'>
-        <div className='agenda'>
-          <div className='agenda-text' >
-            <div className='agenda-title'>{current.title}</div>
-            <div className='agenda-description'>{current.description}</div>
-          </div>
+      <Window title='Agenda'>
+        <div className='agenda-container'>
+          <div className='agenda'>
+            <div className='agenda-text' >
+              <div className='agenda-title'>{current.title}</div>
+              <div className='agenda-description'>{current.description}</div>
+            </div>
 
-          <IconButton className='create-icon-container' onClick={onEditClick} >
-            <EditIcon />
-          </IconButton>
+            <IconButton className='create-icon-container' onClick={onEditClick} >
+              <EditIcon />
+            </IconButton>
+          </div>
+          {drawer}
         </div>
-        {drawer}
-      </div>
+      </Window>
     )
   }
 }
