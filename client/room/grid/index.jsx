@@ -21,7 +21,6 @@ export default class Grid extends Component {
             <path d='M 200 0 L 0 0 0 200' fill='none' stroke-width='4'/>
           </pattern>
         </defs>
-        <rect {...{id: 'grid-background', width, height}} />
         <rect {...{id: 'grid-main', width, height, fill: 'url(#grid)'}}/>
       </svg>
     )

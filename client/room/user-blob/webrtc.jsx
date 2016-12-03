@@ -4,7 +4,6 @@ import Peer from 'simple-peer'
 
 export default class Connection extends Component {
   peer = null
-
   state = {}
 
   componentWillMount () {
@@ -29,15 +28,18 @@ export default class Connection extends Component {
     const {partnerId} = this.props
     Boss.offAllByCaller(`connection-to-${partnerId}`)
     this.peer.destroy()
+    setStatus('disconnected')
   }
 
   initialize = () => {
-    const {myId, partnerId, localStream} = this.props
+    const {myId, partnerId, localStream, setStatus} = this.props
 
     this.peer = new Peer({
       initiator: myId < partnerId,
       stream: localStream
     })
+
+    setStatus('connecting')
 
     this.peer.on('signal', config => Boss.post('webrtc/config', {
       from: myId,
@@ -49,10 +51,11 @@ export default class Connection extends Component {
       this.peer.signal(config)
     })
 
-    this.peer.on('stream', remoteStream => this.vidEl
-      ? this.vidEl.srcObject = remoteStream
-      : null
-    )
+    this.peer.on('stream', remoteStream => {
+      if (this.vidEl)
+        this.vidEl.srcObject = remoteStream
+      setStatus('connected')
+    })
   }
 
   handleAttenuation = (vol) => this.vidEl

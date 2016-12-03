@@ -72,7 +72,7 @@ export default class Agenda extends Component {
           </div>
 
           <IconButton className='create-icon-container' onClick={onEditClick} >
-            <EditIcon color={theme.get('textColor')} />
+            <EditIcon />
           </IconButton>
         </div>
         {drawer}

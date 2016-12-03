@@ -5,12 +5,20 @@
   border-radius 50%
   transition transform .2s linear
 
-.volume-indicator
+.volume-indicator-wrapper
   position absolute
-  border-radius 50%
-  z-index -1
+
   &.animatable
     animation pulse .5s linear infinite
+
+  .volume-indicator
+    height 100%
+    width 100%
+    border-radius 50%
+    z-index -2
+
+    &.rotating
+      animation siren 1s linear infinite
 
 @keyframes pulse
   0%
@@ -18,6 +26,12 @@
     opacity 1
   100%
     opacity 0
+
+@keyframes siren
+  0%
+    transform rotate(0deg)
+  100%
+    transform rotate(360deg)
 
 .name-text
   text-transform uppercase

@@ -20,20 +20,24 @@ const initialize = name => {
 export default class UserBlob extends Component {
   state = {
     showCard: false,
-    location: {x: 0, y: 0}
+    location: {x: 0, y: 0},
+    status: 'disconnected'
   }
 
   componentWillMount () {
     Boss.on(`location-${this.props.user.id}`, this.handleLocation, `blob-${this.props.user.id}`)
+    if (this.props.isMe) this.state.status = 'connected'
   }
 
   componentWillUnmount () {
     Boss.offAllByCaller(`blob-${this.props.user.id}`)
   }
 
+  setStatus = (status) => this.setState({ status })
+
   handleLocation = (data) => this.setState({ location: data })
 
-  render ({user, idx, translate, me, isMe, localStream}, {location}) {
+  render ({user, idx, translate, me, isMe, localStream}, {location, status}) {
     let { x, y } = location
     if (!x || isNaN(x)) x = 0
     if (!x || isNaN(y)) y = 0
@@ -54,8 +58,11 @@ export default class UserBlob extends Component {
         )}
       >
         <Avatar src={user.avatar} letters={initialize(user.name)} style={{position:'absolute'}} />
-        <VolumeIndicator {...{d: specificD, user}} />
-        <WebRTC myId={me.id} partnerId={user.id} localStream={localStream} />
+        <VolumeIndicator {...{d: specificD, user, status}} />
+        {!isMe
+          ? <WebRTC myId={me.id} partnerId={user.id} localStream={localStream} setStatus={this.setStatus} status={status} />
+          : null
+        }
         <Badge {...{x, y, d: specificD, user}} />
       </div>
     )
