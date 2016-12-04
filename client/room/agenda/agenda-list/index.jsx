@@ -3,7 +3,7 @@ import dragula from 'dragula'
 import dom from 'component-dom'
 import AddIcon from '../../../common/icons/add'
 import Button from '../../../common/button'
-import AgendaItem from '../agenda-item/agenda-item'
+import AgendaItem from '../agenda-item'
 import Boss from '../../../lib/boss'
 import theme from '../../../lib/theme-manager'
 

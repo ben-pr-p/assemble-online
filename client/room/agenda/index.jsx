@@ -1,6 +1,6 @@
 import { Component, h } from 'preact'
-import AgendaDrawer from './agenda-drawer/agenda-drawer'
-import Announcement from '../announcement/announcement'
+import AgendaList from './agenda-list'
+import Announcement from '../announcement'
 import EditIcon from '../../common/icons/edit'
 import IconButton from '../../common/icon-button'
 import Window from '../../common/window'
@@ -60,24 +60,13 @@ export default class Agenda extends Component {
         : overCurrent
       : defaultCurrent
 
-    const drawer = drawerOpen
-      ? <AgendaDrawer {...{onDrawerRequestChange, agenda, activeAgendaItem, newAgendaForm, setEditAgendaForm}} />
-      : null
-
     return (
       <Window title='Agenda'>
         <div className='agenda-container'>
-          <div className='agenda'>
-            <div className='agenda-text' >
-              <div className='agenda-title'>{current.title}</div>
-              <div className='agenda-description'>{current.description}</div>
-            </div>
-
-            <IconButton className='create-icon-container' onClick={onEditClick} >
-              <EditIcon />
-            </IconButton>
-          </div>
-          {drawer}
+          {drawerOpen
+            ? <AgendaList {...{onDrawerRequestChange, agenda, activeAgendaItem, newAgendaForm, setEditAgendaForm}} />
+            : null
+          }
         </div>
       </Window>
     )
