@@ -6,6 +6,7 @@
   left 20px
   top auto
   right auto
+  z-index 50
   border-radius 5px
 
   .menu-bar
@@ -13,9 +14,14 @@
     top auto
     right auto
     width 150px
-    box-shadow 3px 3px 5px black
+    box-shadow 2px 0px 5px black
     height 20px
-    {layer2}
+    cursor pointer
+    {layer1}
     padding 10px
+
     &:hover
-      {layer1}
+      {layer2}
+
+    &.bottom
+      box-shadow 2px 2px 5px black

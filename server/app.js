@@ -9,7 +9,6 @@ const express = require('express')
 const io = require('socket.io')
 const pug = require('pug')
 const http = require('http')
-const bodyParser = require('body-parser')
 
 // Register mongoose models
 require('./models')()
@@ -31,9 +30,7 @@ const server = http.createServer(app)
 const socketServer = io.listen(server, {'log level':1})
 
 const sessions = {}
-const remoteLocations = new Map()
 
-app.use(bodyParser.json())
 app.use('/', express.static(staticDir))
 
 app.set('view engine', 'pug')
@@ -101,43 +98,4 @@ function ensureRoom (req, res, next) {
   log('Creating session for room %s', req.params.room)
   sessions[req.params.room] = spawnSession(socketServer, req.params.room, destroyRoom)
   next()
-}
-
-function preventDuplicateJoin (req, res, next) {
-  const ipaddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress
-  const uagent = req.headers['user-agent']
-  const ubid = identifyUserBrowser(ipaddress, uagent)
-  log('User is %s', ubid)
-
-  // if the user isn't anywhere, we're good
-  if (!remoteLocations.has(ubid)) {
-    log('User brand new - we good')
-    remoteLocations.set(ubid, req.params.room)
-    return next()
-  }
-  log('User was previously in %s', remoteLocations.get(ubid))
-
-  // if the user is trying to go a room they're already in, we're good
-  const prevroom = remoteLocations.get(ubid)
-  if (prevroom == req.params.room) {
-    log('User already in room %s - we good', prevroom)
-    return next()
-  }
-
-  // if the room they were in doesn't exist, we're good
-  if (!sessions[prevroom]) {
-    log('Previous room %s destroyed - we good', prevroom)
-    remoteLocations.set(ubid, req.params.room)
-    return next()
-  }
-
-  // otherwise, they better have left the room they were previously in
-  if (sessions[prevroom].containsUser(ubid)) {
-    log('User is still in %s - error, we bad', prevroom)
-    return res.render('duplicate-join-error')
-  } else {
-    log('User has left %s - we good', prevroom)
-    remoteLocations.set(ubid, req.params.room)
-    return next()
-  }
 }

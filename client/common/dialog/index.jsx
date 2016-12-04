@@ -21,7 +21,7 @@ export default class Dialog extends Component {
   }
 
   componentWillUnMount () {
-    dom('modal-out').remove()
+    dom('whole-screen').remove()
   }
 
   render () {

@@ -14,6 +14,11 @@ const register = (stream, myId) => {
   inputNode = ac.createMediaStreamSource(stream)
   processor = ac.createScriptProcessor(4096,2,2)
 
+  /*
+   * Currently takes a fraction (~.35) of a ms - overhead of transferring to web
+   * worker is larger
+   */
+
   processor.onaudioprocess = (e) => {
     rms = Math.sqrt(e.inputBuffer.getChannelData(0).reduce((a,b) => a + Math.pow(b,2), 0))
   }

@@ -20,10 +20,9 @@ export default class Menu extends Component {
   }
 
   config = [
-    {label: 'Edit Me', action: this.editUser},
-    {label: 'File a Bug Report', action: this.initializeBugReport},
+    {label: 'Edit Me', action: 'editUser'},
+    {label: 'File a Bug Report', action: 'initializeBugReport'},
   ]
-
 
   toggleOpen = () => this.setState({open: !this.state.open})
 
@@ -44,11 +43,11 @@ export default class Menu extends Component {
 
     this.setState({editingUser: false})
   }
-  
+
   render ({me}, {open, editingUser, bugReport, editingColor}) {
     return (
       <div className='menu'>
-        <div className='menu-bar' onClick={this.toggleOpen}>
+        <div className='menu-bar bottom' onClick={this.toggleOpen}>
           {open ? 'Close' : 'Menu'}
         </div>
 
@@ -74,8 +73,9 @@ export default class Menu extends Component {
       const data = idxBase + '-' + idx.toString()
 
       return (
-        <div className='menu-bar' data={data}
-          onClick={b.action}
+        <div className={`menu-bar ${idx == 0 ? 'bottom' : ''}`}
+          data={data}
+          onClick={this[b.action]}
           style={{
             left: (data.split('-').length - 1) * 150,
             bottom: idx * 40 + 40

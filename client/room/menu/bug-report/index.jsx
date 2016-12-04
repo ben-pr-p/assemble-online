@@ -1,5 +1,7 @@
 import { Component, h } from 'preact'
 import Dialog from '../../../common/Dialog'
+import Button from '../../../common/Button'
+import TextInput from '../../../common/text-input'
 import request from 'superagent'
 
 const labelMap = {
@@ -47,11 +49,11 @@ export default class BugReport extends Component {
     }
 
     let actions = [(
-      <RaisedButton key='cancel' label='Cancel'
+      <Button key='cancel' label='Cancel'
         onClick={this.cancel.bind(this)}
       />
     ), (
-      <RaisedButton key='submit' label='Submit Bug/Feature'
+      <Button key='submit' label='Submit Bug/Feature'
         onClick={this.submit.bind(this)}
       />
     )]
@@ -71,7 +73,7 @@ export default class BugReport extends Component {
 
   renderField (attr) {
     return (
-      <TextField id={attr} key={attr}
+      <TextInput id={attr} key={attr}
         value={this.state[attr]}
         onChange={this.onChange.bind(this)}
         multiLine={true}
