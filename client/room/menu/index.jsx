@@ -7,6 +7,8 @@ import ColorIcon from '../../common/icons/color-lens'
 import BugReport from './bug-report'
 import NewUserModal from './new-user-modal'
 import theme from '../../lib/theme-manager'
+import Boss from '../../lib/boss'
+import store from 'store'
 
 const colors = ['green', 'yellow', 'red', 'blue'].map(col => theme.get(col))
 
@@ -54,16 +56,16 @@ export default class Menu extends Component {
         {open && this.renderMenu(this.config, '0')}
 
         {bugReport && <BugReport endBugReport={this.endBugReport} />}
-        { (!me || editingUser) &&
-          <NewUserModal {...{closeNewUserModal: this.closeNewUserModal, me}}/>
-        }
+
+        {this.renderNewUserModal(me, editingUser)}
+
         { editingColor &&
           <Colors {...{
             setColors: this.setColors,
-            palette: theme.getPalette(),
-            closeColorModal: this.closeColorModal
+            palette: theme.getPalette(), closeColorModal: this.closeColorModal
           }}/>
         }
+
       </div>
     )
   }
@@ -87,4 +89,8 @@ export default class Menu extends Component {
       )
     })
   }
+
+  renderNewUserModal = (me, editingUser) => (!me || editingUser)
+    ? <NewUserModal {...{closeNewUserModal: this.closeNewUserModal, me}} />
+    : null
 }

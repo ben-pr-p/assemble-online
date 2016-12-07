@@ -1,12 +1,21 @@
 .avatar
-  height 100%
-  width 100%
   display flex
   align-items center
   justify-content center
   border-radius 50%
   border 2px solid grey
+  background-size contain
+  user-select
   {layer1}
 
   .avatar-letters
     font-size larger
+
+  &.form
+    height 50px
+    width 50px
+
+  &.blob
+    position absolute
+    height 100%
+    width 100%

@@ -8,7 +8,8 @@ export default class Window extends Component {
   state = {
     pos: {x: 100, y: 100},
     collapsed: false,
-    docked: false
+    docked: false,
+    dragging: false
   }
 
   componentDidMount () {
@@ -19,12 +20,10 @@ export default class Window extends Component {
     document.removeEventListener('mousemove', this.onDocMouseMove)
   }
 
-  mouseDown = false
+  onMouseDown = () => this.setState({dragging: true})
+  onMouseUp = () => this.setState({dragging: false})
 
-  onMouseDown = () => this.mouseDown = true
-  onMouseUp = () => this.mouseDown = false
-
-  onDocMouseMove = (ev) => this.mouseDown
+  onDocMouseMove = (ev) => this.state.dragging
     ? this.setState({pos: {
         x: this.state.pos.x + ev.movementX,
         y: this.state.pos.y + ev.movementY
@@ -50,7 +49,7 @@ export default class Window extends Component {
 
   renderWindow () {
     const { children, title } = this.props
-    const { pos, collapsed } = this.state
+    const { pos, collapsed, dragging } = this.state
     const style = {
       transform: `translate3d(${pos.x}px, ${pos.y}px, 0px)`
     }
@@ -59,7 +58,7 @@ export default class Window extends Component {
       style.height = 20
 
     return (
-      <div className='window' style={style}>
+      <div className={`window ${dragging ? 'dragging' : ''}`} style={style}>
         <div className='window-header'
           onMouseDown={this.onMouseDown}
           onMouseUp={this.onMouseUp}

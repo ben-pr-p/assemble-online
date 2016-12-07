@@ -6,19 +6,37 @@ export default class Avatar extends Component {
     failedImg: false
   }
 
-  receiveRef = (ref) => this.img = ref
-
-  componentDidMount () {
-    if (this.img && !this.img.complete)
-      this.setState({ failedImg: true })
+  shouldComponentUpdate () {
+    this.state.failedImg = false
   }
 
-  render ({src, letters, className, ...others}, {failedImg}) {
+  receiveRef = (ref) => this.img = ref
+  componentDidMount () { this.checkFailedImg() }
+  componentDidUpdate () { this.checkFailedImg() }
+
+  checkFailedImg = () => this.img && !this.img.complete
+    ? this.setState({failedImg: true})
+    : null
+
+  render ({form, src, letters, className, ...others}, {failedImg}) {
+    const imageSuccess = src && !failedImg
+
     return (
-      <div className={joinClass(className, 'avatar')} {...others} >
-        {src && !failedImg
-          ? <img src={src} ref={this.receiveRef} />
-          : <span className='avatar-letters'> {letters.toString()} </span>
+      <div {...{
+          ...others,
+          className: joinClass(className, `avatar ${!form ? 'blob' : 'form'}`),
+          style: {backgroundImage: imageSuccess ? `url("${src}")` : 'none'}
+        }}
+      >
+        {imageSuccess
+          ? (
+              <img src={src} ref={this.receiveRef} style={{display: 'none'}} />
+            )
+          : (
+              <span className='avatar-letters'>
+                {letters && letters != '' ? letters.toString() : '?'}
+              </span>
+            )
         }
       </div>
     )

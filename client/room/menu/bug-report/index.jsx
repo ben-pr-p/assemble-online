@@ -17,10 +17,7 @@ export default class BugReport extends Component {
     context: '',
   }
 
-  onChange = (ev) => {
-    this.state[ev.target.id] = ev.target.value
-    this.forceUpdate()
-  }
+  onChange = (ev) => this.setState({[ev.target.id]: ev.target.value})
 
   submit = () => {
     let bug = {}
@@ -49,11 +46,11 @@ export default class BugReport extends Component {
     }
 
     let actions = [(
-      <Button key='cancel' label='Cancel'
+      <Button key='cancel' text='Cancel'
         onClick={this.cancel.bind(this)}
       />
     ), (
-      <Button key='submit' label='Submit Bug/Feature'
+      <Button key='submit' text='Submit Bug/Feature'
         onClick={this.submit.bind(this)}
       />
     )]
@@ -76,9 +73,7 @@ export default class BugReport extends Component {
       <TextInput id={attr} key={attr}
         value={this.state[attr]}
         onChange={this.onChange.bind(this)}
-        multiLine={true}
-        floatingLabelText={labelMap[attr]}
-        floatingLabelFixed={true}
+        label={labelMap[attr]}
         className='full-width-text-field'
       />
     )

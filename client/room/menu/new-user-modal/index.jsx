@@ -6,7 +6,6 @@ import TextInput from '../../../common/text-input'
 import store from 'store'
 import randomString from 'random-string'
 import shallowUpdateCompare from '../../../lib/shallow-update-compare'
-import Boss from '../../../lib/boss'
 
 const labelMap = {
   avatar: 'Paste a Image Address to be your Avatar',
@@ -24,10 +23,7 @@ export default class NewUserModal extends Component {
     return shallowUpdateCompare(this.props, this.state, nextProps, nextState)
   }
 
-  onChange = (ev) => {
-    this.state[ev.target.id] = ev.target.value
-    this.forceUpdate()
-  }
+  onChange = (ev) => this.setState({[ev.target.id]: ev.target.value})
 
   componentWillMount () {
     if (this.props.me) {
@@ -94,14 +90,10 @@ export default class NewUserModal extends Component {
   }
 
   renderField (attr) {
-    const {avatar} = this.state
-
-    const goodAvatar = avatar.indexOf('http:') > -1 || avatar.indexOf('data:') > -1
-
     if (attr == 'avatar') {
       return (
         <div className='avatar-field-container' key={attr}>
-          <Avatar src={goodAvatar ? avatar : null} letters={this.state.name} />
+          <Avatar form={true} src={this.state.avatar} letters={this.state.name} />
           <TextInput id={attr}
             name={attr}
             value={this.state[attr]}

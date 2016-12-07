@@ -29,6 +29,7 @@
     "line-intersect": "^1.0.0",
     "mongoose": "^4.5.2",
     "preact": "^6.4.0",
+    "preact-portal": "^1.1.1",
     "pubsubcutioner": "^1.1.5",
     "pug": "^2.0.0-beta5",
     "random-string": "^0.1.2",
