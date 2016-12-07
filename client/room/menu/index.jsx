@@ -19,16 +19,22 @@ export default class Menu extends Component {
     navPos: 0,
     bugReport: false,
     editingUser: false,
-    editingColor: false
+    editingColor: false,
+    windows: []
   }
 
   config = [
     {label: 'Edit Me', action: 'editUser'},
     {label: 'File a Bug Report', action: 'initializeBugReport'},
+    {label: 'Activate Agenda', action: 'activateAgenda'}
   ]
 
   windows = [
-    <Agenda key='agenda' idx={0} />
+    {
+      component: <Agenda key='agenda' idx={0} />,
+      active: false,
+      name: 'agenda'
+    }
   ]
 
   toggleOpen = () => this.setState({open: !this.state.open})
@@ -38,6 +44,9 @@ export default class Menu extends Component {
 
   endBugReport = () =>
     this.setState({bugReport: false})
+
+  activateAgenda = () =>
+    this.setState({windows: [this.windows.filter(w => w.name == 'agenda')[0]]})
 
   editUser = () => this.setState({editingUser: true})
 
@@ -51,14 +60,14 @@ export default class Menu extends Component {
     this.setState({editingUser: false})
   }
 
-  render ({me}, {open, editingUser, bugReport, editingColor}) {
+  render ({me}, {open, editingUser, bugReport, editingColor, windows}) {
     return (
       <div className='menu'>
         <div className='menu-bar bottom' onClick={this.toggleOpen}>
           {open ? 'Close' : 'Menu'}
         </div>
 
-        {this.windows}
+        {windows.map(w => w.component)}
         {open && this.renderMenu(this.config, '0')}
 
         {bugReport && <BugReport endBugReport={this.endBugReport} />}

@@ -3,6 +3,8 @@ const MAC = .1
 export default function (params) {
   const {sesh, state, on, emit, socket} = params
 
+  let transitioning = false
+
   on('location/delta', announce)
 
   function announce (rawMouse) {
@@ -14,9 +16,11 @@ export default function (params) {
       y: rawMouse.y - state.translate.y - 50
     }
 
+    const getMac = () => transitioning ? MAC * .01 : MAC
+
     socket.emit('/location/delta', {
-      x: constrain((current.x + (MAC * (mouse.x - current.x))), 0, state.dimensions.x),
-      y: constrain((current.y + (MAC * (mouse.y - current.y))), 0, state.dimensions.y)
+      x: constrain((current.x + (getMac() * (mouse.x - current.x))), 0, state.dimensions.x),
+      y: constrain((current.y + (getMac() * (mouse.y - current.y))), 0, state.dimensions.y)
     })
   }
 
@@ -33,6 +37,8 @@ export default function (params) {
       if (isInFourth(myLocation, state)) {
         state.translate = calcTranslate(myLocation)
         emit('translate', state.translate)
+        transitioning = true
+        setTimeout(() => transitioning = false, 1500)
       }
     }
   }
