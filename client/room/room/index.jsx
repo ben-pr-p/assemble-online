@@ -40,6 +40,7 @@ export default class Room extends Component {
     this.state.localMedia,
     // on success
     stream => {
+      console.log('new stream')
       this.setState({localStream: stream})
       VolumeDetector.register(stream, this.props.me.id)
     },

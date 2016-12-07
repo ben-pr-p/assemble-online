@@ -6,6 +6,7 @@ import SettingsIcon from '../../common/icons/settings'
 import ColorIcon from '../../common/icons/color-lens'
 import BugReport from './bug-report'
 import NewUserModal from './new-user-modal'
+import Agenda from '../agenda'
 import theme from '../../lib/theme-manager'
 import Boss from '../../lib/boss'
 import store from 'store'
@@ -24,6 +25,10 @@ export default class Menu extends Component {
   config = [
     {label: 'Edit Me', action: 'editUser'},
     {label: 'File a Bug Report', action: 'initializeBugReport'},
+  ]
+
+  windows = [
+    <Agenda key='agenda' idx={0} />
   ]
 
   toggleOpen = () => this.setState({open: !this.state.open})
@@ -53,6 +58,7 @@ export default class Menu extends Component {
           {open ? 'Close' : 'Menu'}
         </div>
 
+        {this.windows}
         {open && this.renderMenu(this.config, '0')}
 
         {bugReport && <BugReport endBugReport={this.endBugReport} />}

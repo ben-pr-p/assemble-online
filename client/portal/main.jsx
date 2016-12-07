@@ -3,6 +3,8 @@ import request from 'superagent'
 import EnterIcon from '../common/icons/enter'
 import CreateIcon from '../common/icons/create'
 import randomString from 'random-string'
+import Button from '../common/button'
+import TextInput from '../common/text-input'
 
 const hinttextoptions = [
   'Super Important Meeting',
@@ -60,14 +62,6 @@ export default class Portal extends Component {
       <div className='center-with-padding'>
         <div className='overlay'></div>
         <div className='room-status-container' >
-          <span className='big-header'>assemble.live</span>
-          <br/>
-          <br/>
-          <span className='simple-text'>In the future, this will be a secure, real time, audio and text based online meeting platform based on the use and manipulation  of <em>spatial metaphors</em>.</span>
-          <br/>
-          <br/>
-          <span className='simple-text'>For now, please mess around with your friends, report bugs, and suggest features.</span>
-
           <div className='room-status'>
             <h3>Publicly Joinable Rooms</h3>
             <div className='divider' />
@@ -78,13 +72,11 @@ export default class Portal extends Component {
           <div className='divider' />
 
           <h3>Create Your Own Room</h3>
-          <form className='room-form'>
-            <label> What would you like to name your room? </label>
-            <input placeholder={hinttextoptions[hintidx]}
-              onInput={this.onNewRoomChange}
-              maxLength='30'
-            />
-          </form>
+          <TextInput label='What would you like to name your room?'
+            placeholder={hinttextoptions[hintidx]}
+            onInput={this.onNewRoomChange}
+            maxLength='30'
+          />
 
           {/* If they're typing in a new room */}
           {(newRoomUrl && newRoomUrl != '') && <span>{`https://www.assemble.live/room/${newRoomUrl}`}</span>}
@@ -92,10 +84,11 @@ export default class Portal extends Component {
           <br />
           <br />
 
-          <div className='raised-button' onClick={this.createAndEnterRoom} >
+          <Button text='Create Room'
+            onClick={this.createAndEnterRoom}
+          >
             <CreateIcon />
-            <span className='raised-button-text'> Create Room </span>
-          </div>
+          </Button>
 
         <br/>
         <br/>

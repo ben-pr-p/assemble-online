@@ -41,7 +41,10 @@ export default class Window extends Component {
     const firstLetter = this.props.title.charAt(0).toUpperCase()
 
     return (
-      <a className='window-docked' onClick={this.toggleDocked}>
+      <a className='window-docked'
+        onClick={this.toggleDocked}
+        style={{left: `${220 + this.props.idx * 50}px`}}
+      >
         {firstLetter}
       </a>
     )

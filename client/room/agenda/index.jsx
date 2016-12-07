@@ -1,5 +1,5 @@
 import { Component, h } from 'preact'
-import AgendaList from './agenda-list'
+import AgendaItem from './agenda-item'
 import Announcement from '../announcement'
 import EditIcon from '../../common/icons/edit'
 import IconButton from '../../common/icon-button'
@@ -21,20 +21,13 @@ export default class Agenda extends Component {
   state = {
     editAgendaForm: null,
     activeAgendaItem: null,
-    agenda: [],
-    drawerOpen: false
+    agenda: []
   }
 
   componentWillMount () {
     Boss.on('agenda', this.handleAgenda, 'Agenda')
     Boss.on('activeAgendaItem', this.handleAgendaActivity, 'Agenda')
   }
-
-  onEditClick = () =>
-    this.setState({ drawerOpen: !this.state.drawerOpen })
-
-  onDrawerRequestChange = (open) =>
-    this.setState({ drawerOpen: open })
 
   newAgendaForm = () =>
     this.setState({ editAgendaForm: true })
@@ -51,22 +44,12 @@ export default class Agenda extends Component {
   handleAgendaActivity = (activeAgendaItem) =>
     this.setState({activeAgendaItem})
 
-  render ({roomName}, {drawerOpen, editAgendaForm, agenda, activeAgendaItem}) {
+  render ({idx}, {editAgendaForm, agenda, activeAgendaItem}) {
     const { closeForm, onDrawerRequestChange, newAgendaForm, setEditAgendaForm, onEditClick } = this
 
-    const current = (activeAgendaItem != null && activeAgendaItem != -1)
-      ? (activeAgendaItem < agenda.length)
-        ? agenda[activeAgendaItem]
-        : overCurrent
-      : defaultCurrent
-
     return (
-      <Window title='Agenda'>
+      <Window idx={idx} title='Agenda'>
         <div className='agenda-container'>
-          {drawerOpen
-            ? <AgendaList {...{onDrawerRequestChange, agenda, activeAgendaItem, newAgendaForm, setEditAgendaForm}} />
-            : null
-          }
         </div>
       </Window>
     )

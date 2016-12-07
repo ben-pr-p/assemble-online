@@ -2,7 +2,6 @@ import { Component, h } from 'preact'
 import store from 'store'
 import dom from 'component-dom'
 import Menu from './menu'
-import Agenda from './agenda'
 import Room from './room'
 import ThemeManager from '../lib/theme-manager'
 import Boss from '../lib/boss'
@@ -60,7 +59,6 @@ export default class Main extends Component {
       <div id='main-app'>
         <Room {...{me, users}} />
         <Menu {...{me, clearLocal}} />
-        <Agenda {...{roomName}} />
       </div>
     )
   }
