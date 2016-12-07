@@ -9,6 +9,7 @@ const express = require('express')
 const io = require('socket.io')
 const pug = require('pug')
 const http = require('http')
+const fs = require('fs')
 
 // Register mongoose models
 require('./models')()
@@ -64,6 +65,8 @@ app.get('/room/:room', rejectBadRooms, ensureRoom, function (req, res) {
 app.get('/room', function (req, res) {
   res.redirect('/')
 })
+
+log(fs.readdirSync(__dirname + '/../build'))
 
 let PORT = process.env.PORT
 if (!PORT) {
