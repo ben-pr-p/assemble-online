@@ -7,7 +7,6 @@ import locationDrone from './drones/location'
 import dimensionDrone from './drones/dimension'
 import attenuationDrone from './drones/attenuation'
 import volumeDrone from './drones/volume'
-import agendaDrone from './drones/agenda'
 import webrtcDrone from './drones/webrtc'
 
 // const patch = patchFn(io.Manager)
@@ -17,8 +16,7 @@ let port, socket, roomName, namespace, locations, dimensions, distances, announc
 const sesh = {
   _id: null,
   room: null,
-  announcements: [],
-  agenda: []
+  announcements: []
 }
 
 const state = {
@@ -66,7 +64,6 @@ function initialize () {
   dimensionDrone(params)
   attenuationDrone(params)
   volumeDrone(params)
-  agendaDrone(params)
   webrtcDrone(params)
 
   socket.on('sesh', receiveSesh)
@@ -165,7 +162,7 @@ function receiveScreen (size) {
 }
 
 function receiveSesh (serverSesh) {
-  const emitables = ['announcements', 'agenda', 'activeAgendaItem']
+  const emitables = []
   for (let prop in serverSesh) {
     sesh[prop] = serverSesh[prop]
   }

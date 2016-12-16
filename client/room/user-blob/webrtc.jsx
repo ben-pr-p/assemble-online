@@ -1,5 +1,6 @@
 import { Component, h } from 'preact'
 import Boss from '../../lib/boss'
+import { ToPeers, FromPeers } from '../../lib/emitters'
 import Peer from 'simple-peer'
 
 export default class Connection extends Component {
@@ -15,7 +16,18 @@ export default class Connection extends Component {
       this.state.remoteSrc = window.URL.createObjectURL(localStream)
 
     Boss.on(`attenuation-for-${partnerId}`, this.handleAttenuation, `connection-to-${partnerId}`)
+    ToPeers.on(`to-${partnerId}`, this.sendData)
+    ToPeers.on(`to-all`, this.sendData)
   }
+
+  sendData = (data) => this.peer
+    ? this.peer.send(data)
+    : null
+
+  handleData = (raw) => this._handleData(JSON.stringify(raw))
+  _handleData = (data) => data.event
+    ? FromPeers.emit(data.event, data.data)
+    : null
 
   componentDidMount () {
     const {myId, partnerId, localStream} = this.props
@@ -47,15 +59,15 @@ export default class Connection extends Component {
       data: config
     }))
 
-    Boss.on(`webrtc-config-${partnerId}`, config => {
-      this.peer.signal(config)
-    })
+    Boss.on(`webrtc-config-${partnerId}`, config => this.peer.signal(config))
 
     this.peer.on('stream', remoteStream => {
       if (this.vidEl)
         this.vidEl.srcObject = remoteStream
       setStatus('connected')
     })
+
+    this.peer.on('data', this.handleData)
   }
 
   handleAttenuation = (vol) => this.vidEl

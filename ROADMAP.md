@@ -48,10 +48,6 @@
 ## MVP
 * Landing page / better packaging, as well as blog style thing
 * Arrow key movement
-* Refresh requirement bug might still be there, not sure
-* Reference points
-* Hard time seeing people when offscreen at top because of bar
-* Make bar go away sometimes
 * Someway to find lots of people at once
 * Offscreen person should they get smaller and smaller as they go away?
 * Collage and absorption for offscreen people on overlap
@@ -59,13 +55,11 @@
   * Two people can only merge if they are a certain distance from each other
 
 ## Immediate
-* Agenda setting widget
- * announcements back
- * Additional response options - text response
- * Agenda items contain announcements
-* banner on new agenda item or really any changes not visible
-* agenda plus is fixed over, no scroll, 8+ agenda items
-* Digest
+* Create widget composing helper functions, migrate agenda there
+* Make all data for widgets sent over peer data channels
+* Establish benchmarks - implement them
+* Digest structure development
+* Redis - migrate to new server structure
 
 # Interested people
 Nikhil

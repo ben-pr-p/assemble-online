@@ -11,9 +11,6 @@ const pug = require('pug')
 const http = require('http')
 const fs = require('fs')
 
-// Register mongoose models
-require('./models')()
-
 /*
  * Local dependencies
  */

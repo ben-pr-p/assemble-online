@@ -5,7 +5,7 @@ const socketEvents = require('socket.io-events')
 const LocationManager = require('../helpers/location-manager')
 const identifyUserBrowser = require('../helpers/user-browser-id')
 const help = require('./help')
-const db = require('../db-api')
+const randomString = require('random-string')
 
 const UPDATE_INTERVAL = 50
 const BASE_DIMENSIONS = {x: 2700, y: 1700} // mostly arbitrary, but a little bit smaller than macbook pro 15 inch screen
@@ -15,8 +15,6 @@ const spawnlog = debug('assemble:session-spawner')
 const createUserRouter = require('./user')
 const createLocationRouter = require('./location')
 const createVolumeRouter = require('./volume')
-const createAnnouncementRouter = require('./announcement')
-const createAgendaRouter = require('./agenda')
 const createWebRTCRouter = require('./webrtc')
 
 module.exports = function (io, room, destroySelf) {
@@ -26,13 +24,7 @@ module.exports = function (io, room, destroySelf) {
 
 /**
  * Routes:
- *    '${nsp}/announcement/new'
- *    '${nsp}/announcement/response'
- *    '${nsp}/announcement/request'
- *
  *    '${nsp}/location/mine'
- *
- *    '${nsp}/announcement/request'
  *
  *    '${nsp}/user/new'
  *    '${nsp}/user/update'
@@ -48,10 +40,6 @@ class Session {
     this.sesh = {
       _id: null,
       room: room,
-      announcements: [],
-      agenda: [],
-      activeAgendaItem: null, // will be relative to order + 1
-      activeAnnouncement: null // will be ID
     }
 
     this.state = {
@@ -67,27 +55,22 @@ class Session {
     }
 
     this.log('Creating self...')
-    db.session.create({room}, (err, sesh) => {
-      if (err) {
-        this.log('Could not create self: %j', err)
-        throw new Error('Could not create new session')
-      }
-
-      for (let prop in sesh) {
-        this.sesh[prop] = sesh[prop]
-      }
-
-      this.nsp = io.of('/' + room)
-      this.router = socketEvents()
-
-      this.updateIntervalId = null
-      this.destroyTimeoutId = null
-
-      this.parentEraseMe = parentEraseMe
-      this.bindEvents()
-
-      this.log('I am risen!')
+    Object.assign(this.sesh, {
+      room,
+      begging: Date.now(),
+      appearances: []
     })
+
+    this.nsp = io.of('/' + room)
+    this.router = socketEvents()
+
+    this.updateIntervalId = null
+    this.destroyTimeoutId = null
+
+    this.parentEraseMe = parentEraseMe
+    this.bindEvents()
+
+    this.log('I am risen!')
   }
 
   destroySelf () {
@@ -102,15 +85,9 @@ class Session {
 
       this.nsp.removeAllListeners()
 
-      db.session.end(this.sesh._id, (err, ended) => {
-        if (err) {
-          this.log('Could not end self: %j', err)
-          throw new Error('Could not end session %', this.sesh._id)
-        }
-
-        this.log('Successfully ended session %s', ended.id)
-        this.parentEraseMe(this.sesh.room)
-      })
+      this.sesh.end = Date.now()
+      this.log('Successfully ended session %s', this.sesh.id)
+      this.parentEraseMe(this.sesh.room)
 
     }, 5000)
   }
@@ -129,9 +106,8 @@ class Session {
       this.log('Unknown user disconnect')
     } else {
       this.log('User %s disconnected', user.id)
-      help.removeUser(this.sesh, this.state, user, socket, (err, s) => {
-        this.log('Successfully registered %s leaving %s', user.id, s.id)
-      })
+      help.removeUser(this.sesh, this.state, user, socket)
+      this.log('Successfully registered %s leaving %s', user.id, this.sesh.id)
     }
 
     if (this.state.users.size == 0) { // Stop sending updates
@@ -151,21 +127,13 @@ class Session {
     //this.router.on('*', help.socketEventLogger('index', new RegExp('request*')))
 
     this.router.on('request-sesh', (socket, args, next) => {
-      db.session.get(this.sesh._id, (err, result) => {
-        for (let prop in result) {
-          this.sesh[prop] = result[prop]
-        }
-
-        this.log('Serving session as exists: %j', this.sesh)
-        socket.emit('sesh', this.sesh)
-      })
+      this.log('Serving session as exists: %j', this.sesh)
+      socket.emit('sesh', this.sesh)
     })
 
     this.router.use('/user', createUserRouter(this.sesh, this.state, emitAll))
     this.router.use('/location', createLocationRouter(this.sesh, this.state, emitAll))
     this.router.use('/volume', createVolumeRouter(this.sesh, this.state, emitAll))
-    this.router.use('/announcement', createAnnouncementRouter(this.sesh, this.state, emitAll))
-    this.router.use('/agenda', createAgendaRouter(this.sesh, this.state, emitAll))
     this.router.use('/webrtc', createWebRTCRouter(this.sesh, this.state, emitAll))
 
     //this.router.on('*', help.handleUndefined('index'))

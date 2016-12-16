@@ -9,7 +9,6 @@
 
 const debug = require('debug')
 const Router = require('socket.io-events')
-const db = require('../db-api')
 const help = require('./help')
 
 const propsToTransfer = ['x', 'y', 'easyrtcid', 'color', 'badge']
@@ -45,33 +44,18 @@ module.exports = function createRouter (sesh, state, emitAll) {
 
     let shouldStartUpdates = (state.users.size == 0)
 
-    db.user.ensure(user, (err, u) => {
-      if (err) {
-        log('Found error %j', err)
-        return socket.emit('error', err)
-      }
+    state.users.set(user.id, user)
+    state.sockets.set(user.id, socket)
+    state.userIdFromSocketId.set(socket.id, user.id)
+    state.lm.handleLocationUpdate(user.id, {x: 0, y: 0})
 
-      db.session.registerUserEnter(sesh._id, u._id, (err, s) => {
-        if (err) {
-          log('Found error %j', err)
-          return socket.emit('error', err)
-        }
+    emitAll('users', [...state.users])
+    emitAll('dimensions', state.dimensions)
+    emitAll('locations', state.lm.getLocations())
 
-        state.users.set(user.id, user)
-        state.sockets.set(user.id, socket)
-        state.userIdFromSocketId.set(socket.id, user.id)
-        state.lm.handleLocationUpdate(user.id, {x: 0, y: 0})
-
-        emitAll('users', [...state.users])
-        emitAll('dimensions', state.dimensions)
-        emitAll('locations', state.lm.getLocations())
-
-        if (shouldStartUpdates) {
-          state.modifyUpdates()
-        }
-
-      })
-    })
+    if (shouldStartUpdates) {
+      state.modifyUpdates()
+    }
   }
 
   function onUpdate (socket, args, next) {
@@ -97,9 +81,8 @@ module.exports = function createRouter (sesh, state, emitAll) {
       log('Unknown user requesting trashing')
     } else {
       log('User %j requested trashing', user)
-      help.removeUser(sesh, state, user, socket, (err, s) => {
-        log('User %s trashed from session %s', user.id, s.id)
-      })
+      help.removeUser(sesh, state, user, socket)
+      log('User %s trashed from session %s', user.id, sesh.id)
     }
   }
 
