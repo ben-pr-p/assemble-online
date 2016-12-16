@@ -12,6 +12,7 @@
  */
 
 import { ToPeers, FromPeers } from '../../lib/emitters'
+import Boss from '../../lib/boss'
 
 const configDoMove = config => config.spatial
   ? function (ev) {
@@ -63,10 +64,12 @@ export default config => component => {
   /*
    * Did Mount, Will Unmount
    */
+
   const previousDidMount = component.componentDidMount
   component.componentDidMount = function () {
     document.addEventListener('mousemove', this.doMove)
     previousDidMount()
+    if (!this.state.owner) this.declareOwnership()
   }.bind(component)
 
   const previousWillUnmount = component.componentWillUnmount
@@ -76,7 +79,55 @@ export default config => component => {
   }.bind(component)
 
   /*
+   * Listen for user broadcast
+   * When owner is dead, set owner to null
+   */
+
+  Boss.on('users', function () {
+    if (users.filter([uid, user] => uid == this.state.owner).length == 0)
+      this.setState({owner: null})
+  }.bind(component))
+
+  component.declareOwnership = function () {
+    this.sendToAll({
+      ...this.state,
+      owner: this.props.me.id
+    })
+  }.bind(component)
+
+  /*
+   * Update - if owner is alive, send it to them, otherwise declare ownership and
+   * send the updates
+   */
+
+  component.update = function (change) {
+    if (!this.state.owner)
+      return this.updateIfAnarchy(change)
+    else if (this.state.owner == me.id)
+      return this.updateIfBoss(change)
+    else
+      return this.updateIfSlave(change)
+  }.bind(component)
+
+  component.updateIfBoss = function (change) {
+    this.sendToAll(change)
+  }.bind(component)
+
+  component.updateIfAnarchy = function (change) {
+    Object.assign(this.state, change)
+    this.declareOwnership()
+  }
+
+  component.updateIfSlave = function (change) {
+    ToPeers.emit(`to-${this.state.owner}`, {
+      event: this.eventPrefix,
+      data: change
+    })
+  }
+
+  /*
    * Communicate with other peers
+   * If I am the owner, broadcast changes I get outwards
    */
   component.sendToAll = function (data) {
     ToPeers.emit('to-all', {
@@ -86,6 +137,9 @@ export default config => component => {
   }.bind(component)
 
   FromPeers.on(this.eventPrefix, function (stateChange) {
+    if (this.state.owner == this.props.me.id)
+      this.sendToAll(stateChange)
+
     this.setState(stateChange)
   }.bind(component))
 }

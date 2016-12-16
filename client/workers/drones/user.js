@@ -29,10 +29,6 @@ export default function (params) {
 
       state.users = map
       emit('users', [...state.users])
-
-      map.forEach((user, uid) => {
-        state.easyrtcids.set(uid, user.easyrtcid)
-      })
     }
   }
 
