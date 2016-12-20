@@ -6,6 +6,7 @@ import TextInput from '../../../common/text-input'
 import store from 'store'
 import randomString from 'random-string'
 import shallowUpdateCompare from '../../../lib/shallow-update-compare'
+import { Bus } from '../../../lib/emitters'
 
 const labelMap = {
   avatar: 'Paste a Image Address to be your Avatar',
@@ -50,6 +51,7 @@ export default class NewUserModal extends Component {
       user.id = randomString({numeric: false})
 
     store.set('me', user)
+    Bus.emit('me', user)
     this.props.closeNewUserModal({shouldSave: true})
   }
 
@@ -66,14 +68,14 @@ export default class NewUserModal extends Component {
     let actions = []
     if (this.state.id) {
       actions.push((
-        <Button className='raised' key='cancel' text='Cancel'
+        <Button key='cancel' text='Cancel'
           onClick={this.cancel}
         />
       ))
     }
 
     actions.push((
-      <Button key='ok' text='Get Started'
+      <Button className='submit' key='ok' text='Get Started'
         onClick={this.submit}
       />
     ))

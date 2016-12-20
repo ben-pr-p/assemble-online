@@ -1,14 +1,9 @@
 import { Component, h } from 'preact'
-import DeleteIcon from '../../common/icons/delete'
-import AccountBox from '../../common/icons/account-box'
-import BugIcon from '../../common/icons/bug-report'
-import SettingsIcon from '../../common/icons/settings'
-import ColorIcon from '../../common/icons/color-lens'
 import BugReport from './bug-report'
 import NewUserModal from './new-user-modal'
-import Agenda from '../agenda'
 import theme from '../../lib/theme-manager'
 import Boss from '../../lib/boss'
+import allWidgets from '../widgets'
 import store from 'store'
 
 const colors = ['green', 'yellow', 'red', 'blue'].map(col => theme.get(col))
@@ -20,22 +15,8 @@ export default class Menu extends Component {
     bugReport: false,
     editingUser: false,
     editingColor: false,
-    windows: []
+    widgets: []
   }
-
-  config = [
-    {label: 'Edit Me', action: 'editUser'},
-    {label: 'File a Bug Report', action: 'initializeBugReport'},
-    {label: 'Activate Agenda', action: 'activateAgenda'}
-  ]
-
-  windows = [
-    {
-      component: <Agenda key='agenda' idx={0} />,
-      active: false,
-      name: 'agenda'
-    }
-  ]
 
   toggleOpen = () => this.setState({open: !this.state.open})
 
@@ -45,8 +26,10 @@ export default class Menu extends Component {
   endBugReport = () =>
     this.setState({bugReport: false})
 
-  activateAgenda = () =>
-    this.setState({windows: [this.windows.filter(w => w.name == 'agenda')[0]]})
+  wrapNavPos = navPos => ev => this.setState({ navPos })
+
+  wrapAddWidget = widget => ev =>
+    this.setState({ widgets: this.state.widgets.concat([widget]) })
 
   editUser = () => this.setState({editingUser: true})
 
@@ -60,27 +43,34 @@ export default class Menu extends Component {
     this.setState({editingUser: false})
   }
 
-  render ({me}, {open, editingUser, bugReport, editingColor, windows}) {
+  config = [
+    {label: 'Edit Me', action: this.editUser},
+    {label: 'File a Bug Report', action: this.initializeBugReport},
+    {label: 'Widgets', children: allWidgets.map(w => {
+      return {
+        label: w.kind,
+        action: this.wrapAddWidget(w)
+      }})
+    }
+  ]
+
+  render ({me}, {open, editingUser, bugReport, editingColor, widgets}) {
     return (
       <div className='menu'>
+
+        {widgets.map(W => (
+          <W me={me} />
+        ))}
+
         <div className='menu-bar bottom' onClick={this.toggleOpen}>
           {open ? 'Close' : 'Menu'}
         </div>
 
-        {windows.map(w => w.component)}
         {open && this.renderMenu(this.config, '0')}
 
         {bugReport && <BugReport endBugReport={this.endBugReport} />}
 
         {this.renderNewUserModal(me, editingUser)}
-
-        { editingColor &&
-          <Colors {...{
-            setColors: this.setColors,
-            palette: theme.getPalette(), closeColorModal: this.closeColorModal
-          }}/>
-        }
-
       </div>
     )
   }
@@ -90,16 +80,22 @@ export default class Menu extends Component {
       const data = idxBase + '-' + idx.toString()
 
       return (
-        <div className={`menu-bar ${idx == 0 ? 'bottom' : ''}`}
+        <div id={b.label}
+          className={`menu-bar ${idx == 0 ? 'bottom' : ''}`}
           data={data}
-          onClick={this[b.action]}
+          onClick={b.action && !b.children
+            ? b.action
+            : this.wrapNavPos(data)
+          }
           style={{
-            left: (data.split('-').length - 1) * 150,
-            bottom: idx * 40 + 40
+            transform: `translate(
+              ${(data.split('-').length - 1) * 150}px,
+              -${idx * 40 + 40}px
+            )`
           }}
         >
           {b.label}
-          {((idxBase || '') + idx.toString()) == this.state.navPos && this.renderMenu(b.children || [])}
+          {data == this.state.navPos && this.renderMenu(b.children || [], (parseInt(idxBase) + 1).toString())}
         </div>
       )
     })

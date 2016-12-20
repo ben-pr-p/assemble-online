@@ -39,7 +39,7 @@ module.exports = function createRouter (sesh, state, emitAll) {
     user.color = colorScale[state.colorIdx]
     state.colorIdx = (state.colorIdx + 1) % colorScale.length
 
-    log('Got new user %s', user.id)
+    log('Got new user %s: %j', user.id, user)
     log('Assigned %s color %s', user.id, user.color)
 
     let shouldStartUpdates = (state.users.size == 0)
@@ -49,6 +49,7 @@ module.exports = function createRouter (sesh, state, emitAll) {
     state.userIdFromSocketId.set(socket.id, user.id)
     state.lm.handleLocationUpdate(user.id, {x: 0, y: 0})
 
+    log([...state.users])
     emitAll('users', [...state.users])
     emitAll('dimensions', state.dimensions)
     emitAll('locations', state.lm.getLocations())

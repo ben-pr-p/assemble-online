@@ -19,7 +19,15 @@ export default class Window extends Component {
   componentWillUnmount () {
     document.removeEventListener('mousemove', this.onDocMouseMove)
   }
-  
+
+  onMouseDown = () => this.setState({dragging: true})
+  onMouseUp = () => this.setState({dragging: false})
+
+  onDocMouseMove = ev => this.props.doMove({
+      x: this.state.pos.x + ev.movementX,
+      y: this.state.pos.y + ev.movementY
+    })
+
   render ({children, title, pos, dragging, size}) {
     const style = {
       transform: `translate3d(${pos.x}px, ${pos.y}px, 0px)`
@@ -30,9 +38,9 @@ export default class Window extends Component {
 
     return (
       <div className={`window ${dragging ? 'dragging' : ''}`} style={style}>
-        <div className='window-header'
-          onMouseDown={this.props.onMouseDown}
-          onMouseUp={this.props.onMouseUp}
+         <div className='window-header'
+          onMouseDown={this.onMouseDown}
+          onMouseUp={this.onMouseUp}
         >
           <div className='window-title'>
             {title}

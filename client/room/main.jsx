@@ -5,6 +5,7 @@ import Menu from './menu'
 import Room from './room'
 import ThemeManager from '../lib/theme-manager'
 import Boss from '../lib/boss'
+import { Bus } from '../lib/emitters'
 
 export default class Main extends Component {
   state = {
@@ -16,6 +17,7 @@ export default class Main extends Component {
     this.state.roomName = dom('#reactAppContainer').attr('data')
 
     Boss.on('users', this.handleUsers, 'App')
+    Bus.on('me', this.handleMe)
 
     if (this.state.roomName)
       Boss.post('room-name', this.state.roomName)
@@ -32,10 +34,9 @@ export default class Main extends Component {
     ? this.setState({ users: new Map(users) })
     : null
 
-  setEasyRTCId = (easyrtcid) => {
-    this.state.me.easyrtcid = easyrtcid
-    this.announceMe(this.state.me)
-  }
+  announceMe = data => Boss.post('user/new', data)
+
+  handleMe = me => this.setState({ me })
 
   clearLocal = () => {
     store.clear()
@@ -44,9 +45,6 @@ export default class Main extends Component {
     this.forceUpdate()
   }
 
-  announceMe (data) {
-    Boss.post('user/new', data)
-  }
 
   render (props, { me, users, roomName, theme }) {
     const {
@@ -57,7 +55,7 @@ export default class Main extends Component {
 
     return (
       <div id='main-app'>
-        <Room {...{me, users}} />
+        {me && <Room {...{me, users}} />}
         <Menu {...{me, clearLocal}} />
       </div>
     )

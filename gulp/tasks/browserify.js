@@ -13,7 +13,8 @@ const generate = (jsname) =>
   () => vfs.src(`./client/${jsname}`)
     .pipe(bro({
       transform: babelify,
-      extensions: ['.js','.jsx']
+      extensions: ['.js','.jsx'],
+      // debug: true
     }))
     .pipe(gulp.dest(dest))
 
