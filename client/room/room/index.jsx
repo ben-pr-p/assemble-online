@@ -49,9 +49,7 @@ export default class Room extends Component {
   )
 
   postScreen = () => Boss.post('screen', {x: window.innerWidth, y: window.innerHeight})
-
   handleDimensions = (data) => this.setState({ dimensions: data })
-
   handleTranslate = (data) => this.setState({ translate: data })
 
   onMouseDown = () => {

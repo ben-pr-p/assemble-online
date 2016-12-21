@@ -1,18 +1,13 @@
 import { h, Component } from 'preact'
 
 export default class Test extends Component {
+  static spatial = true
+
   setWidgetState = ev => this.props.update(JSON.parse(this.input.value))
 
   render ({children, me, update, owner, ...props}) {
-    console.log(props)
     return (
-      <div id='widget-state'
-        style={{
-          position: 'fixed',
-          top: 200,
-          left: 200
-        }}
-      >
+      <div id='widget-state'>
         {JSON.stringify(props)}
         <form>
           <input id='set-state' ref={ref => this.input = ref}/>

@@ -1,6 +1,9 @@
+import Emitter from 'component-emitter'
+
 class Boss {
   constructor () {
-    this.events = {}
+    this.emitter = new Emitter()
+    this.callerFns = {}
 
     this.worker = new SharedWorker('/workers/foreman.js')
     this.worker.port.onmessage = this.handleMessage.bind(this)
@@ -10,18 +13,21 @@ class Boss {
   }
 
   on (event, fn, caller) {
-    if (!this.events[event]) {
-      this.events[event] = []
-    }
-    this.events[event].push({fn, caller})
+    this.emitter.on(event, fn)
+    this.callerFns[caller] = this.callerFns[caller] != undefined
+      ? this.callerFns[caller].concat([fn])
+      : [fn]
   }
 
   off (event, fn) {
-    this.events[event] = this.events[event].filter(e => e.fn != fn)
+    if (typeof fn != 'function') throw new Error('send parameter to off must be a function')
+    this.emitter.off(event, fn)
   }
 
   offByCaller (event, caller) {
-    this.events[event] = this.events[event].filter(e => e.caller != caller)
+    for (let fn in this.callerFns[caller]) {
+      this.emitter.off(event, fn)
+    }
   }
 
   offAllByCaller (caller) {
@@ -39,17 +45,7 @@ class Boss {
       return this.handleError(msg.data.data)
     }
 
-    let handled = false
-    if (this.events[msg.data.event]) {
-      this.events[msg.data.event].forEach(ev => {
-        handled = true
-        ev.fn(msg.data.data)
-      })
-    }
-
-    if (!handled) {
-      throw new Error(`Received event ${JSON.stringify(msg.data)} with no handler`)
-    }
+    this.emitter.emit(msg.data.event, msg.data.data)
   }
 
   handleError (err, args) {
