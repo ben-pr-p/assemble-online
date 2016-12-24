@@ -20,12 +20,12 @@ export default class Connection extends Component {
     ToPeers.on(`to-all`, this.sendData)
   }
 
-  sendData = (data) => this.peer
-    ? this.peer.send(data)
+  sendData = data => this.peer
+    ? this.peer.send(JSON.stringify(data))
     : null
 
-  handleData = (raw) => this._handleData(JSON.stringify(raw))
-  _handleData = (data) => data.event
+  handleData = raw => this._handleData(JSON.parse(raw.toString()))
+  _handleData = data => data.event
     ? FromPeers.emit(data.event, data.data)
     : null
 
@@ -40,7 +40,10 @@ export default class Connection extends Component {
     const {partnerId} = this.props
     Boss.offAllByCaller(`connection-to-${partnerId}`)
     this.peer.destroy()
-    setStatus('disconnected')
+    this.peer = null
+    ToPeers.off(`to-${partnerId}`, this.sendData)
+    ToPeers.off(`to-all`, this.sendData)
+    this.props.setStatus('disconnected')
   }
 
   initialize = () => {

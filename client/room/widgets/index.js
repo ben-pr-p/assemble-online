@@ -1,4 +1,5 @@
-import Test from './test'
+import TestSpatial from './test-spatial'
+// import TestNonSpatial from './test-non-spatial'
 import widgetize from './widgetize'
 
-export default [Test].map(w => widgetize(w))
+export default [TestSpatial].map(w => widgetize(w))

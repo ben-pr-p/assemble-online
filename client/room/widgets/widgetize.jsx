@@ -5,7 +5,7 @@ import Portal from 'preact-portal'
 import IconButton from '../../common/icon-button'
 import GrainIcon from '../../common/icons/grain'
 
-const print = string => {console.log(string); return string}
+const print = s => {console.log(s); return s}
 
 export default WrappedComponent =>
   class extends Component {
@@ -18,16 +18,34 @@ export default WrappedComponent =>
       size: {x: 300, y: 500},
       translate: {x: 0, y: 0},
       dragging: false,
-      sizing: false
+      sizing: false,
+      owner: null
     }
 
     isOwner = () => this.state.owner == this.props.me.id
     eventPrefix = () => `widget-${this.kind}`
+    ownerIsDead = users =>
+      users.filter(uid => uid == this.state.owner).length == 0
+
+    users = []
+    newFriends = users => {
+      const result = users.filter(u => !this.users.includes(u)).length > 0
+      this.users = users
+      return print(result)
+    }
 
     componentWillMount () {
-      Boss.on('users', users => {
-        if (users.filter(([uid, user]) => uid == this.state.owner).length == 0)
+      if (this.props.initialState)
+        Object.assign(this.state, this.props.initialState)
+
+      Boss.on('users', raw => {
+        const users = raw.map(([r, _]) => r)
+
+        if (this.ownerIsDead(users))
           this.setState({owner: null})
+
+        if (this.isOwner() && this.newFriends(users))
+          this.declareOwnership()
       }, this.name)
 
       Boss.on('translate', this.handleTranslate, this.name)
@@ -82,7 +100,8 @@ export default WrappedComponent =>
 
    declareOwnership = () =>
      this.sendToAll({
-       owner: this.props.me.id
+       owner: print(this.props.me.id),
+       ...this.state
      })
 
     sendToAll = data =>
@@ -99,8 +118,8 @@ export default WrappedComponent =>
           : this.updateIfSlave(change)
 
     updateIfBoss = change => {
-      this.setState(change)
       this.sendToAll(change)
+      this.setState(change)
     }
 
     updateIfSlave = change =>
@@ -116,7 +135,7 @@ export default WrappedComponent =>
       ? `translate(${pos.x + translate.x}px, ${pos.y + translate.y}px)`
       : `translate(${pos.x}px, ${pos.y}px)`
 
-    render ({me}, {pos, size, dragging, translate, ...state}) {
+    render ({me}, {pos, size, dragging, sizing, translate, owner, ...state}) {
       return (
         <Portal into='body'>
           <div className={`window ${dragging ? 'dragging' : ''}`} style={{

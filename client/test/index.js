@@ -6,34 +6,41 @@ describe('room should load', function () {
   })
 })
 
-describe('after A and B do profile, 2 blobs should exist', function () {
+describe('after A, B, and C do profile, 3 blobs should exist', function () {
   it('#name field should exist', function () {
     expect([...new Set(Object.values(browser.getTagName('#name')))][0])
       .to.equal('input')
   })
 
-  describe('A and B should do profile', function () {
+  describe('A, B, C should do profile', function () {
     before(function () {
       chromeA.setValue('#name', 'chromeA')
       chromeB.setValue('#name', 'chromeB')
+      chromeC.setValue('#name', 'chromeC')
 
       browser.click('.submit')
 
       browser.waitForVisible('.user-blob')
     })
 
-    it('A should see two blobs', function () {
-      browser.pause(1000)
+    it('A should see 3 blobs', function () {
       expect(
         chromeA.getTagName('.user-blob')
-      ).to.have.length(2)
+      ).to.have.length(3)
     })
 
-    it('B should see two blobs', function () {
-      browser.pause(1000)
+    it('B should see 3 blobs', function () {
       expect(
         chromeB.getTagName('.user-blob')
-      ).to.have.length(2)
+      ).to.have.length(3)
+    })
+
+    it('C should see 3 blobs', function () {
+      expect(
+        chromeC.getTagName('.user-blob')
+      ).to.have.length(3)
     })
   })
 })
+
+require('./widgets')

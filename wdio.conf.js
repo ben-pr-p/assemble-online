@@ -49,12 +49,12 @@ exports.config = {
         desiredCapabilities: {
           browserName: 'chrome'
         }
+      },
+      chromeC: {
+        desiredCapabilities: {
+          browserName: 'chrome'
+        }
       }
-      // firefoxA: {
-      //   desiredCapabilities: {
-      //     browserName: 'firefox'
-      //   }
-      // }
     },
 
     // ===================
@@ -86,7 +86,7 @@ exports.config = {
     baseUrl: 'http://localhost:3000',
 
     // Default timeout for all waitFor* commands.
-    waitforTimeout: 10000,
+    waitforTimeout: 100000000,
 
     // Default timeout in milliseconds for request
     // if Selenium Grid doesn't send response

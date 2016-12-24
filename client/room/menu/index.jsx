@@ -3,8 +3,10 @@ import BugReport from './bug-report'
 import NewUserModal from './new-user-modal'
 import theme from '../../lib/theme-manager'
 import Boss from '../../lib/boss'
+import { FromPeers } from '../../lib/emitters'
 import allWidgets from '../widgets'
 import store from 'store'
+import wildcardify from 'wildcards'
 
 const colors = ['green', 'yellow', 'red', 'blue'].map(col => theme.get(col))
 
@@ -16,6 +18,17 @@ export default class Menu extends Component {
     editingUser: false,
     editingColor: false,
     widgets: []
+  }
+
+  componentWillMount () {
+    wildcardify(FromPeers, '*', (ev, data) => {
+      if (FromPeers.listeners(ev).length == 0) {
+        this.setState({
+          widgets: this.state.widgets.concat(allWidgets.filter(w => w.kind == ev.split('-')[1]).map(w => [w, data]))
+        })
+        setTimeout(() => FromPeers.emit(ev, data), 10)
+      }
+    })
   }
 
   toggleOpen = () => this.setState({open: !this.state.open})
@@ -58,9 +71,7 @@ export default class Menu extends Component {
     return (
       <div className='menu'>
 
-        {widgets.map(W => (
-          <W me={me} />
-        ))}
+        {widgets.map(w => this.renderWidget(me, w))}
 
         <div className='menu-bar bottom' onClick={this.toggleOpen}>
           {open ? 'Close' : 'Menu'}
@@ -75,31 +86,34 @@ export default class Menu extends Component {
     )
   }
 
-  renderMenu (bars, idxBase) {
-    return bars.map((b, idx) => {
-      const data = idxBase + '-' + idx.toString()
+  renderMenu = (bars, idxBase) => bars.map((b, idx) => {
+    const data = idxBase + '-' + idx.toString()
+    return (
+      <div id={b.label}
+        className={`menu-bar ${idx == 0 ? 'bottom' : ''}`}
+        data={data}
+        onClick={b.action && !b.children
+          ? b.action
+          : this.wrapNavPos(data)
+        }
+        style={{
+          transform: `translate(
+            ${(data.split('-').length - 1) * 150}px,
+            -${idx * 40 + 40}px
+          )`
+        }}
+      >
+        {b.label}
+        {data == this.state.navPos && this.renderMenu(b.children || [], (parseInt(idxBase) + 1).toString())}
+      </div>
+    )
+  })
 
-      return (
-        <div id={b.label}
-          className={`menu-bar ${idx == 0 ? 'bottom' : ''}`}
-          data={data}
-          onClick={b.action && !b.children
-            ? b.action
-            : this.wrapNavPos(data)
-          }
-          style={{
-            transform: `translate(
-              ${(data.split('-').length - 1) * 150}px,
-              -${idx * 40 + 40}px
-            )`
-          }}
-        >
-          {b.label}
-          {data == this.state.navPos && this.renderMenu(b.children || [], (parseInt(idxBase) + 1).toString())}
-        </div>
-      )
-    })
-  }
+  renderWidget = (me, widget) => Array.isArray(widget)
+    ? this._renderWidget(me, widget[0], widget[1])
+    : this._renderWidget(me, widget, null)
+
+  _renderWidget = (me, W, initialState) => <W me={me} initialState={initialState} />
 
   renderNewUserModal = (me, editingUser) => (!me || editingUser)
     ? <NewUserModal {...{closeNewUserModal: this.closeNewUserModal, me}} />
