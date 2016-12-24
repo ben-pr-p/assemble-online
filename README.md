@@ -27,39 +27,16 @@ For development, I have one tab open running `gulp` and one running `npm start`.
 
 You'll also need to set `export DEBUG=assemble*` to see server side logs.
 
-# Socket Events
-For performance reasons, all receiving and emitting all socket events is done through a SharedWorker. Thus, a client emission is implemented indirectly by posting a message to the SharedWorker, and a server emission is handled first by the SharedWorker which processes the data and posts the message to the proper component.
+## Tests
 
-To make passing messages from the SharedWorker to a specific component easier, and to ensure re-renders happen as low in the component hierarchy as possible, I implemented a small helper class called `Boss`, which allows listeners to be bound which are called on specific emissions from the SharedWorker.
+I'm using `webdriverio` with the `wdio` test runner and Selenium for client side
+tests. Server unit tests are planned in my head, but as of now there are none.
 
-As of now, WebRTC is still handled in the main Javascript thread.
+To run them, ```
+npm i -g selenium-standalone
+```
 
-## Client Emissions
+Then have one terminal tab running `selenium-standalone start`, another one running
+`npm start` or `node server/app.js`, and another with `gulp` if you're actively developing.
 
-### 'me' - emitted by App
-
-### 'my-volume' - emitted by AudioController
-
-### 'my-announcement' - emitted by Announcement
-
-### 'my-location' - emitted by Room
-
-## Server Emissions
-
-### 'users' - handled by App
-users is a serialized Map
-
-### 'locations' - handled by Room
-locations is a serialized Map
-
-### 'volumes' - handled by Announcement
-volumes is a serialized Map
-
-### 'distances' - handled by AudioController
-distances is an object
-
-### 'dimensions' - handled by Room
-dimensions is an object
-
-### 'announcement' - handled by Announcement
-announcement is an object
+You also need Chrome installed. Then run `npm test`.
