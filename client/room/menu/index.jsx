@@ -8,8 +8,6 @@ import allWidgets from '../widgets'
 import store from 'store'
 import wildcardify from 'wildcards'
 
-const colors = ['green', 'yellow', 'red', 'blue'].map(col => theme.get(col))
-
 export default class Menu extends Component {
   state = {
     open: false,
@@ -22,6 +20,11 @@ export default class Menu extends Component {
 
   componentWillMount () {
     wildcardify(FromPeers, '*', (ev, data) => {
+      /*
+       * If we currently don't have a widget listener for the event,
+       *  - create the proper widget, give it 10 ms to mount, and then re-broadcast
+       *    this event
+       */
       if (FromPeers.listeners(ev).length == 0) {
         this.setState({
           widgets: this.state.widgets.concat(allWidgets.filter(w => w.kind == ev.split('-')[1]).map(w => [w, data]))

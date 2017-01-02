@@ -63,8 +63,6 @@ app.get('/room', function (req, res) {
   res.redirect('/')
 })
 
-log(fs.readdirSync(__dirname + '/../build'))
-
 let PORT = process.env.PORT
 if (!PORT) {
   log('Missing env var PORT, using 3000')
@@ -91,7 +89,7 @@ function rejectBadRooms (req, res, next) {
 }
 
 function ensureRoom (req, res, next) {
-  log('Current have sessions %j', Object.keys(sessions))
+  log('Currently have sessions %j', Object.keys(sessions))
 
   if (sessions[req.params.room]) return next()
 

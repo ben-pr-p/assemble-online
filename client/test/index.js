@@ -1,3 +1,5 @@
+/*global chromeA chromeB chromeC expect browser*/
+
 describe('room should load', function () {
   it('should have #main-app', function () {
     browser.waitForVisible('#main-app')

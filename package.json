@@ -15,7 +15,7 @@
     "build": "gulp build",
     "bs": "gulp build && node server/app.js",
     "bw": "gulp bw",
-    "lint": "./node_modules/.bin/eslint client/ --ignore-pattern client/lib/easyrtc.js",
+    "lint": "./node_modules/.bin/eslint . --ignore-pattern test",
     "test": "./node_modules/.bin/wdio wdio.conf.js"
   },
   "license": "MIT",

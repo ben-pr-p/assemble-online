@@ -20,7 +20,6 @@ class Boss {
   }
 
   off (event, fn) {
-    if (typeof fn != 'function') throw new Error('send parameter to off must be a function')
     this.emitter.off(event, fn)
   }
 

@@ -5,8 +5,6 @@ import Portal from 'preact-portal'
 import IconButton from '../../common/icon-button'
 import GrainIcon from '../../common/icons/grain'
 
-const print = s => {console.log(s); return s}
-
 export default WrappedComponent =>
   class extends Component {
     static kind = WrappedComponent.name
@@ -29,32 +27,63 @@ export default WrappedComponent =>
 
     users = []
     newFriends = users => {
-      const result = users.filter(u => !this.users.includes(u)).length > 0
+      const result = users.filter(u => this.props.me.id != u && !this.users.includes(u))
       this.users = users
-      return print(result)
+      return result
     }
 
     componentWillMount () {
       if (this.props.initialState)
         Object.assign(this.state, this.props.initialState)
 
+      /*
+       * Listen to changes in users for 2 purposes
+       * 1) Check and set if the owner is dead
+       * 2) See if we are the owner and need to alert new friends about the
+       *    existence of this widget
+       *
+       *    If so, wait until we've received the `connected-to-${partnerId}`
+       *    events from the corresponding webrtc components, then broadcast
+       *    ourselves as owners
+       */
       Boss.on('users', raw => {
         const users = raw.map(([r, _]) => r)
+        console.log('new users')
+        console.log(this.isOwner())
 
         if (this.ownerIsDead(users))
           this.setState({owner: null})
 
-        if (this.isOwner() && this.newFriends(users))
-          this.declareOwnership()
+        if (this.isOwner()) {
+          const toTell = new Set(this.newFriends(users))
+          console.log(toTell.size)
+          if (toTell.size > 0) {
+            toTell.forEach(uid =>
+              ToPeers.on(`connected-to-${uid}`, () => {
+                toTell.delete(uid)
+                if (toTell.size == 0) {
+                  console.log('new friends have connected')
+                  this.declareOwnership()
+                }
+              })
+            )
+          }
+        }
       }, this.name)
 
       Boss.on('translate', this.handleTranslate, this.name)
 
+      /*
+       * If we're owner, share the change with everyone
+       */
       FromPeers.on(this.eventPrefix(), stateChange => {
         if (this.isOwner()) this.sendToAll(stateChange)
         this.setState(stateChange)
       })
 
+      /*
+       * Set initial translate based on viewport translate
+       */
       this.state.translate = (([x,y]) => ({x, y}))
         (document.querySelector('#viewport')
           .style.transform.match(/[0-9\.]*px,/g)
@@ -100,7 +129,7 @@ export default WrappedComponent =>
 
    declareOwnership = () =>
      this.sendToAll({
-       owner: print(this.props.me.id),
+       owner: this.props.me.id,
        ...this.state
      })
 

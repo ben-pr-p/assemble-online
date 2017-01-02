@@ -1,3 +1,5 @@
+/*global chromeA chromeB chromeC expect browser*/
+
 const genMessage = source => JSON.stringify({source, number: Math.random()})
 
 const messageFromA = genMessage('A')
@@ -83,6 +85,8 @@ describe('transition of power', function () {
       .setValue('#set-state', messageFromB)
       .click('#do-set-state')
 
+    browser.pause(300)
+
     expect(
       chromeB.getText('#current-state')
     ).to.equal(messageFromB)
@@ -91,12 +95,26 @@ describe('transition of power', function () {
       chromeC.getText('#current-state')
     ).to.equal(messageFromB)
   })
+
+  it('and C\'s to B', function () {
+    chromeC
+      .setValue('#set-state', messageFromC)
+      .click('#do-set-state')
+
+    expect(
+      chromeB.getText('#current-state')
+    ).to.equal(messageFromC)
+
+    expect(
+      chromeC.getText('#current-state')
+    ).to.equal(messageFromC)
+  })
 })
 
 describe('new friends', function () {
   it('when A returns, A should have widget with message from B', function () {
     chromeA.url('/room/test')
-    browser.pause(30)
+    browser.pause(300)
 
     expect(
       chromeA.getText('#current-state')

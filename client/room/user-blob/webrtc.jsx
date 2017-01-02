@@ -38,11 +38,14 @@ export default class Connection extends Component {
 
   componentWillUnmount () {
     const {partnerId} = this.props
-    Boss.offAllByCaller(`connection-to-${partnerId}`)
+
     this.peer.destroy()
     this.peer = null
+
     ToPeers.off(`to-${partnerId}`, this.sendData)
     ToPeers.off(`to-all`, this.sendData)
+    Boss.off(`webrtc-config-${partnerId}`)
+    Boss.off(`attenuation-for-${partnerId}`)
     this.props.setStatus('disconnected')
   }
 
@@ -62,7 +65,9 @@ export default class Connection extends Component {
       data: config
     }))
 
-    Boss.on(`webrtc-config-${partnerId}`, config => this.peer.signal(config))
+    Boss.on(`webrtc-config-${partnerId}`, config => {
+      this.peer.signal(config)
+    })
 
     this.peer.on('stream', remoteStream => {
       if (this.vidEl)
@@ -71,6 +76,7 @@ export default class Connection extends Component {
     })
 
     this.peer.on('data', this.handleData)
+    this.peer.on('connect', () => ToPeers.emit(`connected-to-${partnerId}`))
   }
 
   handleAttenuation = (vol) => this.vidEl
