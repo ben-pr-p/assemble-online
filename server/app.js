@@ -1,5 +1,3 @@
-'use strict'
-
 /*
  * Dependencies
  */
@@ -9,30 +7,23 @@ const express = require('express')
 const io = require('socket.io')
 const pug = require('pug')
 const http = require('http')
-const fs = require('fs')
-
-/*
- * Local dependencies
- */
 const spawnSession = require('./socket')
-const identifyUserBrowser = require('./helpers/user-browser-id')
 
 /*
- * Begin config
+ * ------------------------- Begin config --------------------------
  */
 const app = express()
-
 const staticDir = path.resolve(__dirname + '/../build')
 
-const server = http.createServer(app)
-const socketServer = io.listen(server, {'log level':1})
-
-const sessions = {}
-
 app.use('/', express.static(staticDir))
-
 app.set('view engine', 'pug')
 app.set('views', './server/views')
+
+/*
+ * Express endpoints
+ */
+
+const sessions = {}
 
 app.get('/', function (req, res) {
   res.render('portal')
@@ -97,3 +88,13 @@ function ensureRoom (req, res, next) {
   sessions[req.params.room] = spawnSession(socketServer, req.params.room, destroyRoom)
   next()
 }
+
+/*
+ * Create
+ * -- express server
+ * -- socket server
+ * -- redis client
+ */
+const server = http.createServer(app)
+const socketServer = io.listen(server, {'log level':1})
+const redis = require('redis').createClient(process.env.REDIS_URL)
