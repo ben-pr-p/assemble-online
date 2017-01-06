@@ -34,6 +34,7 @@
     "pubsubcutioner": "^1.1.5",
     "pug": "^2.0.0-beta5",
     "random-string": "^0.1.2",
+    "redis": "^2.6.3",
     "simple-peer": "^6.0.7",
     "socket.io": "^1.4.8",
     "socket.io-client": "^1.4.8",

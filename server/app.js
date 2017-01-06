@@ -45,39 +45,23 @@ app.get('/room-status', function (req, res) {
   res.json(result)
 })
 
-app.get('/room/:room', rejectBadRooms, ensureRoom, function (req, res) {
-  log('Request GET /%s', req.params.room)
-  res.render('room', {room: req.params.room})
-})
-
 app.get('/room', function (req, res) {
   res.redirect('/')
 })
 
-let PORT = process.env.PORT
-if (!PORT) {
-  log('Missing env var PORT, using 3000')
-  PORT = 3000
-}
-
-log('Listening on PORT %d', PORT)
-server.listen(PORT)
-
-function destroyRoom (roomName) {
-  log('Destroying room %s', roomName)
-
-  socketServer.nsps[roomName] = null
-  delete socketServer.nsps[roomName]
-
-  sessions[roomName] = null
-  delete sessions[roomName]
-}
-
-function rejectBadRooms (req, res, next) {
-  if (req.params.room.indexOf('.') > -1)
-    return res.status(400).json({error: 'invalid room name'})
-  return next()
-}
+app.get('/room/:room',
+  /* Reject bad room names */
+  (req, res, next) => req.params.room.indexOf('.') > -1
+    ? res.status(400).json({error: 'invalid room name'})
+    : next()
+  ,
+  /* Ensure room exists in redis */
+  ensureRoom,
+  (req, res) => {
+    log('Request GET /%s', req.params.room)
+    res.render('room', {room: req.params.room})
+  }
+)
 
 function ensureRoom (req, res, next) {
   log('Currently have sessions %j', Object.keys(sessions))
@@ -98,3 +82,12 @@ function ensureRoom (req, res, next) {
 const server = http.createServer(app)
 const socketServer = io.listen(server, {'log level':1})
 const redis = require('redis').createClient(process.env.REDIS_URL)
+
+let PORT = process.env.PORT
+if (!PORT) {
+  log('Missing env var PORT, using 3000')
+  PORT = 3000
+}
+
+log('Listening on PORT %d', PORT)
+server.listen(PORT)
