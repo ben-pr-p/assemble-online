@@ -18,7 +18,7 @@ describe('enter and exit', () => {
         name: `user ${idx}`
       }
 
-      s.emit('/user/new', s.me)
+      s.emit('me', s.me)
     })
 
     expectNumUsersAfter(NUM_PARTICIPANTS, 100, done)
@@ -44,7 +44,7 @@ describe('half exodus and re-entry', () => {
         const s = io.connect(GET_ROOM_URL('test'), SOCKET_OPTIONS)
         s.me = dumpedUsers[idx]
         s.on('connect', _ =>
-          s.emit('/user/new', s.me)
+          s.emit('me', s.me)
         )
         return s
       })

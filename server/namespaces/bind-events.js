@@ -1,4 +1,5 @@
 const redis = require('../redis')
+const queueAttn = require('../attenuation-workers')
 
 const ignore = _ => _
 const panic = err => {throw err}
@@ -24,7 +25,7 @@ module.exports = (io, nsp, name) => {
         .then(ignore)
         .catch(panic)
 
-      // redis.
+      queueAttn(socket.id)
     })
 
     socket.on('volume', vol =>
