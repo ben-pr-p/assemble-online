@@ -1,28 +1,7 @@
 const redis = require('redis').createClient(process.env.REDIS_URL)
-
-const callbackify =
-  (resolve, reject) =>
-    (err, result) =>
-      err
-        ? reject(err)
-        : resolve(result)
-
-const keyify = prefix => uid => `${prefix}:${uid}`
-const sortbine = uid1 => uid2 =>
-  uid1 != uid2
-    ? [uid1, uid2].sort().join('-')
-    : undefined
-
-const _objectify = (uids, vals) => vals.reduce((acc, val, idx) =>
-  val
-    ? Object.assign(acc, {[uids[idx]]: JSON.parse(val)})
-    : acc
-, {})
-
-const objectify = (uids, vals) =>
-  vals !== undefined
-    ? _objectify(uids, vals)
-    : curriedVals => _objectify(uids, curriedVals)
+const {
+  sortbine, objectify, keyify, callbackify, distance
+} = require('../utils')
 
 module.exports = {
   rooms: {
@@ -149,6 +128,7 @@ module.exports = {
       getFor: (uid, others) => new Promise((resolve, reject) =>
         redis.mget(uids.map(sortbine(uid)).map(keyify('att')), callbackify(resolve, reject))
       ),
+
       set: (uid1, uid2, val) => new Promise((resolve, reject) =>
         redis.set(keyify('att')(sortbine(uid1)(uid2)), val, callbackify(resolve, reject))
       )
