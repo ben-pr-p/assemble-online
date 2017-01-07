@@ -13,6 +13,17 @@ const sortbine = uid1 => uid2 =>
     ? [uid1, uid2].sort().join('-')
     : undefined
 
+const _objectify = (uids, vals) => vals.reduce((acc, val, idx) =>
+  val
+    ? Object.assign(acc, {[uids[idx]]: JSON.parse(val)})
+    : acc
+, {})
+
+const objectify = (uids, vals) =>
+  vals !== undefined
+    ? _objectify(uids, vals)
+    : curriedVals => _objectify(uids, curriedVals)
+
 module.exports = {
   rooms: {
     getAll: () => new Promise((resolve, reject) =>
@@ -74,20 +85,63 @@ module.exports = {
 
     locations: {
       get: (uids) => new Promise((resolve, reject) =>
-        redis.mget(uids.map(keyify('loc')), callbackify(resolve, reject))
+        redis.mget(uids.map(keyify('loc')), (err, locs) =>
+          err
+            ? reject(err)
+            : resolve(objectify(uids, locs))
+        )
+      ),
+
+      getAll: () => new Promise((resolve, reject) =>
+        redis.smembers(`${room}:users`, (err, uids) =>
+          uids.length > 0
+            ? redis.mget(uids.map(keyify('loc')), (err, locs) =>
+                err
+                  ? reject(err)
+                  : resolve(objectify(uids, locs))
+              )
+            : {}
+        )
       ),
 
       set: (uid, loc) => new Promise((resolve, reject) =>
-        redis.set(keyify('loc')(uid), loc, callbackify(resolve, reject))
+        (key => redis
+          .multi()
+          .set(key, JSON.stringify(loc))
+          .pexpire(key, 500)
+          .exec(callbackify(resolve, reject))
+        )(keyify('loc')(uid))
       )
     },
 
     volumes: {
       get: (uids) => new Promise((resolve, reject) =>
-        redis.mget(uids.map(keyify('vol')), callbackify(resolve, reject))
+        redis.mget(uids.map(keyify('vol')), (err, vols) =>
+          err
+            ? reject(err)
+            : resolve(objectify(uids, vols))
+        )
       ),
+
+      getAll: () => new Promise((resolve, reject) =>
+        redis.smembers(`${room}:users`, (err, uids) =>
+          uids.length > 0
+            ? redis.mget(uids.map(keyify('vol')), (err, vols) =>
+                err
+                  ? reject(err)
+                  : resolve(objectify(uids, vols))
+              )
+            : {}
+        )
+      ),
+
       set: (uid, vol) => new Promise((resolve, reject) =>
-        redis.set(keyify('vol')(uid), loc, callbackify(resolve, reject))
+        (key => redis
+          .multi()
+          .set(key, vol)
+          .pexpire(key, 500)
+          .exec(callbackify(resolve, reject))
+        )(keyify('vol')(uid))
       )
     },
 
@@ -108,7 +162,11 @@ module.exports = {
             .mget(uids.map(keyify('loc')))
             .mget(uids.map(keyify('vol')))
             .mget(uids.map(sortbine(uid)).map(keyify('att')))
-            .exec(callbackify(resolve, reject))
+            .exec((err, all) =>
+              err
+                ? reject(err)
+                : resolve(all.map(objectify(uids)))
+            )
         )
       )
     }
