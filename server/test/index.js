@@ -8,7 +8,8 @@ const request = require('superagent')
 
 global.GET_ROOM_URL = room => `http://localhost:3000/${room}`
 
-global.NUM_PARTICIPANTS = 10
+global.NUM_PARTICIPANTS = 6
+global.TIMEOUT = 100
 global.SOCKET_OPTIONS = {
   transports: ['websocket'],
   forceNew: true

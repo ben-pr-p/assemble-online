@@ -1,6 +1,6 @@
 const redis = require('redis').createClient(process.env.REDIS_URL)
 const {
-  sortbine, objectify, keyify, callbackify, distance
+  sortbine, objectify, keyify, callbackify, distance, print
 } = require('../utils')
 
 module.exports = {

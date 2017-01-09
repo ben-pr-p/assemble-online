@@ -2,7 +2,6 @@ import { Component, h } from 'preact'
 import Dialog from '../../../common/Dialog'
 import Button from '../../../common/Button'
 import TextInput from '../../../common/text-input'
-import request from 'superagent'
 
 const labelMap = {
   user: 'Who are you, and what do you want with assemble.live?',
@@ -27,12 +26,12 @@ export default class BugReport extends Component {
 
     bug['user-agent'] = navigator.userAgent
 
-    request
-    .post('/api/bug-report')
-    .send(bug)
-    .end((err, res) => {
-      this.props.endBugReport()
-    })
+    // request
+    // .post('/api/bug-report')
+    // .send(bug)
+    // .end((err, res) => {
+    //   this.props.endBugReport()
+    // })
   }
 
   cancel = () =>

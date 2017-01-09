@@ -1,6 +1,4 @@
 import { Component, h } from 'preact'
-import { arc } from 'd3-shape'
-import dom from 'component-dom'
 import Boss from '../../lib/boss'
 
 const MAX_VOLUME = 10
@@ -20,8 +18,14 @@ export default class VolumeIndicator extends Component {
 
   handleVolume = (vol) => {
     this.counter = this.counter + 1
-    dom(`#v-${this.counter % NUM_CIRCLES}`).css('transform', `scale(${1 + vol/MAX_VOLUME})`).addClass('animatable')
-    dom(`#v-${(this.counter - (NUM_CIRCLES / 2)) % NUM_CIRCLES}`).css('transform', `scale(1)`).removeClass('animatable')
+
+    const curr = document.querySelector(`#v-${this.counter % NUM_CIRCLES}`)
+    curr.style.transform = `scale(${1 + vol/MAX_VOLUME})`
+    curr.classList.add('animatable')
+
+    const prev = document.querySelector(`#v-${(this.counter - (NUM_CIRCLES / 2)) % NUM_CIRCLES}`)
+    prev.style.transform = 'scale(1)'
+    prev.classList.remove('animatable')
   }
 
   render ({x, y, d, user, status}) {

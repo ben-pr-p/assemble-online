@@ -2,9 +2,11 @@ const expect = require('chai').expect
 const randomString = require('random-string')
 const io = require('socket.io-client')
 
+const print = s => {console.log(s); return s}
+
 const expectNumUsersAfter = (num, after, done) =>
   setTimeout(() => {
-    socks.forEach(s =>
+    socks.slice(5).forEach(s =>
       expect(Object.keys(s.users)).to.have.length(num)
     )
     done()
@@ -21,7 +23,7 @@ describe('enter and exit', () => {
       s.emit('me', s.me)
     })
 
-    expectNumUsersAfter(NUM_PARTICIPANTS, 100, done)
+    expectNumUsersAfter(NUM_PARTICIPANTS, TIMEOUT, done)
   })
 })
 
@@ -29,27 +31,26 @@ describe('half exodus and re-entry', () => {
   let dumpedUsers
 
   it('after half of the socks leave, user count should be NUM_PARTICIPANTS / 2', done => {
-    dumpedUsers = socks.slice(0, 5).map(s => s.me)
+    dumpedUsers = socks.slice(0, NUM_PARTICIPANTS / 2).map(s => s.me)
 
     socks.slice(0, NUM_PARTICIPANTS / 2).forEach(s => {
       s.disconnect()
     })
 
-    expectNumUsersAfter(NUM_PARTICIPANTS / 2, 1000, done)
+    expectNumUsersAfter(NUM_PARTICIPANTS / 2, TIMEOUT, done)
   })
 
   it('when those half return, user count should be NUM_PARTICIPANTS', done => {
-    socks = new Array(NUM_PARTICIPANTS / 2).fill(null)
-      .map(idx => {
+    socks = dumpedUsers
+      .map(aMe => {
         const s = io.connect(GET_ROOM_URL('test'), SOCKET_OPTIONS)
-        s.me = dumpedUsers[idx]
         s.on('connect', _ =>
-          s.emit('me', s.me)
+          s.emit('me', aMe)
         )
         return s
       })
       .concat(socks.slice(NUM_PARTICIPANTS / 2))
 
-    expectNumUsersAfter(NUM_PARTICIPANTS, 100, done)
+    expectNumUsersAfter(NUM_PARTICIPANTS, TIMEOUT + 100, done)
   })
 })

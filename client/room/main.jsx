@@ -1,6 +1,5 @@
 import { Component, h } from 'preact'
 import store from 'store'
-import dom from 'component-dom'
 import Menu from './menu'
 import Room from './room'
 import ThemeManager from '../lib/theme-manager'
@@ -14,7 +13,7 @@ export default class Main extends Component {
   }
 
   componentWillMount () {
-    this.state.roomName = dom('#reactAppContainer').attr('data')
+    this.state.roomName = document.querySelector('#reactAppContainer').getAttribute('data')
 
     Boss.on('users', this.handleUsers, 'App')
     Bus.on('me', this.handleMe)

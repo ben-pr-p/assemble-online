@@ -2,7 +2,10 @@ const redis = require('../redis')
 const queueAttn = require('../attenuation-workers')
 
 const ignore = _ => _
-const panic = err => {throw err}
+const panic = err => {
+  console.log(JSON.stringify(err))
+  throw err
+}
 
 module.exports = (io, nsp, name) => {
   const room = redis.room(name)
@@ -41,19 +44,23 @@ module.exports = (io, nsp, name) => {
         .emit('signal', config)
     )
 
-    socket.on('disconnect', () =>
+    socket.on('disconnect', () => {
       room.users
         .remove(socket.id)
-        .then(room.users.getAll)
-        .then(allUsers => {
-          nsp.emit('users', allUsers)
+        .then(_ =>
+          room.users
+            .getAll()
+            .then(allUsers => {
+              nsp.emit('users', allUsers)
 
-          if (Object.keys(allUsers).length == 0) {
-            nsp.implode()
-          }
-        })
+              if (Object.keys(allUsers).length == 0) {
+                nsp.implode()
+              }
+            })
+            .catch(panic)
+        )
         .catch(panic)
-    )
+    })
   })
 
   nsp.implode = () => {
