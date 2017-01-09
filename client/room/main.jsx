@@ -3,7 +3,7 @@ import store from 'store'
 import Menu from './menu'
 import Room from './room'
 import ThemeManager from '../lib/theme-manager'
-import Boss from '../lib/boss'
+import Sock from '../lib/sock'
 import { Bus } from '../lib/emitters'
 
 export default class Main extends Component {
@@ -13,39 +13,33 @@ export default class Main extends Component {
   }
 
   componentWillMount () {
-    this.state.roomName = document.querySelector('#reactAppContainer').getAttribute('data')
-
-    Boss.on('users', this.handleUsers, 'App')
+    Sock.on('users', this.handleUsers)
     Bus.on('me', this.handleMe)
-
-    if (this.state.roomName)
-      Boss.post('room-name', this.state.roomName)
 
     this.state.me = store.get('me')
     if (this.state.me) this.announceMe(this.state.me)
   }
 
   componentWillUnmount () {
-    Boss.offAllByCaller('App')
+    Sock.off('users', this.handleUsers)
   }
 
   handleUsers = users => users
     ? this.setState({ users: new Map(users) })
     : null
 
-  announceMe = data => Boss.post('user/new', data)
+  announceMe = data => Sock.emit('me', data)
 
   handleMe = me => this.setState({ me })
 
   clearLocal = () => {
     store.clear()
     this.state.me = null
-    Boss.post('user/trash')
     this.forceUpdate()
   }
 
 
-  render (props, { me, users, roomName, theme }) {
+  render (props, { me, users, theme }) {
     const {
       setEditUserState,
       setEasyRTCId,

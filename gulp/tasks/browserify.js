@@ -10,7 +10,6 @@ const clientapps = require('./client-apps')
 const dest = './build'
 
 const shouldUglify = process.env.NODE_ENV == 'production'
-console.log(shouldUglify)
 
 const generate = jsname => () =>
   vfs.src(`./client/${jsname}`)

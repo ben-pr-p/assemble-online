@@ -2,7 +2,7 @@ import { Component, h } from 'preact'
 import BugReport from './bug-report'
 import NewUserModal from './new-user-modal'
 import theme from '../../lib/theme-manager'
-import Boss from '../../lib/boss'
+import Sock from '../../lib/sock'
 import { FromPeers } from '../../lib/emitters'
 import allWidgets from '../widgets'
 import store from 'store'
@@ -54,7 +54,7 @@ export default class Menu extends Component {
 
   closeNewUserModal = params => {
     if (params.shouldSave)
-      Boss.post('user/new', store.get('me'))
+      Sock.emit('me', store.get('me'))
 
     this.setState({editingUser: false})
   }

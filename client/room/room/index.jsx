@@ -1,7 +1,7 @@
 import { Component, h } from 'preact'
 import Grid from '../grid'
 import UserBlob from '../user-blob'
-import Boss from '../../lib/boss'
+import Sock from '../../lib/sock'
 import theme from '../../lib/theme-manager'
 import VolumeDetector from './volume-detector'
 
@@ -23,8 +23,8 @@ export default class Room extends Component {
   componentWillMount () {
     window.onresize = this.postScreen
 
-    Boss.on('dimensions', this.handleDimensions, 'Room')
-    Boss.on('translate', this.handleTranslate, 'Room')
+    Sock.on('dimensions', this.handleDimensions)
+    Sock.on('translate', this.handleTranslate)
 
     this.postScreen()
 
@@ -32,7 +32,8 @@ export default class Room extends Component {
   }
 
   componentWillUnmount () {
-    Boss.offAllByCaller('Room')
+    Sock.off('dimensions', this.handleDimensions)
+    Sock.off('translate', this.handleTranslate)
     VolumeDetector.detach()
   }
 
@@ -48,7 +49,7 @@ export default class Room extends Component {
     error => console.log(error)
   )
 
-  postScreen = () => Boss.post('screen', {x: window.innerWidth, y: window.innerHeight})
+  postScreen = () => Sock.emit('screen', {x: window.innerWidth, y: window.innerHeight})
   handleDimensions = (data) => this.setState({ dimensions: data })
   handleTranslate = (data) => this.setState({ translate: data })
 
@@ -65,23 +66,18 @@ export default class Room extends Component {
       y: ev.clientY
     }
 
-  moveUser = () => Boss.post('location/delta', this.mousePos)
+  moveUser = () => Sock.emit('location/delta', this.mousePos)
 
   render ({me, users}, {translate, dimensions, localStream}) {
-    const blobs = []
-    let idx = 0
-    users.forEach((user, uid) => {
-      blobs.push((
-        <UserBlob user={user}
-          idx={idx} key={uid}
-          me={me}
-          localStream={localStream}
-          translate={translate}
-          isMe={me ? uid == me.id : false}
-        />
-      ))
-      idx++
-    })
+    const blobs = Object.keys(users).map((uid, idx) => (
+      <UserBlob user={users[uid]}
+        idx={idx}
+        me={me}
+        localStream={localStream}
+        translate={translate}
+        isMe={me ? uid == me.id : false}
+      />
+    ))
 
     return (
       <div id='plaza'

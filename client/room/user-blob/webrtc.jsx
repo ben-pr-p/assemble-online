@@ -1,5 +1,5 @@
 import { Component, h } from 'preact'
-import Boss from '../../lib/boss'
+import Sock from '../../lib/sock'
 import { ToPeers, FromPeers } from '../../lib/emitters'
 import Peer from 'simple-peer'
 
@@ -15,7 +15,7 @@ export default class Connection extends Component {
     else
       this.state.remoteSrc = window.URL.createObjectURL(localStream)
 
-    Boss.on(`attenuation-for-${partnerId}`, this.handleAttenuation, `connection-to-${partnerId}`)
+    Sock.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
     ToPeers.on(`to-${partnerId}`, this.sendData)
     ToPeers.on(`to-all`, this.sendData)
   }
@@ -44,8 +44,8 @@ export default class Connection extends Component {
 
     ToPeers.off(`to-${partnerId}`, this.sendData)
     ToPeers.off(`to-all`, this.sendData)
-    Boss.off(`webrtc-config-${partnerId}`)
-    Boss.off(`attenuation-for-${partnerId}`)
+    Sock.off(`webrtc-config-${partnerId}`)
+    Sock.off(`attenuation-for-${partnerId}`)
     this.props.setStatus('disconnected')
   }
 
@@ -59,13 +59,13 @@ export default class Connection extends Component {
 
     setStatus('connecting')
 
-    this.peer.on('signal', config => Boss.post('webrtc/config', {
+    this.peer.on('signal', config => Sock.emit('webrtc/config', {
       from: myId,
       to: partnerId,
       data: config
     }))
 
-    Boss.on(`webrtc-config-${partnerId}`, config => {
+    Sock.on(`webrtc-config-${partnerId}`, config => {
       this.peer.signal(config)
     })
 

@@ -1,6 +1,6 @@
 import { h, Component } from 'preact'
 import { ToPeers, FromPeers } from '../../lib/emitters'
-import Boss from '../../lib/boss'
+import Sock from '../../lib/sock'
 import Portal from 'preact-portal'
 import IconButton from '../../common/icon-button'
 import GrainIcon from '../../common/icons/grain'
@@ -46,32 +46,8 @@ export default WrappedComponent =>
        *    events from the corresponding webrtc components, then broadcast
        *    ourselves as owners
        */
-      Boss.on('users', raw => {
-        const users = raw.map(([r, _]) => r)
-        console.log('new users')
-        console.log(this.isOwner())
-
-        if (this.ownerIsDead(users))
-          this.setState({owner: null})
-
-        if (this.isOwner()) {
-          const toTell = new Set(this.newFriends(users))
-          console.log(toTell.size)
-          if (toTell.size > 0) {
-            toTell.forEach(uid =>
-              ToPeers.on(`connected-to-${uid}`, () => {
-                toTell.delete(uid)
-                if (toTell.size == 0) {
-                  console.log('new friends have connected')
-                  this.declareOwnership()
-                }
-              })
-            )
-          }
-        }
-      }, this.name)
-
-      Boss.on('translate', this.handleTranslate, this.name)
+      Sock.on('users', this.handleUsers)
+      Sock.on('translate', this.handleTranslate)
 
       /*
        * If we're owner, share the change with everyone
@@ -97,8 +73,30 @@ export default WrappedComponent =>
 
     componentWillUnmount () {
       FromPeers.off(this.eventPrefix)
-      Boss.offAllByCaller(this.name)
+      Sock.off('users', this.handleUsers)
+      Sock.off('translate', this.handleTranslate)
       document.removeEventListener('mousemove', this.onMove)
+    }
+
+    handleUsers = raw => {
+      const users = raw.map(([r, _]) => r)
+
+      if (this.ownerIsDead(users))
+        this.setState({owner: null})
+
+      if (this.isOwner()) {
+        const toTell = new Set(this.newFriends(users))
+        if (toTell.size > 0) {
+          toTell.forEach(uid =>
+            ToPeers.on(`connected-to-${uid}`, () => {
+              toTell.delete(uid)
+              if (toTell.size == 0) {
+                this.declareOwnership()
+              }
+            })
+          )
+        }
+      }
     }
 
     handleTranslate = data => this.setState({ translate: data })

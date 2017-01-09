@@ -1,4 +1,4 @@
-import Boss from '../../lib/boss'
+import Sock from '../../lib/sock'
 
 const UPDATE_INTERVAL = 100
 const AC = window.AudioContext || window.webkitAudioContext
@@ -27,7 +27,7 @@ const register = (stream, myId) => {
   processor.connect(ac.destination)
 
   intervalId = window.setInterval(() => {
-    Boss.post('volume/mine', rms)
+    Sock.emit('volume/mine', rms)
   }, UPDATE_INTERVAL)
 }
 
