@@ -7,6 +7,7 @@ import store from 'store'
 import randomString from 'random-string'
 import shallowUpdateCompare from '../../../lib/shallow-update-compare'
 import { Bus } from '../../../lib/emitters'
+import Sock from '../../../lib/sock'
 
 const labelMap = {
   avatar: 'Paste a Image Address to be your Avatar',
@@ -16,8 +17,7 @@ const labelMap = {
 export default class NewUserModal extends Component {
   state = {
     avatar: '',
-    name: '',
-    id: null
+    name: ''
   }
 
   shouldComponentUpdate (nextProps, nextState) {
@@ -42,16 +42,13 @@ export default class NewUserModal extends Component {
     }
 
     let plaza = document.querySelector('svg#plaza')
-    if (plaza && !this.state.id) {
+    if (plaza && !this.state.name) {
       user.x = plaza.width.baseVal.value / 2,
       user.y = plaza.height.baseVal.value / 2
     }
 
-    if (!this.state.id)
-      user.id = randomString({numeric: false})
-
     store.set('me', user)
-    Bus.emit('me', user)
+    Bus.emit('me', Object.assign(user, {id: Sock.id}))
     this.props.closeNewUserModal({shouldSave: true})
   }
 
@@ -59,14 +56,11 @@ export default class NewUserModal extends Component {
     this.props.closeNewUserModal({shouldSave: false})
 
   render () {
-    let fields = []
-    for (let attr in this.state) {
-      if (attr == 'id') continue
-      fields.push((this.renderField(attr)))
-    }
+    const fields = Object.keys(this.state).map(this.renderField)
 
-    let actions = []
-    if (this.state.id) {
+    const actions = []
+
+    if (this.state.name != null) {
       actions.push((
         <Button key='cancel' text='Cancel'
           onClick={this.cancel}
@@ -91,7 +85,7 @@ export default class NewUserModal extends Component {
     )
   }
 
-  renderField (attr) {
+  renderField = (attr) => {
     if (attr == 'avatar') {
       return (
         <div className='avatar-field-container' key={attr}>

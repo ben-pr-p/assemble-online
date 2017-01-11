@@ -1,39 +1,57 @@
 const redis = require('../redis')
 const queueAttn = require('../attenuation-workers')
+const colors = require('./user-colors')
+const {print} = require('../utils')
+
+let colorIdx = 0
+
+const transformId = raw =>
+  raw.split('#')[1]
 
 const ignore = _ => _
 const panic = err => {
-  console.log(JSON.stringify(err))
   throw err
 }
 
 module.exports = (io, nsp, name) => {
   const room = redis.room(name)
   const pings = {}
+  let updateIntervalId = null
 
   nsp.on('connection', socket => {
     socket.on('me', user => {
+      const uid = transformId(socket.id)
+
       room.users
-        .add(socket.id, user)
+        .add(uid, Object.assign(user, {
+          id: uid,
+          color: colors[colorIdx % colors.length]
+        }))
         .then(room.users.getAll)
-        .then(allUsers => nsp.emit('users', allUsers))
+        .then(allUsers => {
+          if (allUsers.length > 0 && !updateIntervalId)
+            updateIntervalId = setInterval(nsp.update, 50)
+
+          nsp.emit('users', allUsers)
+        })
         .catch(panic)
 
-      pings[socket.id] = 50
+      colorIdx++
+      pings[transformId(socket.id)] = 50
     })
 
     socket.on('location', loc => {
       room.locations
-        .set(socket.id, loc)
+        .set(transformId(socket.id), loc)
         .then(ignore)
         .catch(panic)
 
-      queueAttn(socket.id)
+      queueAttn({room: name, uid: transformId(socket.id)})
     })
 
     socket.on('volume', vol =>
       room.volumes
-        .set(socket.id, vol)
+        .set(transformId(socket.id), vol)
         .then(ignore)
         .catch(panic)
     )
@@ -45,8 +63,12 @@ module.exports = (io, nsp, name) => {
     )
 
     socket.on('disconnect', () => {
+      pings[transformId(socket.id)] = undefined
+      delete pings[transformId(socket.id)]
+      clearInterval(updateIntervalId)
+
       room.users
-        .remove(socket.id)
+        .remove(transformId(socket.id))
         .then(_ =>
           room.users
             .getAll()
@@ -72,20 +94,10 @@ module.exports = (io, nsp, name) => {
   nsp.update = () => {
     for (let uid in nsp.connected) {
       room.updates.for(uid)
-      .then(update => nsp.connected[uid].emit(update))
+      .then(update => nsp.connected[uid].emit('update', update))
       .catch(panic)
     }
   }
-
-  const nextUpdateTime = () => Object.values(pings).reduce((min, curr) =>
-    Math.min(min, curr)
-  , 10000000)
-
-  const updateThenTick = () =>
-    setTimeout(() => {
-      nsp.update()
-      setTimeout(updateThenTick, nextUpdateTime())
-    }, nextUpdateTime())
 
   return nsp
 }

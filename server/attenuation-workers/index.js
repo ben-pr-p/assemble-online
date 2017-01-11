@@ -23,12 +23,12 @@ children.forEach(c =>
 const getFirstFree = () => children.filter(c => c.free)[0]
 
 /* Handle new jobs */
-module.exports = uid => {
+module.exports = ({room, uid}) => {
   const freeKid = getFirstFree()
   if (freeKid) {
-    child.free = false
-    child.process.send(uid)
+    freeKid.free = false
+    freeKid.process.send({uid, room})
   } else {
-    queue.push(uid)
+    queue.push({uid, room})
   }
 }

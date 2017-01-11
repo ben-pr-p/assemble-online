@@ -66,16 +66,16 @@ export default class Room extends Component {
       y: ev.clientY
     }
 
-  moveUser = () => Sock.emit('location/delta', this.mousePos)
+  moveUser = () => Sock.emit('location', this.mousePos)
 
   render ({me, users}, {translate, dimensions, localStream}) {
-    const blobs = Object.keys(users).map((uid, idx) => (
-      <UserBlob user={users[uid]}
+    const blobs = users.map((u, idx) => (
+      <UserBlob user={u}
         idx={idx}
         me={me}
         localStream={localStream}
         translate={translate}
-        isMe={me ? uid == me.id : false}
+        isMe={me && u.id == Sock.id}
       />
     ))
 

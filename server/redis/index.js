@@ -27,19 +27,17 @@ module.exports = {
         redis.smembers(`${room}:users`, callbackify(resolve, reject))
       ),
 
-      getAll: () => new Promise((resolve, reject) => {
+      getAll: () => new Promise((resolve, reject) =>
         redis.smembers(`${room}:users`, (err, uids) =>
           uids.map(keyify('users')).reduce((acc, uid) =>
             acc.hgetall(uid)
           , redis.multi())
           .exec((err, replies) => err
             ? reject(err)
-            : resolve(replies.map((rep, idx) => ({
-                [uids[idx]]: rep
-              })))
+            : resolve(replies)
           )
         )
-      }),
+      ),
 
       add: (uid, user) => new Promise((resolve, reject) =>
         redis

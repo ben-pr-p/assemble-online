@@ -1,5 +1,5 @@
 import { Component, h } from 'preact'
-import Sock from '../../lib/sock'
+import Updates from '../../lib/updates'
 
 const MAX_VOLUME = 10
 const NUM_CIRCLES = 20
@@ -9,11 +9,11 @@ export default class VolumeIndicator extends Component {
   counter = NUM_CIRCLES - 1
 
   componentWillMount () {
-    Sock.on(`volume-${this.props.user.id}`, this.handleVolume)
+    Updates.on(`volume-${this.props.user.id}`, this.handleVolume)
   }
 
   componentWillUnmount () {
-    Sock.off(`volume-${this.props.user.id}`, this.handleVolume)
+    Updates.off(`volume-${this.props.user.id}`, this.handleVolume)
   }
 
   handleVolume = (vol) => {

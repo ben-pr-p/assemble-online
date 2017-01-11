@@ -27,7 +27,7 @@ const register = (stream, myId) => {
   processor.connect(ac.destination)
 
   intervalId = window.setInterval(() => {
-    Sock.emit('volume/mine', rms)
+    Sock.emit('volume', rms)
   }, UPDATE_INTERVAL)
 }
 

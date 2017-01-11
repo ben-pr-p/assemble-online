@@ -8,7 +8,7 @@ import { Bus } from '../lib/emitters'
 
 export default class Main extends Component {
   state = {
-    users: new Map(),
+    users: [],
     me: null
   }
 
@@ -25,7 +25,7 @@ export default class Main extends Component {
   }
 
   handleUsers = users => users
-    ? this.setState({ users: new Map(users) })
+    ? this.setState({ users })
     : null
 
   announceMe = data => Sock.emit('me', data)
@@ -37,7 +37,6 @@ export default class Main extends Component {
     this.state.me = null
     this.forceUpdate()
   }
-
 
   render (props, { me, users, theme }) {
     const {

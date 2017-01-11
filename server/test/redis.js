@@ -1,32 +1,31 @@
 const redis = require('../redis')
 const expect = require('chai').expect
 
+const extract = users =>
+  users.map(u => u.id).sort()
+
 const testRoomName = 'hamburgar#sauce'
 const testUsers = [
   {
-    abc: {
-      name: 'ABC',
-      height: 'pretty tall'
-    },
+    id: 'abc',
+    name: 'ABC',
+    height: 'pretty tall'
   },
   {
-    def: {
-      name: 'DEF',
-      height: 'wee little guy'
-    }
+    id: 'def',
+    name: 'DEF',
+    height: 'wee little guy'
   }
 ]
 
 const testLocations = {}
 testUsers.forEach(u => {
-  const id = Object.keys(u)[0]
-  testLocations[id] = {x: Math.random() * 1000, y: Math.random() * 1000}
+  testLocations[u.id] = {x: Math.random() * 1000, y: Math.random() * 1000}
 })
 
 const testVolumes = {}
 testUsers.forEach(u => {
-  const id = Object.keys(u)[0]
-  testVolumes[id] = Math.random() * 20
+  testVolumes[u.id] = Math.random() * 20
 })
 
 describe('room', () => {
@@ -66,14 +65,13 @@ describe('users', () => {
   })
 
   it('after adding two users, expect fetch to have them all', done => {
-    Promise.all(testUsers.map(u => {
-      const uid = Object.keys(u)[0]
-      return room.users.add(uid, u[uid])
-    }))
+    Promise.all(testUsers.map(u =>
+      room.users.add(u.id, u)
+    ))
     .then(numAddedArray => {
       room.users.getAll()
       .then(users => {
-        expect(users).to.deep.equal(testUsers)
+        expect(extract(users)).to.deep.equal(extract(users))
         done()
       })
       .catch(done)
@@ -82,11 +80,11 @@ describe('users', () => {
   })
 
   it('after removing the first, expect fetch to have only the second', done => {
-    room.users.remove(Object.keys(testUsers[0])[0])
+    room.users.remove(testUsers[0].id)
     .then(numRemoved => {
       room.users.getAll()
       .then(users => {
-        expect(users).to.deep.equal(testUsers.slice(1))
+        expect(extract(users)).to.deep.equal(extract(testUsers.slice(1)))
         done()
       })
       .catch(done)
@@ -95,7 +93,7 @@ describe('users', () => {
   })
 
   it('after removing the second, expect the size to be 0', done => {
-    room.users.remove(Object.keys(testUsers[1])[0])
+    room.users.remove(testUsers[1].id)
     .then(numRemoved => {
       room.users.size()
       .then(size => {
@@ -112,10 +110,9 @@ describe('locations', () => {
   const room = redis.room(testRoomName)
 
   before(done => {
-    Promise.all(testUsers.map(u => {
-      const uid = Object.keys(u)[0]
-      return room.users.add(uid, u[uid])
-    }))
+    Promise.all(testUsers.map(u =>
+      room.users.add(u.id, u)
+    ))
     .then(numAddedArray => done())
     .catch(done)
   })
