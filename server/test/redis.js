@@ -5,18 +5,15 @@ const extract = users =>
   users.map(u => u.id).sort()
 
 const testRoomName = 'hamburgar#sauce'
-const testUsers = [
-  {
-    id: 'abc',
-    name: 'ABC',
-    height: 'pretty tall'
-  },
-  {
-    id: 'def',
-    name: 'DEF',
-    height: 'wee little guy'
-  }
-]
+const testUsers = [{
+  id: 'abc',
+  name: 'ABC',
+  height: 'pretty tall'
+}, {
+  id: 'def',
+  name: 'DEF',
+  height: 'wee little guy'
+}]
 
 const testLocations = {}
 testUsers.forEach(u => {
@@ -171,5 +168,32 @@ describe('volumes', () => {
       })
       .catch(done)
     , 501)
+  })
+})
+
+describe('updates', () => {
+  const room = redis.room(testRoomName)
+
+  before(done => {
+    Promise.all(Object.keys(testVolumes).map(uid =>
+      room.volumes.set(uid, testVolumes[uid])
+    ).concat(Object.keys(testLocations).map(uid =>
+      room.locations.set(uid, testLocations[uid])
+    )))
+    .then(doubleNumAddedArray => {
+      done()
+    })
+    .catch(done)
+  })
+
+  it('updates should equal locations, volumes, {}', done => {
+    room.updates.for(testUsers[0].id)
+    .then(([locs, vols, atts]) => {
+      expect(locs).to.deep.equal(testLocations)
+      expect(vols).to.deep.equal(testVolumes)
+      expect(atts).to.deep.equal({})
+      done()
+    })
+    .catch(done)
   })
 })

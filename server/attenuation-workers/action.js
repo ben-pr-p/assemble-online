@@ -1,4 +1,5 @@
 const redis = require('../redis')
+const { distance } = require('../utils')
 
 module.exports = ({room, uid}) => new Promise((resolve, reject) => {
   const redisRoom = redis.room(room)

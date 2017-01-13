@@ -2,6 +2,7 @@ const redis = require('../redis')
 const queueAttn = require('../attenuation-workers')
 const colors = require('./user-colors')
 const {print} = require('../utils')
+const debug = require('debug')
 
 let colorIdx = 0
 
@@ -10,12 +11,13 @@ const transformId = raw =>
 
 const ignore = _ => _
 const panic = err => {
-  throw err
+  throw print(err)
 }
 
 module.exports = (io, nsp, name) => {
   const room = redis.room(name)
   const pings = {}
+  const log = debug('assemble:' + name)
   let updateIntervalId = null
 
   nsp.on('connection', socket => {
@@ -65,7 +67,6 @@ module.exports = (io, nsp, name) => {
     socket.on('disconnect', () => {
       pings[transformId(socket.id)] = undefined
       delete pings[transformId(socket.id)]
-      clearInterval(updateIntervalId)
 
       room.users
         .remove(transformId(socket.id))
@@ -77,6 +78,7 @@ module.exports = (io, nsp, name) => {
 
               if (Object.keys(allUsers).length == 0) {
                 nsp.implode()
+                clearInterval(updateIntervalId)
               }
             })
             .catch(panic)
@@ -94,7 +96,9 @@ module.exports = (io, nsp, name) => {
   nsp.update = () => {
     for (let uid in nsp.connected) {
       room.updates.for(uid)
-      .then(update => nsp.connected[uid].emit('update', update))
+      .then(update => {
+        nsp.connected[uid].emit('update', update)
+      })
       .catch(panic)
     }
   }

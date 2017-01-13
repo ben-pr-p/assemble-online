@@ -128,7 +128,12 @@ module.exports = {
       ),
 
       set: (uid1, uid2, val) => new Promise((resolve, reject) =>
-        redis.set(keyify('att')(sortbine(uid1)(uid2)), val, callbackify(resolve, reject))
+        (key => redis
+          .multi()
+          .set(key, val)
+          .pexpire(key, 500)
+          .exec(callbackify(resolve, reject))
+        )(keyify('att')(sortbine(uid1)(uid2)))
       )
     },
 

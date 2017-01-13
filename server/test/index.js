@@ -46,4 +46,6 @@ describe('Clients should be able to connect', () => {
 /*
  * Run other tests
  */
+require('./redis')
 require('./user-enter-exit')
+require('./attenuations')
