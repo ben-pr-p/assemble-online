@@ -35,6 +35,17 @@ module.exports = (io, nsp, name) => {
             updateIntervalId = setInterval(nsp.update, 50)
 
           nsp.emit('users', allUsers)
+          nsp.emit('dimensions', {
+            x: 400 * allUsers.length,
+            y: 300 * allUsers.length
+          })
+
+          room.locations.set(uid, {
+            x: 200 * allUsers.length,
+            y: 150 * allUsers.length
+          })
+          .then(ignore)
+          .catch(panic)
         })
         .catch(panic)
 
@@ -76,10 +87,15 @@ module.exports = (io, nsp, name) => {
             .then(allUsers => {
               nsp.emit('users', allUsers)
 
-              if (Object.keys(allUsers).length == 0) {
+              if (allUsers.length == 0) {
                 nsp.implode()
                 clearInterval(updateIntervalId)
               }
+
+              nsp.emit('dimensions', {
+                x: 400 * allUsers.length,
+                y: 300 * allUsers.length
+              })
             })
             .catch(panic)
         )
