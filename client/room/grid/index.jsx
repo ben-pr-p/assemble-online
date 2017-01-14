@@ -18,7 +18,7 @@ export default class Grid extends Component {
           </pattern>
           <pattern id='grid' width='200' height='200' patternUnits='userSpaceOnUse'>
             <rect width='200' height='200' fill='url(#smallGrid)' />
-            <path d='M 200 0 L 0 0 0 200' fill='none' stroke-width='4'/>
+            <path d='M 200 0 L 0 0 0 200' fill='none' stroke-width='1'/>
           </pattern>
         </defs>
         <rect {...{id: 'grid-main', width, height, fill: 'url(#grid)'}}/>
