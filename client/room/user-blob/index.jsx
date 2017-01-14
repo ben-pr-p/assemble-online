@@ -1,7 +1,7 @@
 import { Component, h } from 'preact'
 import lineIntersect from 'line-intersect'
 import Avatar from '../../common/Avatar'
-import Sock from '../../lib/sock'
+import Updates from '../../lib/updates'
 import VolumeIndicator from './volume-indicator'
 import Badge from './badge'
 import WebRTC from './webrtc'
@@ -25,12 +25,12 @@ export default class UserBlob extends Component {
   }
 
   componentWillMount () {
-    Sock.on(`location-${this.props.user.id}`, this.handleLocation)
+    Updates.on(`location-${this.props.user.id}`, this.handleLocation)
     if (this.props.isMe) this.state.status = 'connected'
   }
 
   componentWillUnmount () {
-    Sock.off(`location-${this.props.user.id}`, this.handleLocation)
+    Updates.off(`location-${this.props.user.id}`, this.handleLocation)
   }
 
   setStatus = (status) => this.setState({ status })

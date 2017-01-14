@@ -2,6 +2,7 @@ import { Component, h } from 'preact'
 import Grid from '../grid'
 import UserBlob from '../user-blob'
 import Sock from '../../lib/sock'
+import Updates from '../../lib/updates'
 import theme from '../../lib/theme-manager'
 import VolumeDetector from './volume-detector'
 
@@ -21,19 +22,15 @@ export default class Room extends Component {
   intervalId = null
 
   componentWillMount () {
-    window.onresize = this.postScreen
-
     Sock.on('dimensions', this.handleDimensions)
-    Sock.on('translate', this.handleTranslate)
-
-    this.postScreen()
+    Updates.on('translate', this.handleTranslate)
 
     this.setStream()
   }
 
   componentWillUnmount () {
     Sock.off('dimensions', this.handleDimensions)
-    Sock.off('translate', this.handleTranslate)
+    Updates.off('translate', this.handleTranslate)
     VolumeDetector.detach()
   }
 
@@ -49,7 +46,6 @@ export default class Room extends Component {
     error => console.log(error)
   )
 
-  postScreen = () => Sock.emit('screen', {x: window.innerWidth, y: window.innerHeight})
   handleDimensions = (data) => this.setState({ dimensions: data })
   handleTranslate = (data) => this.setState({ translate: data })
 
@@ -62,11 +58,11 @@ export default class Room extends Component {
 
   onMouseMove = (ev) =>
     this.mousePos = {
-      x: ev.clientX,
-      y: ev.clientY
+      clientX: ev.clientX,
+      clientY: ev.clientY
     }
 
-  moveUser = () => Sock.emit('location', this.mousePos)
+  moveUser = () => Updates.emit('location', this.mousePos)
 
   render ({me, users}, {translate, dimensions, localStream}) {
     const blobs = users.map((u, idx) => (
