@@ -60,7 +60,7 @@ export default class UserBlob extends Component {
         <Avatar src={user.avatar} letters={initialize(user.name)} style={{position:'absolute'}} />
         <VolumeIndicator {...{d: specificD, user, status}} />
         {!isMe
-          ? <WebRTC myId={me.id} partnerId={user.id} localStream={localStream} setStatus={this.setStatus} status={status} />
+          ? <WebRTC partnerId={user.id} localStream={localStream} setStatus={this.setStatus} status={status} />
           : null
         }
         <Badge {...{x, y, d: specificD, user}} />

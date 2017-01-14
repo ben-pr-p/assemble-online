@@ -69,11 +69,12 @@ module.exports = (io, nsp, name) => {
         .catch(panic)
     )
 
-    socket.on('signal', config =>
+    socket.on('signal', config => {
+      log(`Emitting signal-from-${transformId(socket.id)}`)
       nsp
-        .connected[config.to]
-        .emit('signal', config)
-    )
+        .connected[`/${name}#${config.to}`]
+        .emit(`signal-from-${transformId(socket.id)}`, config)
+    })
 
     socket.on('disconnect', () => {
       pings[transformId(socket.id)] = undefined

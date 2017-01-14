@@ -15,9 +15,17 @@ export default class Connection extends Component {
     else
       this.state.remoteSrc = window.URL.createObjectURL(localStream)
 
+    Sock.on(`signal-from-${partnerId}`, this.handleSignal)
     Sock.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
     ToPeers.on(`to-${partnerId}`, this.sendData)
-    ToPeers.on(`to-all`, this.sendData)
+    ToPeers.on('to-all', this.sendData)
+  }
+
+  componentDidMount () {
+    const {myId, partnerId, localStream} = this.props
+
+    if (myId == partnerId)
+      this.vidEl.volume = 0
   }
 
   sendData = data => this.peer
@@ -29,13 +37,6 @@ export default class Connection extends Component {
     ? FromPeers.emit(data.event, data.data)
     : null
 
-  componentDidMount () {
-    const {myId, partnerId, localStream} = this.props
-
-    if (myId == partnerId)
-      this.vidEl.volume = 0
-  }
-
   componentWillUnmount () {
     const {partnerId} = this.props
 
@@ -43,30 +44,29 @@ export default class Connection extends Component {
     this.peer = null
 
     ToPeers.off(`to-${partnerId}`, this.sendData)
-    ToPeers.off(`to-all`, this.sendData)
-    Sock.off(`webrtc-config-${partnerId}`)
+    ToPeers.off('to-all', this.sendData)
+    Sock.off(`signal-from-${partnerId}`, this.handleSignal)
     Sock.off(`attenuation-for-${partnerId}`)
     this.props.setStatus('disconnected')
   }
 
   initialize = () => {
-    const {myId, partnerId, localStream, setStatus} = this.props
+    const {partnerId, localStream, setStatus} = this.props
 
     this.peer = new Peer({
-      initiator: myId < partnerId,
+      initiator: Sock.id < partnerId,
       stream: localStream
     })
 
+    console.log(Sock.id < partnerId)
     setStatus('connecting')
 
-    this.peer.on('signal', config => Sock.emit('webrtc/config', {
-      from: myId,
-      to: partnerId,
-      data: config
-    }))
-
-    Sock.on(`webrtc-config-${partnerId}`, config => {
-      this.peer.signal(config)
+    this.peer.on('signal', config => {
+      console.log('Sending signaling data')
+      Sock.emit('signal', {
+        to: partnerId,
+        data: config
+      })
     })
 
     this.peer.on('stream', remoteStream => {
@@ -79,6 +79,7 @@ export default class Connection extends Component {
     this.peer.on('connect', () => ToPeers.emit(`connected-to-${partnerId}`))
   }
 
+  handleSignal = config => this.peer.signal(config.data)
   handleAttenuation = (vol) => this.vidEl
     ? this.vidEl.volume = vol
     : null
