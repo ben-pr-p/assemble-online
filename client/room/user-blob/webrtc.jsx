@@ -60,6 +60,7 @@ export default class Connection extends Component {
     setStatus('connecting')
 
     this.peer.on('signal', config => {
+      console.log(`Sending signal: ${JSON.stringify(config)}`)
       Sock.emit('signal', {
         to: partnerId,
         data: config
@@ -71,6 +72,7 @@ export default class Connection extends Component {
     this.peer.on('stream', remoteStream => {
       if (this.vidEl)
         this.vidEl.srcObject = remoteStream
+      console.log(remoteStream)
       setStatus('connected')
     })
 
@@ -78,11 +80,13 @@ export default class Connection extends Component {
     this.peer.on('connect', () => ToPeers.emit(`connected-to-${partnerId}`))
 
     this.peer.on('error', err => {
-      throw err
+      console.error(err)
+      setStatus('connecting')
     })
   }
 
   handleSignal = config => {
+    console.log(`Got signal: ${JSON.stringify(config.data)}`)
     this.peer.signal(config.data)
   }
 

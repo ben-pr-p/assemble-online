@@ -24,12 +24,9 @@ export default class Main extends Component {
     Sock.off('users', this.handleUsers)
   }
 
-  handleUsers = users => {
-    console.log(users)
-    users
+  handleUsers = users => users
     ? this.setState({ users })
     : null
-  }
 
   announceMe = data => Sock.emit('me', data)
 
