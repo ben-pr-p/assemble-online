@@ -138,7 +138,7 @@ module.exports = {
         redis
           .multi()
           .set(key, val)
-          .pexpire(key, 500)
+          // .pexpire(key, 500)
           .exec(callbackify(resolve, reject))
       })
     },
@@ -150,7 +150,11 @@ module.exports = {
             .multi()
             .mget(uids.map(keyify('loc')))
             .mget(uids.map(keyify('vol')))
-            .mget(uids.map(sortbine(uid)).map(keyify('att')))
+            .mget(uids
+              .map(sortbine(uid))
+              .filter(sbnd => sbnd)
+              .map(keyify('att'))
+            )
             .exec((err, all) =>
               err
                 ? reject(err)

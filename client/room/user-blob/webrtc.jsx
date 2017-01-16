@@ -1,5 +1,6 @@
 import { Component, h } from 'preact'
 import Sock from '../../lib/sock'
+import Updates from '../../lib/updates'
 import { ToPeers, FromPeers } from '../../lib/emitters'
 import Peer from 'simple-peer'
 
@@ -15,7 +16,7 @@ export default class Connection extends Component {
     else
       this.state.remoteSrc = window.URL.createObjectURL(localStream)
 
-    Sock.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
+    Updates.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
     ToPeers.on(`to-${partnerId}`, this.sendData)
     ToPeers.on('to-all', this.sendData)
   }
@@ -45,7 +46,7 @@ export default class Connection extends Component {
     ToPeers.off(`to-${partnerId}`, this.sendData)
     ToPeers.off('to-all', this.sendData)
     Sock.off(`signal-from-${partnerId}`, this.handleSignal)
-    Sock.off(`attenuation-for-${partnerId}`)
+    Updates.off(`attenuation-for-${partnerId}`)
     this.props.setStatus('disconnected')
   }
 
@@ -57,42 +58,44 @@ export default class Connection extends Component {
       stream: localStream
     })
 
+    this.peer.on('error', err => {
+      console.error(err)
+      setStatus('connecting')
+    })
+
+    this.peer.on('connect', () => {
+      setStatus('connected')
+      ToPeers.emit(`connected-to-${partnerId}`)
+    })
+
     setStatus('connecting')
 
-    this.peer.on('signal', config => {
-      console.log(`Sending signal: ${JSON.stringify(config)}`)
+    this.peer.on('signal', config =>
       Sock.emit('signal', {
         to: partnerId,
         data: config
       })
-    })
+    )
 
     Sock.on(`signal-from-${partnerId}`, this.handleSignal)
 
     this.peer.on('stream', remoteStream => {
       if (this.vidEl)
         this.vidEl.srcObject = remoteStream
-      console.log(remoteStream)
       setStatus('connected')
     })
 
     this.peer.on('data', this.handleData)
-    this.peer.on('connect', () => ToPeers.emit(`connected-to-${partnerId}`))
-
-    this.peer.on('error', err => {
-      console.error(err)
-      setStatus('connecting')
-    })
   }
 
-  handleSignal = config => {
-    console.log(`Got signal: ${JSON.stringify(config.data)}`)
-    this.peer.signal(config.data)
-  }
+  handleSignal = config => this.peer.signal(config)
 
-  handleAttenuation = (vol) => this.vidEl
-    ? this.vidEl.volume = vol
-    : null
+  handleAttenuation = (vol) => {
+    console.log(`Got attenuation ${vol}`)
+    this.vidEl
+      ? this.vidEl.volume = vol
+      : null
+  }
 
   setRef = ref => this.vidEl = ref
 

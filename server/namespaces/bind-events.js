@@ -3,6 +3,7 @@ const queueAttn = require('../attenuation-workers')
 const colors = require('./user-colors')
 const {print} = require('../utils')
 const debug = require('debug')
+const crypto = require('crypto')
 
 let colorIdx = 0
 
@@ -20,10 +21,12 @@ module.exports = (io, nsp, name) => {
   const log = debug('assemble:' + name)
   let updateIntervalId = null
 
-  nsp.on('connection', socket => {
-    socket.on('me', user => {
-      const uid = transformId(socket.id)
+  log('Binding events')
 
+  nsp.on('connection', socket => {
+    const uid = transformId(socket.id)
+
+    socket.on('me', user => {
       room.users
         .add(uid, Object.assign(user, {
           id: uid,
@@ -44,47 +47,54 @@ module.exports = (io, nsp, name) => {
             x: 200 * allUsers.length,
             y: 150 * allUsers.length
           })
-          .then(ignore)
+          .then(rez => queueAttn({room: name, uid: uid}))
           .catch(panic)
         })
         .catch(panic)
 
       colorIdx++
-      pings[transformId(socket.id)] = 50
+      pings[uid] = 50
     })
 
     socket.on('location', loc => {
       room.locations
-        .set(transformId(socket.id), loc)
+        .set(uid, loc)
         .then(ignore)
         .catch(panic)
 
-      queueAttn({room: name, uid: transformId(socket.id)})
+      queueAttn({room: name, uid: uid})
     })
 
     socket.on('volume', vol =>
       room.volumes
-        .set(transformId(socket.id), vol)
+        .set(uid, vol)
         .then(ignore)
         .catch(panic)
     )
 
     socket.on('signal', config => {
+      const toUid = config.to
+      const fromUid = uid
+
       const sid = `/${name}#${config.to}`
+
+      const dataHash = crypto.createHash('md5')
+        .update(JSON.stringify(config.data))
+        .digest('hex')
 
       if (nsp.connected[sid]) {
         nsp
           .connected[sid]
-          .emit(`signal-from-${transformId(socket.id)}`, config)
+          .emit(`signal-from-${fromUid}`, config.data)
       }
     })
 
     socket.on('disconnect', () => {
-      pings[transformId(socket.id)] = undefined
-      delete pings[transformId(socket.id)]
+      pings[uid] = undefined
+      delete pings[uid]
 
       room.users
-        .remove(transformId(socket.id))
+        .remove(uid)
         .then(_ =>
           room.users
             .getAll()
@@ -115,9 +125,7 @@ module.exports = (io, nsp, name) => {
 
   nsp.update = () => {
     for (let sid in nsp.connected) {
-      const uid = transformId(sid)
-
-      room.updates.for(uid)
+      room.updates.for(transformId(sid))
       .then(update => {
         /* Could not be connected if stuff has changed since 5 lines ago */
         if (nsp.connected[sid])

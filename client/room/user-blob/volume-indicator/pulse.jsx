@@ -1,5 +1,5 @@
 import { Component, h } from 'preact'
-import Updates from '../../lib/updates'
+import Updates from '../../../lib/updates'
 
 const MAX_VOLUME = 10
 const NUM_CIRCLES = 20

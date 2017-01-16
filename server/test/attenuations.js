@@ -28,4 +28,12 @@ describe('updates with attenuations', () => {
       done()
     }, 500)
   })
+
+  it('attenuations should exist', done => {
+    socks.forEach(s => {
+      const [_, __, atts] = s.lastUpdate
+      expect(Object.keys(atts)).to.have.length.within(NUM_PARTICIPANTS - 5, NUM_PARTICIPANTS - 1)
+    })
+    done()
+  })
 })
