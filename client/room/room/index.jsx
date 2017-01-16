@@ -65,9 +65,8 @@ export default class Room extends Component {
 
   render ({me, users}, {translate, dimensions, localStream}) {
     const blobs = users.map((u, idx) => (
-      <UserBlob user={u}
-        idx={idx}
-        me={me}
+      <UserBlob key={u.id}
+        user={u}
         localStream={localStream}
         translate={translate}
         isMe={me && u.id == Sock.id}

@@ -35,9 +35,11 @@ export default class UserBlob extends Component {
 
   setStatus = (status) => this.setState({ status })
 
-  handleLocation = (data) => this.setState({ location: data })
+  handleLocation = (data) => {
+    this.setState({ location: data })
+  }
 
-  render ({user, idx, translate, me, isMe, localStream}, {location, status}) {
+  render ({user, translate, isMe, localStream}, {location, status}) {
     let { x, y } = location
     if (!x || isNaN(x)) x = 0
     if (!x || isNaN(y)) y = 0

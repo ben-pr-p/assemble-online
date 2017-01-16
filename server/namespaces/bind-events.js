@@ -70,10 +70,13 @@ module.exports = (io, nsp, name) => {
     )
 
     socket.on('signal', config => {
-      log(`Emitting signal-from-${transformId(socket.id)}`)
-      nsp
-        .connected[`/${name}#${config.to}`]
-        .emit(`signal-from-${transformId(socket.id)}`, config)
+      const sid = `/${name}#${config.to}`
+
+      if (nsp.connected[sid]) {
+        nsp
+          .connected[sid]
+          .emit(`signal-from-${transformId(socket.id)}`, config)
+      }
     })
 
     socket.on('disconnect', () => {
@@ -111,10 +114,14 @@ module.exports = (io, nsp, name) => {
   }
 
   nsp.update = () => {
-    for (let uid in nsp.connected) {
+    for (let sid in nsp.connected) {
+      const uid = transformId(sid)
+
       room.updates.for(uid)
       .then(update => {
-        nsp.connected[uid].emit('update', update)
+        /* Could not be connected if stuff has changed since 5 lines ago */
+        if (nsp.connected[sid])
+          nsp.connected[sid].emit('update', update)
       })
       .catch(panic)
     }

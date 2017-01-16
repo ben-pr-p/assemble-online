@@ -19,11 +19,11 @@ export default class VolumeIndicator extends Component {
   handleVolume = (vol) => {
     this.counter = this.counter + 1
 
-    const curr = document.querySelector(`#v-${this.counter % NUM_CIRCLES}`)
+    const curr = document.querySelector(`#v-${this.props.user.id}-${this.counter % NUM_CIRCLES}`)
     curr.style.transform = `scale(${1 + vol/MAX_VOLUME})`
     curr.classList.add('animatable')
 
-    const prev = document.querySelector(`#v-${(this.counter - (NUM_CIRCLES / 2)) % NUM_CIRCLES}`)
+    const prev = document.querySelector(`#v-${this.props.user.id}-${(this.counter - (NUM_CIRCLES / 2)) % NUM_CIRCLES}`)
     prev.style.transform = 'scale(1)'
     prev.classList.remove('animatable')
   }
@@ -32,7 +32,7 @@ export default class VolumeIndicator extends Component {
     return (
       <div className='volume-conatiners'>
         {new Array(NUM_CIRCLES).fill(null).map((nil, idx) => (
-          <div key={idx} id={`v-${idx}`}
+          <div key={idx} id={`v-${this.props.user.id}-${idx}`}
             className='volume-indicator-wrapper'
             style={{ width: `${d - BORDER_THICKNESS}px`, height: `${d - BORDER_THICKNESS}px`}}
           >

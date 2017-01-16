@@ -3,6 +3,9 @@ const {
   sortbine, objectify, keyify, callbackify, distance, print
 } = require('../utils')
 
+const log = require('debug')('assemble:redis')
+
+
 module.exports = {
   rooms: {
     getAll: () => new Promise((resolve, reject) =>
@@ -81,14 +84,15 @@ module.exports = {
         )
       ),
 
-      set: (uid, loc) => new Promise((resolve, reject) =>
-        (key => redis
+      set: (uid, loc) => new Promise((resolve, reject) => {
+        const key = keyify('loc')(uid)
+
+        redis
           .multi()
           .set(key, JSON.stringify(loc))
           .pexpire(key, 500)
           .exec(callbackify(resolve, reject))
-        )(keyify('loc')(uid))
-      )
+      })
     },
 
     volumes: {
@@ -112,14 +116,15 @@ module.exports = {
         )
       ),
 
-      set: (uid, vol) => new Promise((resolve, reject) =>
-        (key => redis
+      set: (uid, vol) => new Promise((resolve, reject) => {
+        const key = keyify('vol')(uid)
+
+        redis
           .multi()
           .set(key, vol)
           .pexpire(key, 500)
           .exec(callbackify(resolve, reject))
-        )(keyify('vol')(uid))
-      )
+      })
     },
 
     attenuations: {
@@ -127,14 +132,15 @@ module.exports = {
         redis.mget(uids.map(sortbine(uid)).map(keyify('att')), callbackify(resolve, reject))
       ),
 
-      set: (uid1, uid2, val) => new Promise((resolve, reject) =>
-        (key => redis
+      set: (uid1, uid2, val) => new Promise((resolve, reject) => {
+        const key = keyify('att')(sortbine(uid1)(uid2))
+
+        redis
           .multi()
           .set(key, val)
           .pexpire(key, 500)
           .exec(callbackify(resolve, reject))
-        )(keyify('att')(sortbine(uid1)(uid2)))
-      )
+      })
     },
 
     updates: {
