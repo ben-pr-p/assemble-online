@@ -15,7 +15,6 @@ export default class Connection extends Component {
     else
       this.state.remoteSrc = window.URL.createObjectURL(localStream)
 
-    Sock.on(`signal-from-${partnerId}`, this.handleSignal)
     Sock.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
     ToPeers.on(`to-${partnerId}`, this.sendData)
     ToPeers.on('to-all', this.sendData)
@@ -58,16 +57,16 @@ export default class Connection extends Component {
       stream: localStream
     })
 
-    console.log(Sock.id < partnerId)
     setStatus('connecting')
 
     this.peer.on('signal', config => {
-      console.log('Sending signaling data')
       Sock.emit('signal', {
         to: partnerId,
         data: config
       })
     })
+
+    Sock.on(`signal-from-${partnerId}`, this.handleSignal)
 
     this.peer.on('stream', remoteStream => {
       if (this.vidEl)
@@ -77,9 +76,16 @@ export default class Connection extends Component {
 
     this.peer.on('data', this.handleData)
     this.peer.on('connect', () => ToPeers.emit(`connected-to-${partnerId}`))
+
+    this.peer.on('error', err => {
+      throw err
+    })
   }
 
-  handleSignal = config => this.peer.signal(config.data)
+  handleSignal = config => {
+    this.peer.signal(config.data)
+  }
+
   handleAttenuation = (vol) => this.vidEl
     ? this.vidEl.volume = vol
     : null

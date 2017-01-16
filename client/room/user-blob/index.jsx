@@ -3,7 +3,7 @@ import lineIntersect from 'line-intersect'
 import Avatar from '../../common/Avatar'
 import Updates from '../../lib/updates'
 import VolumeIndicator from './volume-indicator'
-import Badge from './badge'
+// import Badge from './badge'
 import WebRTC from './webrtc'
 
 const r = 50
@@ -63,7 +63,7 @@ export default class UserBlob extends Component {
           ? <WebRTC partnerId={user.id} localStream={localStream} setStatus={this.setStatus} status={status} />
           : null
         }
-        <Badge {...{x, y, d: specificD, user}} />
+        {/* <Badge {...{x, y, d: specificD, user}} /> */}
       </div>
     )
   }
