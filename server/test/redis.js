@@ -129,16 +129,16 @@ describe('locations', () => {
     .catch(done)
   })
 
-  it('locations should expire', done => {
-    setTimeout(() =>
-      room.locations.getAll()
-      .then(locs => {
-        expect(locs).to.deep.equal({})
-        done()
-      })
-      .catch(done)
-    , 501)
-  })
+  // it('locations should expire', done => {
+  //   setTimeout(() =>
+  //     room.locations.getAll()
+  //     .then(locs => {
+  //       expect(locs).to.deep.equal({})
+  //       done()
+  //     })
+  //     .catch(done)
+  //   , 501)
+  // })
 })
 
 describe('volumes', () => {
@@ -159,16 +159,16 @@ describe('volumes', () => {
     .catch(done)
   })
 
-  it('volumes should expire', done => {
-    setTimeout(() =>
-      room.volumes.getAll()
-      .then(volumes => {
-        expect(volumes).to.deep.equal({})
-        done()
-      })
-      .catch(done)
-    , 501)
-  })
+  // it('volumes should expire', done => {
+  //   setTimeout(() =>
+  //     room.volumes.getAll()
+  //     .then(volumes => {
+  //       expect(volumes).to.deep.equal({})
+  //       done()
+  //     })
+  //     .catch(done)
+  //   , 501)
+  // })
 })
 
 describe('updates', () => {

@@ -73,14 +73,8 @@ module.exports = (io, nsp, name) => {
     )
 
     socket.on('signal', config => {
-      const toUid = config.to
       const fromUid = uid
-
       const sid = `/${name}#${config.to}`
-
-      const dataHash = crypto.createHash('md5')
-        .update(JSON.stringify(config.data))
-        .digest('hex')
 
       if (nsp.connected[sid]) {
         nsp
@@ -128,8 +122,10 @@ module.exports = (io, nsp, name) => {
       room.updates.for(transformId(sid))
       .then(update => {
         /* Could not be connected if stuff has changed since 5 lines ago */
-        if (nsp.connected[sid])
+        if (nsp.connected[sid]) {
+          log(update)
           nsp.connected[sid].emit('update', update)
+        }
       })
       .catch(panic)
     }

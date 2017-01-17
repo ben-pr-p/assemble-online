@@ -5,6 +5,8 @@ const {
 
 const log = require('debug')('assemble:redis')
 
+const shortExpiry = 500
+const longExpiry = 100000
 
 module.exports = {
   rooms: {
@@ -90,7 +92,6 @@ module.exports = {
         redis
           .multi()
           .set(key, JSON.stringify(loc))
-          .pexpire(key, 500)
           .exec(callbackify(resolve, reject))
       })
     },
@@ -122,7 +123,6 @@ module.exports = {
         redis
           .multi()
           .set(key, vol)
-          .pexpire(key, 500)
           .exec(callbackify(resolve, reject))
       })
     },
@@ -135,32 +135,34 @@ module.exports = {
       set: (uid1, uid2, val) => new Promise((resolve, reject) => {
         const key = keyify('att')(sortbine(uid1)(uid2))
 
+        log('Did this!!!')
+
         redis
           .multi()
           .set(key, val)
-          // .pexpire(key, 500)
           .exec(callbackify(resolve, reject))
       })
     },
 
     updates: {
       for: (uid) => new Promise((resolve, reject) =>
-        redis.smembers(`${room}:users`, (err, uids) =>
-          redis
-            .multi()
+        redis.smembers(`${room}:users`, (err, uids) => {
+          let queued = redis.multi()
             .mget(uids.map(keyify('loc')))
             .mget(uids.map(keyify('vol')))
-            .mget(uids
-              .map(sortbine(uid))
-              .filter(sbnd => sbnd)
-              .map(keyify('att'))
-            )
+
+          const attQuery = uids.map(sortbine(uid)).filter(sbnd => sbnd).map(keyify('att'))
+
+          if (attQuery.length > 0)
+            queued = queued.mget(attQuery)
+
+          queued
             .exec((err, all) =>
               err
                 ? reject(err)
                 : resolve(all.map(objectify(uids)))
             )
-        )
+        })
       )
     }
   })
