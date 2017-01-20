@@ -5,6 +5,11 @@ const MAX_VOLUME = 10
 const NUM_CIRCLES = 20
 const BORDER_THICKNESS = 3
 
+/*
+ * TODO
+ * Opacity on circle grow
+ */
+
 export default class Pulse extends Component {
   counter = NUM_CIRCLES - 1
 

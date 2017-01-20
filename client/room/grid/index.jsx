@@ -1,6 +1,14 @@
 import { Component, h } from 'preact'
 import theme from '../../lib/theme-manager'
 
+/*
+ * TODO
+ * Try inactive is not empty
+ * Dots instead of grid
+ * On size change you animate the growth
+ * Try corners
+ */
+
 export default class Grid extends Component {
   shouldComponentUpdate (nextProps) {
     return (this.props.dimensions.x != nextProps.dimensions.x || this.props.dimensions.y != nextProps.dimensions.y)

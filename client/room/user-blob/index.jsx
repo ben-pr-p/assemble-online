@@ -17,6 +17,29 @@ const initialize = name => {
   return [subnames.shift(), subnames.pop()]
 }
 
+/*
+ * User blob needs to:
+     - show the location and volume of a person
+     - show badges: (on the right?) (scrollable?)
+        - how they voted
+        - whether they want to talk next
+    - show video if there (maybe as rectangle)
+    - have A/V controls (on bottom?) (maybe the controls aren't part of the blob)
+    -
+
+ * On overlap
+   - speaking order determines z-index?
+   - bumper cars and lassos? or small bump
+   -
+
+ * Whatever I do to the circle needs to work for the rectangle
+
+ * TODO
+ * Big circle around me calibrated to audio distances
+ * Should show name? Configurable?
+ * Card shows up around name or something like that
+ */
+
 export default class UserBlob extends Component {
   state = {
     showCard: false,

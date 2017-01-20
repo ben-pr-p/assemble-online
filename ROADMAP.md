@@ -26,7 +26,6 @@
 * MS Paint style drawing with ability to draw sound barriers
 * When two people bump into each other, a video session is started - then on the
   right there's the video chat
-* Dots instead of grid
 
 ## For fun
 * Voice art
@@ -44,6 +43,7 @@
 * Normalize the audio
 * CLI
 * Latex build scenario
+* Logo + little name
 
 ## MVP
 * Landing page / better packaging, as well as blog style thing
@@ -55,11 +55,9 @@
   * Two people can only merge if they are a certain distance from each other
 
 ## Immediate
-* Create widget composing helper functions, migrate agenda there
-* Make all data for widgets sent over peer data channels
 * Establish benchmarks - implement them
 * Digest structure development
-* Redis - migrate to new server structure
+  * needs to be structured by sub conversation
 
 # Interested people
 Nikhil

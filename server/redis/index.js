@@ -135,8 +135,6 @@ module.exports = {
       set: (uid1, uid2, val) => new Promise((resolve, reject) => {
         const key = keyify('att')(sortbine(uid1)(uid2))
 
-        log('Did this!!!')
-
         redis
           .multi()
           .set(key, val)
@@ -151,16 +149,22 @@ module.exports = {
             .mget(uids.map(keyify('loc')))
             .mget(uids.map(keyify('vol')))
 
-          const attQuery = uids.map(sortbine(uid)).filter(sbnd => sbnd).map(keyify('att'))
+          const withoutMe = uids.filter(u => u != uid)
+          const attQuery = withoutMe.map(sortbine(uid)).filter(sbnd => sbnd).map(keyify('att'))
 
           if (attQuery.length > 0)
             queued = queued.mget(attQuery)
+
 
           queued
             .exec((err, all) =>
               err
                 ? reject(err)
-                : resolve(all.map(objectify(uids)))
+                : resolve([
+                    objectify(uids, all[0]),
+                    objectify(uids, all[1]),
+                    objectify(withoutMe, all[2])
+                  ])
             )
         })
       )

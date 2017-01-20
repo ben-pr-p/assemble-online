@@ -12,7 +12,7 @@ const queue = []
 children.forEach(c => {
 
   c.process.on('message', message => {
-    log('Job finished: %s', message)
+    // log('Job finished: %s', message)
     const job = queue.shift()
     if (job) {
       c.process.send(job)
@@ -33,9 +33,11 @@ const getFirstFree = () => children.filter(c => c.free)[0]
 module.exports = ({room, uid}) => {
   const freeKid = getFirstFree()
   if (freeKid) {
+    // log('There\'s a free kid')
     freeKid.free = false
     freeKid.process.send({uid, room})
   } else {
+    // log('Queueing...')
     queue.push({uid, room})
   }
 }

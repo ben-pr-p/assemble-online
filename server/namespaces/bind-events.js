@@ -121,11 +121,12 @@ module.exports = (io, nsp, name) => {
     for (let sid in nsp.connected) {
       room.updates.for(transformId(sid))
       .then(update => {
+
         /* Could not be connected if stuff has changed since 5 lines ago */
         if (nsp.connected[sid]) {
-          log(update)
           nsp.connected[sid].emit('update', update)
         }
+
       })
       .catch(panic)
     }
