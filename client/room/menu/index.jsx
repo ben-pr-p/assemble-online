@@ -27,7 +27,7 @@ export default class Menu extends Component {
     this.setState({ currentItems: items })
   }
 
-  closeNewUserModal = params => {
+  closeEditUser = params => {
     if (params.shouldSave)
       Sock.emit('me', store.get('me'))
 
@@ -108,7 +108,7 @@ export default class Menu extends Component {
         {bugReport &&
           <BugReport endBugReport={this.endBugReport} />}
         {(!me || editingUser) &&
-          <NewUserModal {...{closeNewUserModal: this.closeNewUserModal, me}} />}
+          <EditUser {...{closeEditUser: this.closeEditUser, me}} />}
       </div>
     )
   }
