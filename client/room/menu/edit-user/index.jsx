@@ -1,7 +1,7 @@
 import { Component, h } from 'preact'
 import Dialog from '../../../common/dialog'
 import Avatar from '../../../common/avatar'
-import Button from '../../../common/Button'
+import Button from '../../../common/button'
 import TextInput from '../../../common/text-input'
 import store from 'store'
 import randomString from 'random-string'
@@ -18,7 +18,7 @@ export default class NewUserModal extends Component {
     avatar: '',
     name: ''
   }
-  
+
   onChange = (ev) => this.setState({[ev.target.id]: ev.target.value})
 
   componentWillMount () {
