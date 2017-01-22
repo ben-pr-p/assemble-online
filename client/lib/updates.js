@@ -20,7 +20,6 @@ Sock.on('update', ([loc, vol, att]) => {
   }
 
   for (let partnerId in att) {
-    console.log(partnerId)
     Updates.emit(`attenuation-for-${partnerId}`, att[partnerId])
   }
 })

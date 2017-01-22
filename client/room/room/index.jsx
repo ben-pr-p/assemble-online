@@ -3,7 +3,6 @@ import Grid from '../grid'
 import UserBlob from '../user-blob'
 import Sock from '../../lib/sock'
 import Updates from '../../lib/updates'
-import theme from '../../lib/theme-manager'
 import VolumeDetector from './volume-detector'
 
 const UPDATE_INTERVAL = 30

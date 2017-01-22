@@ -2,7 +2,6 @@ import { Component, h } from 'preact'
 import store from 'store'
 import Menu from './menu'
 import Room from './room'
-import ThemeManager from '../lib/theme-manager'
 import Sock from '../lib/sock'
 import { Bus } from '../lib/emitters'
 

@@ -1,5 +1,4 @@
 import { Component, h } from 'preact'
-import theme from '../../lib/theme-manager'
 
 /*
  * TODO

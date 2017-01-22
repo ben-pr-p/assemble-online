@@ -1,22 +1,24 @@
 import { Component, h } from 'preact'
-import BugReport from './bug-report'
-import NewUserModal from './new-user-modal'
-import theme from '../../lib/theme-manager'
 import Sock from '../../lib/sock'
-import { Settings, Person, Bug, Widgets, Close } from '../../common/icons'
+import BugReport from './bug-report'
+import EditUser from './edit-user'
+import UserBrowse from './user-browse'
+import CheckpointBrowse from './checkpoint-browse'
 import IconButton from '../../common/icon-button'
 import { FromPeers } from '../../lib/emitters'
-import allWidgets from '../widgets'
 import store from 'store'
 import wildcardify from 'wildcards'
+
+import {
+  Settings, Person, Bug, Widgets, Close, People, Checkpoint
+} from '../../common/icons'
+
+const RADIUS = 200
 
 export default class Menu extends Component {
   toggleOpen = () => {
     this.setState({open: !this.state.open})
   }
-
-  initializeBugReport = () =>
-    this.setState({bugReport: true})
 
   endBugReport = () =>
     this.setState({bugReport: false})
@@ -25,20 +27,16 @@ export default class Menu extends Component {
     this.setState({ currentItems: items })
   }
 
-  editUser = () => this.setState({editingUser: true})
-  openColorModal = () => this.setState({ editingColor: true })
-  closeColorModal = () => this.setState({ editingColor: false })
-
   closeNewUserModal = params => {
     if (params.shouldSave)
       Sock.emit('me', store.get('me'))
 
     this.setState({editingUser: false})
   }
-
-  wrapAddWidget = widget => ev =>
-    this.setState({ widgets: this.state.widgets.concat([widget]) })
-
+  //
+  // wrapAddWidget = widget => ev =>
+  //   this.setState({ widgets: this.state.widgets.concat([widget]) })
+  //
   wrapAction = action => ev => {
     this.state.currentItems = this.config
     this.state.open = false
@@ -49,21 +47,22 @@ export default class Menu extends Component {
     {
       icon: <Person />,
       label: 'Edit Me',
-      action: this.wrapAction(this.editUser)
+      action: this.wrapAction(() => this.setState({editingUser: true}))
     },
     {
       icon: <Bug />,
       label: 'File a Bug Report',
-      action: this.wrapAction(this.initializeBugReport)
+      action: this.wrapAction(() => this.setState({bugReport: true}))
     },
     {
-      icon: <Widgets />,
-      label: 'Widgets',
-      children: allWidgets.map(w => ({
-        label: w.kind,
-        icon: w.icon,
-        action: this.wrapAction(this.wrapAddWidget(w))
-      }))
+      icon: <Checkpoint />,
+      label: 'Checkpoints',
+      action: this.wrapAction(() => this.setState({checkpointBrowse: true}))
+    },
+    {
+      icon: <People />,
+      label: 'Users',
+      action: this.wrapAction(() => this.setState({userBrowse: true}))
     }
   ]
 
@@ -72,8 +71,8 @@ export default class Menu extends Component {
     currentItems: this.config,
     bugReport: false,
     editingUser: false,
-    editingColor: false,
-    widgets: []
+    checkpointBrowse: false,
+    userBrowse: false,
   }
 
   componentWillMount () {
@@ -92,7 +91,9 @@ export default class Menu extends Component {
     })
   }
 
-  render ({me}, {open, editingUser, bugReport, editingColor, widgets}) {
+  render ({me}, {
+    open, editingUser, bugReport, userBrowse, checkpointBrowse
+  }) {
     return (
       <div className={`menu`}>
         <IconButton onClick={this.toggleOpen}>
@@ -104,7 +105,6 @@ export default class Menu extends Component {
 
         {open && this.renderMenu(this.state.currentItems)}
         {/* Actual menu modals that can pop up */}
-        {widgets.map(w => this.renderWidget(me, w))}
         {bugReport &&
           <BugReport endBugReport={this.endBugReport} />}
         {(!me || editingUser) &&
@@ -140,8 +140,8 @@ export default class Menu extends Component {
       : Math.PI / 4
 
     return `translate(
-      ${100 * Math.cos(angle)}px,
-      -${100 * Math.sin(angle)}px
+      ${RADIUS * Math.cos(angle)}px,
+      -${RADIUS * Math.sin(angle)}px
     )`
   }
 

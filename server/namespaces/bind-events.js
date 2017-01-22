@@ -24,6 +24,8 @@ module.exports = (io, nsp, name) => {
   log('Binding events')
 
   nsp.on('connection', socket => {
+    log('New connection')
+
     const uid = transformId(socket.id)
 
     socket.on('me', user => {
@@ -34,6 +36,7 @@ module.exports = (io, nsp, name) => {
         }))
         .then(room.users.getAll)
         .then(allUsers => {
+          log('Have users %j', allUsers)
           if (allUsers.length > 0 && !updateIntervalId)
             updateIntervalId = setInterval(nsp.update, 50)
 
@@ -95,9 +98,20 @@ module.exports = (io, nsp, name) => {
             .then(allUsers => {
               nsp.emit('users', allUsers)
 
+              log('After disconnect have users %j', allUsers)
+
               if (allUsers.length == 0) {
-                nsp.implode()
-                clearInterval(updateIntervalId)
+                setTimeout(() => {
+                  room.users.size()
+                  .then(num => {
+                    if (num == 0) {
+                      log('Imploding...')
+                      nsp.implode()
+                      clearInterval(updateIntervalId)
+                    }
+                  })
+                  .catch(panic)
+                }, 200)
               }
 
               nsp.emit('dimensions', {
@@ -114,7 +128,7 @@ module.exports = (io, nsp, name) => {
   nsp.implode = () => {
     Object.keys(nsp.connected).forEach(id => nsp[id].disconnect())
     nsp.removeAllListeners()
-    delete io.nsps[name]
+    delete io.nsps['/' + name]
   }
 
   nsp.update = () => {

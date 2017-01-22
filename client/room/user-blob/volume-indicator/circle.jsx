@@ -22,8 +22,6 @@ export default class Circle extends Component {
   }
 
   render ({x, y, d, user, status}, {vol, filler}) {
-    console.log(vol)
-
     return (
       <div className='volume-circle'>
 
