@@ -2,8 +2,8 @@
   "name": "assemble-live",
   "version": "0.0.1",
   "engines": {
-    "node": "7.0.0",
-    "npm": "3.10.8"
+    "node": "7.4.0",
+    "npm": "4.0.5"
   },
   "description": "online meeting space",
   "repository": {
