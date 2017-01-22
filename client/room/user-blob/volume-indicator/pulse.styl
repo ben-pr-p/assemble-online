@@ -1,0 +1,40 @@
+.volume-indicator-wrapper
+  position absolute
+
+  &.animatable
+    animation pulse .5s linear infinite
+
+  .volume-indicator
+    height 100%
+    width 100%
+    border-radius 50%
+    z-index -2
+
+    &.rotating
+      animation siren 1s linear infinite
+
+@keyframes pulse
+  0%
+    transform scale(1)
+    opacity 1
+  100%
+    opacity 0
+
+@keyframes siren
+  0%
+    transform rotate(0deg)
+  100%
+    transform rotate(360deg)
+
+.name-text
+  text-transform uppercase
+  font-family Roboto, sans-serif
+  font-weight bold
+  font-size 12px
+
+.badge-container
+  display flex
+  align-items center
+  justify-content center
+  height 100%
+  width 100%

@@ -82,7 +82,7 @@ export default class UserBlob extends Component {
           this.computeTransform(isFar, {x, y, translate})
         )}
       >
-        <Avatar src={user.avatar} letters={initialize(user.name)} style={{position:'absolute'}} />
+        {/* <Avatar src={user.avatar} letters={initialize(user.name)} style={{position:'absolute'}} /> */}
         <VolumeIndicator {...{d: specificD, user, status}} />
         {!isMe
           ? <WebRTC partnerId={user.id} localStream={localStream} setStatus={this.setStatus} status={status} />

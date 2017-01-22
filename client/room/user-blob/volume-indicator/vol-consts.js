@@ -1,0 +1,9 @@
+const MAX_VOLUME = 20
+const NUM_CIRCLES = 20
+const BORDER_THICKNESS = 5
+
+export {
+  MAX_VOLUME,
+  NUM_CIRCLES,
+  BORDER_THICKNESS
+}

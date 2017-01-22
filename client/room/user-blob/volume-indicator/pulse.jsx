@@ -1,9 +1,6 @@
 import { Component, h } from 'preact'
 import Updates from '../../../lib/updates'
-
-const MAX_VOLUME = 10
-const NUM_CIRCLES = 20
-const BORDER_THICKNESS = 3
+import {MAX_VOLUME, NUM_CIRCLES, BORDER_THICKNESS} from './vol-consts'
 
 /*
  * TODO
