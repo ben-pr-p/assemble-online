@@ -1,6 +1,6 @@
 import { Component, h } from 'preact'
 import lineIntersect from 'line-intersect'
-import Avatar from '../../common/Avatar'
+import Avatar from '../../common/avatar'
 import Updates from '../../lib/updates'
 import VolumeIndicator from './volume-indicator'
 // import Badge from './badge'

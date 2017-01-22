@@ -1,6 +1,6 @@
 import { Component, h } from 'preact'
-import Dialog from '../../../common/Dialog'
-import Button from '../../../common/Button'
+import Dialog from '../../../common/dialog'
+import Button from '../../../common/button'
 import TextInput from '../../../common/text-input'
 
 const labelMap = {
