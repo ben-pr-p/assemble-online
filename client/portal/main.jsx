@@ -1,7 +1,7 @@
 import { h, Component } from 'preact'
 import request from 'superagent'
-import EnterIcon from '../common/icons/enter'
-import CreateIcon from '../common/icons/create'
+import { Enter } from '../common/icons'
+import { Create } from '../common/icons'
 import randomString from 'random-string'
 import Button from '../common/button'
 import TextInput from '../common/text-input'
@@ -87,7 +87,7 @@ export default class Portal extends Component {
           <Button text='Create Room'
             onClick={this.createAndEnterRoom}
           >
-            <CreateIcon />
+            <Create />
           </Button>
 
         <br/>
@@ -110,7 +110,7 @@ export default class Portal extends Component {
     ? Object.keys(rooms).map(r => (
         <div key={r} className='room-list-item'>
           <div className='enter-icon-container' onClick={this.enterRoom(r)} >
-            <EnterIcon className='enter-icon' />
+            <Enter className='enter-icon' />
           </div>
           <div className='text-container'>
             <span className='room-name'>{r}</span>
