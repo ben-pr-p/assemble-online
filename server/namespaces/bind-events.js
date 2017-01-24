@@ -15,6 +15,11 @@ const panic = err => {
   throw print(err)
 }
 
+const hashObj = obj => crypto
+  .createHash('md5')
+  .update(JSON.stringify(obj))
+  .digest('hex')
+
 module.exports = (io, nsp, name) => {
   const room = redis.room(name)
   const pings = {}
@@ -72,6 +77,42 @@ module.exports = (io, nsp, name) => {
       room.volumes
         .set(uid, vol)
         .then(ignore)
+        .catch(panic)
+    )
+
+    socket.on('checkpoint-new', checkpoint =>
+      room.checkpoints
+        .set(hashObj(checkpoint), checkpoint)
+        .then(() =>
+          room.checkpoints
+            .getAll()
+            .then(all => nsp.emit('checkpoints', all))
+            .catch(panic)
+        )
+        .catch(panic)
+    )
+
+    socket.on('checkpoint-edit', checkpoint =>
+      room.checkpoints
+        .set(checkpoint.id, checkpoint)
+        .then(() =>
+          room.checkpoints
+            .getAll()
+            .then(all => nsp.emit('checkpoints', all))
+            .catch(panic)
+        )
+        .catch(panic)
+    )
+
+    socket.on('checkpoint-destroy', checkpoint =>
+      room.checkpoints
+        .remove(checkpoint.id)
+        .then(() =>
+          room.checkpoints
+            .getAll()
+            .then(all => nsp.emit('checkpoints', all))
+            .catch(panic)
+        )
         .catch(panic)
     )
 
