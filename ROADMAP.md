@@ -20,6 +20,7 @@
 * take a picture with camera
 * click on heads and go to the person
 * optional video communication
+* minimap like games for when lost
 
 ## Dreamers
 * Documents, where you can select a few grids and it turns into a document

@@ -1,2 +1,2 @@
-module.exports = (p1, p2) =>
-  Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
+module.exports = ([x1, y1], [x2, y2]) =>
+  Math.sqrt((x1 - x2)**2 + (y1 - y2)**2)

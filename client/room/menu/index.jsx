@@ -33,10 +33,7 @@ export default class Menu extends Component {
 
     this.setState({editingUser: false})
   }
-  //
-  // wrapAddWidget = widget => ev =>
-  //   this.setState({ widgets: this.state.widgets.concat([widget]) })
-  //
+
   wrapAction = action => ev => {
     this.state.currentItems = this.config
     this.state.open = false

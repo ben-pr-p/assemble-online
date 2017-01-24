@@ -28,29 +28,29 @@ Sock.on('update', ([loc, vol, att]) => {
  * Gooey translate stuff
  */
 
-let myLoc = {}
-let translate = {x: 0, y: 0}
-let dimensions = {x: window.innerWidth, y: window.innerHeight}
+let myLoc = []
+let translate = [0, 0]
+let dimensions = [window.innerWidth, window.innerHeight]
 let transitioning = false
 let mac = .1
 
 const getMac = () => transitioning ? mac * .01 : mac
 
-Updates.on('location', ({clientX, clientY}) => {
-  Sock.emit('location', {
-    x: Math.min(Math.max(myLoc.x + ((clientX - translate.x - 50 - myLoc.x) * getMac()), 0), dimensions.x),
-    y: Math.min(Math.max(myLoc.y + ((clientY - translate.y - 50 - myLoc.y) * getMac()), 0), dimensions.y)
-  })
+Updates.on('location', ([clientX, clientY]) => {
+  Sock.emit('location', [
+    Math.min(Math.max(myLoc[0] + ((clientX - translate[0] - 50 - myLoc[0]) * getMac()), 0), dimensions[0]),
+    Math.min(Math.max(myLoc[1] + ((clientY - translate[1] - 50 - myLoc[1]) * getMac()), 0), dimensions[1])
+  ])
 
   setTimeout(() => {
     if (
-      isNearEdge(myLoc.x, translate.x, window.innerWidth) ||
-      isNearEdge(myLoc.y, translate.y, window.innerHeight)
+      isNearEdge(myLoc[0], translate[0], window.innerWidth) ||
+      isNearEdge(myLoc[1], translate[1], window.innerHeight)
     ) {
-      translate = {
-        x: (-1) * myLoc.x + (window.innerWidth / 2) - 50,
-        y: (-1) * myLoc.y + (window.innerHeight / 2) - 50
-      }
+      translate = [
+        (-1) * myLoc[0] + (window.innerWidth / 2) - 50,
+        (-1) * myLoc[1] + (window.innerHeight / 2) - 50
+      ]
 
       transitioning = true
       Updates.emit('translate', translate)
@@ -58,6 +58,11 @@ Updates.on('location', ({clientX, clientY}) => {
       setTimeout(() => transitioning = false, 1500)
     }
   }, 0)
+})
+
+Updates.on('checkpoint-new', checkpoint => {
+  checkpoint.loc = myLoc.map(num => num + 50)
+  Socket.emit('checkpoint-new', checkpoint)
 })
 
 Sock.on('dimensions', dims => dimensions = dims)

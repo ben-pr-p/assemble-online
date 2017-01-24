@@ -91,7 +91,6 @@ export default class Connection extends Component {
   handleSignal = config => this.peer.signal(config)
 
   handleAttenuation = (vol) => {
-    console.log(`Got attenuation ${vol}`)
     this.vidEl
       ? this.vidEl.volume = vol
       : null

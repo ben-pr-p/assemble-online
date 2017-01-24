@@ -13,6 +13,7 @@ export default class Main extends Component {
 
   componentWillMount () {
     Sock.on('users', this.handleUsers)
+    Sock.on('checkpoints', this.handleCheckpoints)
     Bus.on('me', this.handleMe)
 
     this.state.me = store.get('me')
@@ -21,14 +22,18 @@ export default class Main extends Component {
 
   componentWillUnmount () {
     Sock.off('users', this.handleUsers)
+    Sock.off('checkpoints', this.handleCheckpoints)
   }
 
   handleUsers = users => users
     ? this.setState({ users })
     : null
 
-  announceMe = data => Sock.emit('me', data)
+  handleCheckpoints = checkpoints => checkpoints
+    ? this.setState({ checkpoints })
+    : null
 
+  announceMe = data => Sock.emit('me', data)
   handleMe = me => this.setState({ me })
 
   clearLocal = () => {
@@ -37,7 +42,7 @@ export default class Main extends Component {
     this.forceUpdate()
   }
 
-  render (props, { me, users, theme }) {
+  render (props, { me, users, checkpoints, theme }) {
     const {
       setEditUserState,
       setEasyRTCId,
@@ -46,8 +51,8 @@ export default class Main extends Component {
 
     return (
       <div id='main-app'>
-        {me && <Room {...{me, users}} />}
-        <Menu {...{me, clearLocal}} />
+        {me && <Room {...{me, users, checkpoints}} />}
+        <Menu {...{me, users, checkpoints, clearLocal}} />
       </div>
     )
   }

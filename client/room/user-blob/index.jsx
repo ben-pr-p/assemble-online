@@ -43,7 +43,7 @@ const initialize = name => {
 export default class UserBlob extends Component {
   state = {
     showCard: false,
-    location: {x: 0, y: 0},
+    location: [0,0],
     status: 'disconnected'
   }
 
@@ -63,7 +63,7 @@ export default class UserBlob extends Component {
   }
 
   render ({user, translate, isMe, localStream}, {location, status}) {
-    let { x, y } = location
+    let [ x, y ] = location
     if (!x || isNaN(x)) x = 0
     if (!x || isNaN(y)) y = 0
 
@@ -101,7 +101,7 @@ export default class UserBlob extends Component {
     ? {width: `${d}px`, height: `${d}px`}
     : {width: `${sd}px`, height: `${sd}px`}
 
-  computeTransform = (isFar, {x, y, translate}) => !isFar
+  computeTransform = (isFar, {x, y, translate}) => true //!isFar
     ? {transform: `translate3d(${x}px,${y}px, 0px)`}
     : this.computeFarTransform({x, y, translate})
 

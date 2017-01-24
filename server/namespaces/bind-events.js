@@ -1,5 +1,5 @@
 const redis = require('../redis')
-const queueAttn = require('../attenuation-workers')
+const queueWorkers = require('../workers')
 const colors = require('./user-colors')
 const {print} = require('../utils')
 const debug = require('debug')
@@ -41,16 +41,16 @@ module.exports = (io, nsp, name) => {
             updateIntervalId = setInterval(nsp.update, 50)
 
           nsp.emit('users', allUsers)
-          nsp.emit('dimensions', {
-            x: 400 * allUsers.length,
-            y: 300 * allUsers.length
-          })
+          nsp.emit('dimensions', [
+            400 * allUsers.length,
+            300 * allUsers.length
+          ])
 
-          room.locations.set(uid, {
-            x: 200 * allUsers.length,
-            y: 150 * allUsers.length
-          })
-          .then(rez => queueAttn({room: name, uid: uid}))
+          room.locations.set(uid, [
+            200 * allUsers.length,
+            150 * allUsers.length
+          ])
+          .then(rez => queueWorkers({room: name, uid: uid}))
           .catch(panic)
         })
         .catch(panic)
@@ -65,7 +65,7 @@ module.exports = (io, nsp, name) => {
         .then(ignore)
         .catch(panic)
 
-      queueAttn({room: name, uid: uid})
+      queueWorkers({room: name, uid: uid})
     })
 
     socket.on('volume', vol =>
@@ -114,10 +114,10 @@ module.exports = (io, nsp, name) => {
                 }, 200)
               }
 
-              nsp.emit('dimensions', {
-                x: 400 * allUsers.length,
-                y: 300 * allUsers.length
-              })
+              nsp.emit('dimensions', [
+                400 * allUsers.length,
+                300 * allUsers.length
+              ])
             })
             .catch(panic)
         )

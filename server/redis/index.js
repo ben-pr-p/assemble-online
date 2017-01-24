@@ -28,10 +28,6 @@ module.exports = {
     name: () => room,
 
     users: {
-      getAllIds: () => new Promise((resolve, reject) =>
-        redis.smembers(`${room}:users`, callbackify(resolve, reject))
-      ),
-
       getAll: () => new Promise((resolve, reject) =>
         redis.smembers(`${room}:users`, (err, uids) =>
           uids.map(keyify('users')).reduce((acc, uid) =>
@@ -97,26 +93,6 @@ module.exports = {
     },
 
     volumes: {
-      get: (uids) => new Promise((resolve, reject) =>
-        redis.mget(uids.map(keyify('vol')), (err, vols) =>
-          err
-            ? reject(err)
-            : resolve(objectify(uids, vols))
-        )
-      ),
-
-      getAll: () => new Promise((resolve, reject) =>
-        redis.smembers(`${room}:users`, (err, uids) =>
-          uids.length > 0
-            ? redis.mget(uids.map(keyify('vol')), (err, vols) =>
-                err
-                  ? reject(err)
-                  : resolve(objectify(uids, vols))
-              )
-            : {}
-        )
-      ),
-
       set: (uid, vol) => new Promise((resolve, reject) => {
         const key = keyify('vol')(uid)
 
@@ -128,10 +104,6 @@ module.exports = {
     },
 
     attenuations: {
-      getFor: (uid, others) => new Promise((resolve, reject) =>
-        redis.mget(uids.map(sortbine(uid)).map(keyify('att')), callbackify(resolve, reject))
-      ),
-
       set: (uid1, uid2, val) => new Promise((resolve, reject) => {
         const key = keyify('att')(sortbine(uid1)(uid2))
 
@@ -140,6 +112,74 @@ module.exports = {
           .set(key, val)
           .exec(callbackify(resolve, reject))
       })
+    },
+
+    checkpoints: {
+      getAll: () => new Promise((resolve, reject) =>
+        redis.smembers(`${room}:checks`, (err, cids) => {
+          const memberKeyify = keyify('checks:members')
+          const locKeyify = keyify('checks:loc')
+
+          let chain = redis.multi()
+
+          if (cids.length == 0) return resolve({})
+
+          cids.forEach(cid => {
+            chain = chain.smembers(memberKeyify(cid))
+          })
+
+          cids.forEach(cid => {
+            chain = chain.get(locKeyify(cid))
+          })
+
+          chain.exec((err, [members, locations]) => {
+            if (err) return reject(err)
+
+            return resolve(cids.reduce((cid, idx) =>
+              Object.assing({
+                [cid]: {
+                  members: members[idx],
+                  loc: locations[idx]
+                }
+              })
+            , {}))
+          })
+        })
+      ),
+
+      add: (cid, check) => new Promise((resolve, reject) =>
+        redis
+          .multi()
+          .sadd(`${room}:checks`, cid)
+          .exec(callbackify(resolve, reject))
+      ),
+
+      moveTo: (cid, loc) => new Promise((resolve, reject) =>
+        redis
+          .multi()
+          .set(keyify('checks:loc')(cid), loc)
+          .exec(callbackify(resolve, reject))
+      ),
+
+      user: uid => ({
+        join: cid => new Promise((resolve, reject) =>
+          redis
+            .sadd(keyify('checks')(cid), uid, callbackify(resolve, reject))
+        ),
+
+        leave: cid => new Promise((resolve, reject) =>
+          redis
+            .srem(keyify('checks')(cid), uid, callbackify(resolve, reject))
+        )
+      }),
+
+      remove: (cid) => new Promise((resolve, reject) =>
+        redis
+          .multi()
+          .srem(`${room}:checks`, cid)
+          .del(keyify('checks')(cid))
+          .exec(callbackify(resolve, reject))
+      ),
     },
 
     updates: {
@@ -155,7 +195,6 @@ module.exports = {
           if (attQuery.length > 0)
             queued = queued.mget(attQuery)
 
-
           queued
             .exec((err, all) =>
               err
@@ -169,5 +208,6 @@ module.exports = {
         })
       )
     }
+
   })
 }

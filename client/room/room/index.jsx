@@ -11,8 +11,8 @@ navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia 
 
 export default class Room extends Component {
   state = {
-    dimensions: {},
-    translate: {x: 0, y: 0},
+    dimensions: [],
+    translate: [0, 0],
     localMedia: {audio: true, video: false},
     localStream: null
   }
@@ -55,10 +55,7 @@ export default class Room extends Component {
   onMouseUp = () => clearInterval(this.intervalId)
 
   onMouseMove = (ev) =>
-    this.mousePos = {
-      clientX: ev.clientX,
-      clientY: ev.clientY
-    }
+    this.mousePos = [ev.clientX, ev.clientY]
 
   moveUser = () => Updates.emit('location', this.mousePos)
 
@@ -78,7 +75,7 @@ export default class Room extends Component {
         onMouseUp={this.onMouseUp}
         onMouseMove={this.onMouseMove}
       >
-        <div id='viewport' style={{transform: `translate3d(${translate.x}px, ${translate.y}px, 0px)`}} >
+        <div id='viewport' style={{transform: `translate(${translate[0]}px, ${translate[1]}px)`}} >
           <Grid dimensions={dimensions} />
           {blobs}
         </div>

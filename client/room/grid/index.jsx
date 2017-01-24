@@ -9,13 +9,10 @@ import { Component, h } from 'preact'
  */
 
 export default class Grid extends Component {
-  shouldComponentUpdate (nextProps) {
-    return (this.props.dimensions.x != nextProps.dimensions.x || this.props.dimensions.y != nextProps.dimensions.y)
-  }
-
   render ({dimensions}) {
-    const width = dimensions && dimensions.x ? dimensions.x : '100%'
-    const height = dimensions && dimensions.y ? dimensions.y : '100%'
+    const [x, y] = dimensions
+    const width = dimensions && x ? x : '100%'
+    const height = dimensions && y ? y : '100%'
 
     return (
       <svg className='grid' {...{id: 'grid-container', width, height}} >
