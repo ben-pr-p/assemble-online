@@ -44,7 +44,7 @@ export default class NewUserModal extends Component {
 
     store.set('me', user)
     Bus.emit('me', Object.assign(user, {id: Sock.id}))
-    this.props.closeNewUserModal({shouldSave: true})
+    this.props.closeNewUserModal({shouldSave: 'user'})
   }
 
   cancel = () =>

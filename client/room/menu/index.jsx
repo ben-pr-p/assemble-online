@@ -2,6 +2,7 @@ import { Component, h } from 'preact'
 import Sock from '../../lib/sock'
 import BugReport from './bug-report'
 import EditUser from './edit-user'
+import EditCheckpoint from './edit-checkpoint'
 import UserBrowse from './user-browse'
 import CheckpointBrowse from './checkpoint-browse'
 import IconButton from '../../common/icon-button'
@@ -10,28 +11,30 @@ import store from 'store'
 import wildcardify from 'wildcards'
 
 import {
-  Settings, Person, Bug, Widgets, Close, People, Checkpoint
+  Settings, Person, Bug, Widgets, Close, People, Checkpoint, NewCheckpoint,
+  BrowseCheckpoints
 } from '../../common/icons'
 
 const RADIUS = 200
 
 export default class Menu extends Component {
-  toggleOpen = () => {
+  toggleOpen = () =>
     this.setState({open: !this.state.open})
-  }
 
   endBugReport = () =>
     this.setState({bugReport: false})
 
-  wrapSetItems = items => ev => {
+  wrapSetItems = items => ev =>
     this.setState({ currentItems: items })
-  }
 
-  closeEditUser = params => {
-    if (params.shouldSave)
+  closeModal = params => {
+    if (params && params.shouldSave == 'user')
       Sock.emit('me', store.get('me'))
 
-    this.setState({editingUser: false})
+    this.setState({
+      editingUser: false,
+      newCheckpointForm: false
+    })
   }
 
   wrapAction = action => ev => {
@@ -54,7 +57,18 @@ export default class Menu extends Component {
     {
       icon: <Checkpoint />,
       label: 'Checkpoints',
-      action: this.wrapAction(() => this.setState({checkpointBrowse: true}))
+      children: [
+        {
+          icon: <NewCheckpoint />,
+          label: 'New Checkpoint',
+          action: this.wrapAction(() => this.setState({newCheckpointForm: true}))
+        },
+        {
+          icon: <BrowseCheckpoints />,
+          label: 'Browse Checkpoints',
+          action: this.wrapAction(() => this.setState({checkpointBrowse: true}))
+        }
+      ]
     },
     {
       icon: <People />,
@@ -70,6 +84,7 @@ export default class Menu extends Component {
     editingUser: false,
     checkpointBrowse: false,
     userBrowse: false,
+    newCheckpointForm: false
   }
 
   componentWillMount () {
@@ -88,8 +103,9 @@ export default class Menu extends Component {
     })
   }
 
-  render ({me}, {
-    open, editingUser, bugReport, userBrowse, checkpointBrowse
+  render ({me, users, checkpoints}, {
+    open, editingUser, bugReport, userBrowse, checkpointBrowse,
+    newCheckpointForm
   }) {
     return (
       <div className={`menu`}>
@@ -102,10 +118,16 @@ export default class Menu extends Component {
 
         {open && this.renderMenu(this.state.currentItems)}
         {/* Actual menu modals that can pop up */}
+        {userBrowse &&
+          <UserBrowse {...{users}} />}
+        {checkpointBrowse &&
+          <CheckpointBrowse {...{users}} />}
+        {newCheckpointForm &&
+          <EditCheckpoint {...{closeModal: this.closeModal}} />}
         {bugReport &&
           <BugReport endBugReport={this.endBugReport} />}
         {(!me || editingUser) &&
-          <EditUser {...{closeEditUser: this.closeEditUser, me}} />}
+          <EditUser {...{closeModal: this.closeModal, me}} />}
       </div>
     )
   }

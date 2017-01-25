@@ -82,11 +82,15 @@ module.exports = (io, nsp, name) => {
 
     socket.on('checkpoint-new', checkpoint =>
       room.checkpoints
-        .set(hashObj(checkpoint), checkpoint)
+        .add(hashObj(checkpoint), checkpoint)
         .then(() =>
           room.checkpoints
             .getAll()
-            .then(all => nsp.emit('checkpoints', all))
+            .then(all => {
+              log('Requested add checkpoint %j', checkpoint)
+              log('Have checkpoints %j', all)
+              nsp.emit('checkpoints', all)
+            })
             .catch(panic)
         )
         .catch(panic)
@@ -98,7 +102,10 @@ module.exports = (io, nsp, name) => {
         .then(() =>
           room.checkpoints
             .getAll()
-            .then(all => nsp.emit('checkpoints', all))
+            .then(all => {
+              log('Have checkpoints %j', all)
+              nsp.emit('checkpoints', all)
+            })
             .catch(panic)
         )
         .catch(panic)
@@ -110,7 +117,10 @@ module.exports = (io, nsp, name) => {
         .then(() =>
           room.checkpoints
             .getAll()
-            .then(all => nsp.emit('checkpoints', all))
+            .then(all => {
+              log('Have checkpoints %j', all)
+              nsp.emit('checkpoints', all)
+            })
             .catch(panic)
         )
         .catch(panic)

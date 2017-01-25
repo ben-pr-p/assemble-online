@@ -121,22 +121,23 @@ module.exports = {
           const locKeyify = keyify('checks:loc')
 
           let chain = redis.multi()
-
           if (cids.length == 0) return resolve({})
 
           cids.forEach(cid => {
             chain = chain.smembers(memberKeyify(cid))
           })
-
           cids.forEach(cid => {
             chain = chain.get(locKeyify(cid))
           })
 
-          chain.exec((err, [members, locations]) => {
+          chain.exec((err, halfnhalf) => {
             if (err) return reject(err)
 
-            return resolve(cids.reduce((cid, idx) =>
-              Object.assing({
+            const members = halfnhalf.slice(0, halfnhalf.length / 2)
+            const locations = halfnhalf.slice(halfnhalf.length / 2)
+
+            return resolve(cids.reduce((acc, cid, idx) =>
+              Object.assign(acc, {
                 [cid]: {
                   members: members[idx],
                   loc: locations[idx]
@@ -151,6 +152,7 @@ module.exports = {
         redis
           .multi()
           .sadd(`${room}:checks`, cid)
+          .set(`checks:loc:${cid}`, JSON.stringify(check.loc))
           .exec(callbackify(resolve, reject))
       ),
 

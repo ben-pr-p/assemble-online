@@ -24,6 +24,8 @@ Sock.on('update', ([loc, vol, att]) => {
   }
 })
 
+Sock.on('dimensions', dims => dimensions = dims)
+
 /*
  * Gooey translate stuff
  */
@@ -60,11 +62,12 @@ Updates.on('location', ([clientX, clientY]) => {
   }, 0)
 })
 
+/*
+ * Set starting checkpoint location to slight offset of user
+ */
 Updates.on('checkpoint-new', checkpoint => {
   checkpoint.loc = myLoc.map(num => num + 50)
-  Socket.emit('checkpoint-new', checkpoint)
+  Sock.emit('checkpoint-new', checkpoint)
 })
-
-Sock.on('dimensions', dims => dimensions = dims)
 
 export default Updates

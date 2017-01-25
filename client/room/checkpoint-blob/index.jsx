@@ -13,7 +13,7 @@ const sd = sr * 2
 
 export default class CheckpointBlob extends Component {
   render ({checkpoint}) {
-    const { location, name, translate, color, label } = checkpoint
+    const { location, translate, color, name } = checkpoint
 
     let [ x, y ] = location
     if (!x || isNaN(x)) x = 0
@@ -38,7 +38,7 @@ export default class CheckpointBlob extends Component {
           <Checkpoint color={color} />
         </div>
         <div className='checkpoint-label'>
-          {label}
+          {name}
         </div>
       </div>
     )
