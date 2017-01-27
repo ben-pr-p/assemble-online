@@ -2,6 +2,7 @@ import { Component, h } from 'preact'
 import store from 'store'
 import Menu from './menu'
 import Room from './room'
+import CheckpointDrawer from './checkpoint-drawer'
 import Sock from '../lib/sock'
 import { Bus } from '../lib/emitters'
 
@@ -45,11 +46,13 @@ export default class Main extends Component {
 
   render (props, { me, users, checkpoints, theme }) {
     const { clearLocal } = this
+    const cp = checkpoints.filter(c => c.members.includes(Sock.id))[0]
 
     return (
       <div id='main-app'>
         {me && <Room {...{me, users, checkpoints}} />}
         <Menu {...{me, users, checkpoints, clearLocal}} />
+        {cp && <CheckpointDrawer checkpoint={cp} />}
       </div>
     )
   }

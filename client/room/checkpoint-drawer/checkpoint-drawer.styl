@@ -1,0 +1,20 @@
+.cp-drawer
+  position fixed
+  right 0
+  left auto
+  top 0
+  height 100%
+  width 33%
+  background-color rgba(0, 0, 0, .5)
+  animation slide-from-right 300ms ease-out
+
+  .cp-title
+    font-size larger
+    margin-left 40px
+    margin-top 40px
+
+@keyframes slide-from-right
+  0%
+    transform translateX(100%)
+  100%
+    transform translateX(0x)

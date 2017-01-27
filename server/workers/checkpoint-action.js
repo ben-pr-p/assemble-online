@@ -28,8 +28,6 @@ const doLeaveJoins = (redisRoom, uid, should) => new Promise((resolve, reject) =
   if (should.join.length == 0 && should.leave.length == 0)
     return resolve(false)
 
-  log(should.join)
-  log(should.leave)
   const me = redisRoom.checkpoints.user(uid)
 
   Promise
@@ -47,13 +45,11 @@ module.exports = ({room, uid}) => new Promise((resolve, reject) => {
   ])
   .then(data => doLeaveJoins(redisRoom, uid, determineLeaveJoins(uid, data)))
   .then(requiresUpdate => {
-    log(requiresUpdate)
     if (requiresUpdate) {
       const event = 'checkpoints'
 
       redisRoom.checkpoints.getAll()
       .then(data => {
-        log('doing update')
         redis.emitter.emit('update', {event, data})
         resolve(null)
       })
