@@ -5,27 +5,62 @@ const panic = err => {throw err}
 
 const CHECKPOINT_JOIN_DISTANCE = 700
 
+const determineLeaveJoins = (uid, [checks, loc]) => {
+  const toLeave = []
+  const toJoin = []
+
+  checks.forEach(c => {
+    if (distance(c.loc, loc) < CHECKPOINT_JOIN_DISTANCE) {
+      if (!c.members.includes(uid)) {
+        toJoin.push(c.id)
+      }
+    } else {
+      if (c.members.includes(uid)) {
+        toLeave.push(c.id)
+      }
+    }
+  })
+
+  return {join: toJoin, leave: toLeave}
+}
+
+const doLeaveJoins = (redisRoom, uid, should) => new Promise((resolve, reject) => {
+  if (should.join.length == 0 && should.leave.length == 0)
+    return resolve(false)
+
+  log(should.join)
+  log(should.leave)
+  const me = redisRoom.checkpoints.user(uid)
+
+  Promise
+  .all(should.join.map(me.join).concat(should.leave.map(me.leave)))
+  .then(_ => resolve(true))
+  .catch(reject)
+})
+
 module.exports = ({room, uid}) => new Promise((resolve, reject) => {
   const redisRoom = redis.room(room)
 
   Promise.all([
     redisRoom.checkpoints.getAll(),
-    redisRoom.locations.get([uid])
+    redisRoom.locations.get(uid)
   ])
-  .then(([checks, loc]) => {
-    const beforeIn = filterobj(checks, c => c.members.includes(uid))
-    const nowIn = filterobj(checks, c => distance(loc, c.loc) < CHECKPOINT_JOIN_DISTANCE)
+  .then(data => doLeaveJoins(redisRoom, uid, determineLeaveJoins(uid, data)))
+  .then(requiresUpdate => {
+    log(requiresUpdate)
+    if (requiresUpdate) {
+      const event = 'checkpoints'
 
-    const toLeave = Object.keys(beforeIn).filter(cid => !nowIn[cid])
-    const toJoin = Object.keys(nowIn).filter(cid => !beforeIn[cid])
-
-    const me = redisRoom.checkpoints.user(uid)
-
-    Promise.all(
-      toLeave.map(me.leave).concat(
-      toJoin.map(me.join)
-    ))
-    .then(resolve)
-    .catch(reject)
+      redisRoom.checkpoints.getAll()
+      .then(data => {
+        log('doing update')
+        redis.emitter.emit('update', {event, data})
+        resolve(null)
+      })
+      .catch(reject)
+    } else {
+      resolve(null)
+    }
   })
+  .catch(reject)
 })

@@ -5,7 +5,7 @@ const workers = {
 
 const { distance } = require('../utils')
 const log = require('debug')('assemble:worker')
-const panic = err => {throw err}
+const panic = err => {log(err); throw err}
 
 process.on('message', (params) => {
   Promise.all([

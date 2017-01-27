@@ -1,26 +1,50 @@
-const redis = require('redis').createClient(process.env.REDIS_URL)
-const {
-  sortbine, objectify, keyify, callbackify, distance, print
-} = require('../utils')
-
+const Emitter = require('events')
+const redis = require('redis')
 const log = require('debug')('assemble:redis')
 
-const shortExpiry = 500
-const longExpiry = 100000
+const client = redis.createClient(process.env.REDIS_URL)
+const subscriber = redis.createClient(process.env.REDIS_URL)
+const publisher = redis.createClient(process.env.REDIS_URL)
+
+const {
+  sortbine, objectify, keyify, callbackify, distance, array, print
+} = require('../utils')
+
+const emitter = new Emitter()
+
+/*
+ * TODO - only happens once, not for each require
+ */
+
+subscriber.on('message', (channel, raw) => {
+  const {msg, data} = JSON.parse(raw)
+  emitter.emit(msg, data)
+})
+
+subscriber.subscribe('channel')
 
 module.exports = {
+  emitter: {
+    on: (msg, fn) => emitter.on(msg, fn),
+    emit: (msg, data) => {
+      log(msg)
+      log(data)
+      publisher.publish('channel', JSON.stringify({msg, data}))
+    },
+  },
+
   rooms: {
     getAll: () => new Promise((resolve, reject) =>
-      redis.smembers('rooms', callbackify(resolve, reject))
+      client.smembers('rooms', callbackify(resolve, reject))
     ),
     size: () => new Promise((resolve, reject) =>
-      redis.scard('rooms', callbackify(resolve, reject))
+      client.scard('rooms', callbackify(resolve, reject))
     ),
     add: (room) => new Promise((resolve, reject) =>
-      redis.sadd('rooms', room, callbackify(resolve, reject))
+      client.sadd('rooms', room, callbackify(resolve, reject))
     ),
     remove: (room) => new Promise((resolve, reject) =>
-      redis.srem('rooms', room, callbackify(resolve, reject))
+      client.srem('rooms', room, callbackify(resolve, reject))
     )
   },
 
@@ -29,19 +53,16 @@ module.exports = {
 
     users: {
       getAll: () => new Promise((resolve, reject) =>
-        redis.smembers(`${room}:users`, (err, uids) =>
+        client.smembers(`${room}:users`, (err, uids) =>
           uids.map(keyify('users')).reduce((acc, uid) =>
             acc.hgetall(uid)
-          , redis.multi())
-          .exec((err, replies) => err
-            ? reject(err)
-            : resolve(replies)
-          )
+          , client.multi())
+          .exec(callbackify(resolve, reject))
         )
       ),
 
       add: (uid, user) => new Promise((resolve, reject) =>
-        redis
+        client
           .multi()
           .sadd(`${room}:users`, uid)
           .hmset(keyify('users')(uid), user)
@@ -49,11 +70,11 @@ module.exports = {
       ),
 
       size: () => new Promise((resolve, reject) =>
-        redis.scard(`${room}:users`, callbackify(resolve, reject))
+        client.scard(`${room}:users`, callbackify(resolve, reject))
       ),
 
       remove: (uid) => new Promise((resolve, reject) =>
-        redis
+        client
           .multi()
           .srem(`${room}:users`, uid)
           .del(keyify('users')(uid))
@@ -62,18 +83,24 @@ module.exports = {
     },
 
     locations: {
-      get: (uids) => new Promise((resolve, reject) =>
-        redis.mget(uids.map(keyify('loc')), (err, locs) =>
-          err
-            ? reject(err)
-            : resolve(objectify(uids, locs))
-        )
-      ),
+      get: (uids) => Array.isArray(uids)
+        ? new Promise((resolve, reject) =>
+            client.mget(uids.map(keyify('loc')), (err, locs) =>
+              err
+                ? reject(err)
+                : resolve(objectify(uids, locs))
+          ))
+        : new Promise((resolve, reject) =>
+            client.get(keyify('loc')(uids), (err, loc) => err
+              ? reject(err)
+              : resolve(JSON.parse(loc))
+          ))
+      ,
 
       getAll: () => new Promise((resolve, reject) =>
-        redis.smembers(`${room}:users`, (err, uids) =>
+        client.smembers(`${room}:users`, (err, uids) =>
           uids.length > 0
-            ? redis.mget(uids.map(keyify('loc')), (err, locs) =>
+            ? client.mget(uids.map(keyify('loc')), (err, locs) =>
                 err
                   ? reject(err)
                   : resolve(objectify(uids, locs))
@@ -85,7 +112,7 @@ module.exports = {
       set: (uid, loc) => new Promise((resolve, reject) => {
         const key = keyify('loc')(uid)
 
-        redis
+        client
           .multi()
           .set(key, JSON.stringify(loc))
           .exec(callbackify(resolve, reject))
@@ -96,7 +123,7 @@ module.exports = {
       set: (uid, vol) => new Promise((resolve, reject) => {
         const key = keyify('vol')(uid)
 
-        redis
+        client
           .multi()
           .set(key, vol)
           .exec(callbackify(resolve, reject))
@@ -107,7 +134,7 @@ module.exports = {
       set: (uid1, uid2, val) => new Promise((resolve, reject) => {
         const key = keyify('att')(sortbine(uid1)(uid2))
 
-        redis
+        client
           .multi()
           .set(key, val)
           .exec(callbackify(resolve, reject))
@@ -116,67 +143,82 @@ module.exports = {
 
     checkpoints: {
       getAll: () => new Promise((resolve, reject) =>
-        redis.smembers(`${room}:checks`, (err, cids) => {
-          const memberKeyify = keyify('checks:members')
-          const locKeyify = keyify('checks:loc')
-
-          let chain = redis.multi()
-          if (cids.length == 0) return resolve({})
-
-          cids.forEach(cid => {
-            chain = chain.smembers(memberKeyify(cid))
-          })
-          cids.forEach(cid => {
-            chain = chain.get(locKeyify(cid))
-          })
-
-          chain.exec((err, halfnhalf) => {
-            if (err) return reject(err)
-
-            const members = halfnhalf.slice(0, halfnhalf.length / 2)
-            const locations = halfnhalf.slice(halfnhalf.length / 2)
-
-            return resolve(cids.reduce((acc, cid, idx) =>
-              Object.assign(acc, {
-                [cid]: {
-                  members: members[idx],
-                  loc: locations[idx]
-                }
-              })
-            , {}))
-          })
-        })
+        client.smembers(`${room}:checks`, (err, cids) =>
+          cids.map(keyify('checks')).reduce((acc, cid) =>
+            acc.hgetall(cid)
+          , client.multi())
+          .exec((err, cps) => err
+            ? reject(err)
+            : resolve(cps.map(cp => ({
+                id: cp.id,
+                name: cp.name,
+                members: JSON.parse(cp.members),
+                loc: JSON.parse(cp.loc)
+              })))
+          )
+        )
       ),
 
       add: (cid, check) => new Promise((resolve, reject) =>
-        redis
+        client
           .multi()
           .sadd(`${room}:checks`, cid)
-          .set(`checks:loc:${cid}`, JSON.stringify(check.loc))
+          .hmset(keyify('checks')(cid), {
+            id: cid,
+            name: check.name,
+            loc: JSON.stringify(check.loc),
+            members: JSON.stringify([])
+          })
           .exec(callbackify(resolve, reject))
       ),
 
       moveTo: (cid, loc) => new Promise((resolve, reject) =>
-        redis
+        client
           .multi()
-          .set(keyify('checks:loc')(cid), loc)
+          .hset(keyify('checks')(cid), 'loc', JSON.stringify(loc))
           .exec(callbackify(resolve, reject))
       ),
 
       user: uid => ({
-        join: cid => new Promise((resolve, reject) =>
-          redis
-            .sadd(keyify('checks')(cid), uid, callbackify(resolve, reject))
-        ),
+        join: cid => new Promise((resolve, reject) => {
+          const key = keyify('checks')(cid)
 
-        leave: cid => new Promise((resolve, reject) =>
-          redis
-            .srem(keyify('checks')(cid), uid, callbackify(resolve, reject))
-        )
+          client
+            .hget(key, 'members', (err, members) => err
+              ? reject(err)
+              : client
+                  .hset(
+                    key,
+                    'members',
+                    JSON.stringify(array.add(JSON.parse(members), uid)),
+                    (err, response) => {
+                      if (err) return reject(err)
+                      log(response)
+                      resolve(response)
+                    }
+                    // callbackify(resolve, reject)
+                  )
+            )
+        }),
+
+        leave: cid => new Promise((resolve, reject) => {
+          const key = keyify('checks')(cid)
+          client
+            .hget(key, 'members', (err, members) => err
+              ? reject(err)
+              : client
+                  .hset(
+                    key,
+                    'members',
+                    JSON.stringify(array.delete(JSON.parse(members), uid)),
+                    callbackify(resolve, reject)
+                  )
+            )
+        })
       }),
 
       remove: (cid) => new Promise((resolve, reject) =>
-        redis
+        client
           .multi()
           .srem(`${room}:checks`, cid)
           .del(keyify('checks')(cid))
@@ -186,8 +228,8 @@ module.exports = {
 
     updates: {
       for: (uid) => new Promise((resolve, reject) =>
-        redis.smembers(`${room}:users`, (err, uids) => {
-          let queued = redis.multi()
+        client.smembers(`${room}:users`, (err, uids) => {
+          let queued = client.multi()
             .mget(uids.map(keyify('loc')))
             .mget(uids.map(keyify('vol')))
 
@@ -210,6 +252,5 @@ module.exports = {
         })
       )
     }
-
   })
 }

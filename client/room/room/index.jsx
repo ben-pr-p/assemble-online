@@ -1,6 +1,7 @@
 import { Component, h } from 'preact'
 import Grid from '../grid'
 import UserBlob from '../user-blob'
+import CheckpointBlob from '../checkpoint-blob'
 import Sock from '../../lib/sock'
 import Updates from '../../lib/updates'
 import VolumeDetector from './volume-detector'
@@ -59,13 +60,20 @@ export default class Room extends Component {
 
   moveUser = () => Updates.emit('location', this.mousePos)
 
-  render ({me, users}, {translate, dimensions, localStream}) {
-    const blobs = users.map((u, idx) => (
+  render ({me, users, checkpoints}, {translate, dimensions, localStream}) {
+    const userBlobs = users.map((u, idx) => (
       <UserBlob key={u.id}
         user={u}
         localStream={localStream}
         translate={translate}
         isMe={me && u.id == Sock.id}
+      />
+    ))
+
+    const checkpointBlobs = checkpoints.map((c, idx) => (
+      <CheckpointBlob key={c.id}
+        checkpoint={c}
+        translate={translate}
       />
     ))
 
@@ -77,7 +85,8 @@ export default class Room extends Component {
       >
         <div id='viewport' style={{transform: `translate(${translate[0]}px, ${translate[1]}px)`}} >
           <Grid dimensions={dimensions} />
-          {blobs}
+          {userBlobs}
+          {checkpointBlobs}
         </div>
       </div>
     )

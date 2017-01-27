@@ -102,7 +102,7 @@ export default class UserBlob extends Component {
     : {width: `${sd}px`, height: `${sd}px`}
 
   computeTransform = (isFar, {x, y, translate}) => true //!isFar
-    ? {transform: `translate3d(${x}px,${y}px, 0px)`}
+    ? {transform: `translate(${x}px,${y}px)`}
     : this.computeFarTransform({x, y, translate})
 
   computeFarTransform = ({x, y, translate}) => {

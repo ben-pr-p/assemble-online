@@ -197,5 +197,10 @@ module.exports = (io, nsp, name) => {
     }
   }
 
+  redis.emitter.on('update', ({event, data}) => {
+    log('Emitting %s: %s', event, JSON.stringify(data))
+    nsp.emit(event, data)
+  })
+
   return nsp
 }

@@ -10,7 +10,6 @@ const queue = []
 
 /* On a free worker process queued job if exists, otherwise mark as free */
 children.forEach(c => {
-
   c.process.on('message', message => {
     // log('Job finished: %s', message)
     const job = queue.shift()

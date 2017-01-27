@@ -8,6 +8,7 @@ import { Bus } from '../lib/emitters'
 export default class Main extends Component {
   state = {
     users: [],
+    checkpoints: [],
     me: null
   }
 
@@ -43,11 +44,7 @@ export default class Main extends Component {
   }
 
   render (props, { me, users, checkpoints, theme }) {
-    const {
-      setEditUserState,
-      setEasyRTCId,
-      clearLocal
-    } = this
+    const { clearLocal } = this
 
     return (
       <div id='main-app'>
