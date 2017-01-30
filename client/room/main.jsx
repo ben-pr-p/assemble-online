@@ -4,6 +4,7 @@ import Menu from './menu'
 import Room from './room'
 import CheckpointDrawer from './checkpoint-drawer'
 import Sock from '../lib/sock'
+import Updates from '../lib/updates'
 import { Bus } from '../lib/emitters'
 
 export default class Main extends Component {
@@ -48,8 +49,14 @@ export default class Main extends Component {
     const { clearLocal } = this
     const cp = checkpoints.filter(c => c.members.includes(Sock.id))[0]
 
+    // if (cp) Updates.emit('cp-on')
+    // if (!cp) Updates.emit('cp-off')
+
     return (
-      <div id='main-app'>
+      <div id='main-app' style={{
+        width: '100%'
+        // width: cp ? '67%' : '100%'
+      }}>
         {me && <Room {...{me, users, checkpoints}} />}
         <Menu {...{me, users, checkpoints, clearLocal}} />
         {cp && <CheckpointDrawer checkpoint={cp} />}

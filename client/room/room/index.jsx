@@ -83,7 +83,9 @@ export default class Room extends Component {
         onMouseUp={this.onMouseUp}
         onMouseMove={this.onMouseMove}
       >
-        <div id='viewport' style={{transform: `translate(${translate[0]}px, ${translate[1]}px)`}} >
+        <div id='viewport' style={{
+          transform: `translate(${translate[0]}px, ${translate[1]}px)`
+        }} >
           <Grid dimensions={dimensions} />
           {userBlobs}
           {checkpointBlobs}

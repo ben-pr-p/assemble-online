@@ -44,11 +44,11 @@ export default class NewUserModal extends Component {
 
     store.set('me', user)
     Bus.emit('me', Object.assign(user, {id: Sock.id}))
-    this.props.closeNewUserModal({shouldSave: 'user'})
+    this.props.closeModal({shouldSave: 'user'})
   }
 
   cancel = () =>
-    this.props.closeNewUserModal({shouldSave: false})
+    this.props.closeModal({shouldSave: false})
 
   render () {
     const fields = Object.keys(this.state).map(this.renderField)

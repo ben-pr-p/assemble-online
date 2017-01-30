@@ -2,7 +2,7 @@ import Sock from './sock'
 import Emitter from 'component-emitter'
 import isNearEdge from './is-near-edge'
 
-const print = s => {console.log(s); return s}
+
 
 const Updates = new Emitter()
 /*
@@ -36,6 +36,21 @@ let dimensions = [window.innerWidth, window.innerHeight]
 let transitioning = false
 let mac = .1
 
+let plaza
+const setPlaza = () => {
+  if (!plaza) plaza = document.querySelector('#main-app')
+}
+
+let width = window.innerWidth
+let height = window.innerHeight
+const updateSizes = () => {
+  setPlaza()
+  if (plaza) {
+    width = plaza.offsetWidth
+    height = plaza.offsetHeight
+  }
+}
+
 const getMac = () => transitioning ? mac * .01 : mac
 
 Updates.on('location', ([clientX, clientY]) => {
@@ -57,7 +72,7 @@ Updates.on('location', ([clientX, clientY]) => {
       transitioning = true
       Updates.emit('translate', translate)
 
-      setTimeout(() => transitioning = false, 1500)
+      setTimeout(() => transitioning = false, 2000)
     }
   }, 0)
 })
@@ -69,5 +84,8 @@ Updates.on('checkpoint-new', checkpoint => {
   checkpoint.loc = myLoc.map(num => num + 5)
   Sock.emit('checkpoint-new', checkpoint)
 })
+
+// Updates.on('cp-on', updateSizes)
+// Updates.on('cp-off', updateSizes)
 
 export default Updates
