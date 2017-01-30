@@ -4,14 +4,27 @@
   left auto
   top 0
   height 100%
-  width 33%
-  background-color rgba(0, 0, 0, .5)
+  width 50%
+  background-color rgba(0, 0, 0, .8)
   animation slide-from-right 300ms ease-out
 
   .cp-title
     font-size larger
     margin-left 40px
     margin-top 40px
+
+  .cp-body
+    overflow-y scroll
+
+  .cp-widget-drawer
+    position fixed
+    left auto
+    top 0
+    right 0
+    height 100%
+    width 200px
+    background-color black
+    box-shadow -5px 0px 3px 3px black
 
 @keyframes slide-from-right
   0%

@@ -1,8 +1,6 @@
-import TestSpatial from './test-spatial'
-// import TestNonSpatial from './test-non-spatial'
-import widgetize from './widgetize'
+import Timer from './widgets/timer'
 
-export default [TestSpatial].map(w => widgetize(w))
+export default [Timer]
 
 /*
  * TODO
