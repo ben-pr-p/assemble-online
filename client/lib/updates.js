@@ -36,19 +36,16 @@ let dimensions = [window.innerWidth, window.innerHeight]
 let transitioning = false
 let mac = .1
 
-let plaza
-const setPlaza = () => {
-  if (!plaza) plaza = document.querySelector('#main-app')
-}
 
 let width = window.innerWidth
 let height = window.innerHeight
-const updateSizes = () => {
-  setPlaza()
-  if (plaza) {
-    width = plaza.offsetWidth
-    height = plaza.offsetHeight
-  }
+
+const thirdOn = () => {
+  width = (2/3) * window.innerWidth
+}
+
+const thirdOff = () => {
+  height = (2/3) * window.innerHeight
 }
 
 const getMac = () => transitioning ? mac * .01 : mac
@@ -61,8 +58,8 @@ Updates.on('location', ([clientX, clientY]) => {
 
   setTimeout(() => {
     if (
-      isNearEdge(myLoc[0], translate[0], window.innerWidth) ||
-      isNearEdge(myLoc[1], translate[1], window.innerHeight)
+      isNearEdge(myLoc[0], translate[0], width) ||
+      isNearEdge(myLoc[1], translate[1], height)
     ) {
       translate = [
         (-1) * myLoc[0] + (window.innerWidth / 2) - 50,
@@ -85,7 +82,7 @@ Updates.on('checkpoint-new', checkpoint => {
   Sock.emit('checkpoint-new', checkpoint)
 })
 
-// Updates.on('cp-on', updateSizes)
-// Updates.on('cp-off', updateSizes)
+Updates.on('cp-on', thirdOn)
+Updates.on('cp-off', thirdOff)
 
 export default Updates

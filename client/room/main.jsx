@@ -49,8 +49,8 @@ export default class Main extends Component {
     const { clearLocal } = this
     const cp = checkpoints.filter(c => c.members.includes(Sock.id))[0]
 
-    // if (cp) Updates.emit('cp-on')
-    // if (!cp) Updates.emit('cp-off')
+    if (cp) Updates.emit('cp-on')
+    if (!cp) Updates.emit('cp-off')
 
     return (
       <div id='main-app' style={{
