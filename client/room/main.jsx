@@ -54,12 +54,11 @@ export default class Main extends Component {
 
     return (
       <div id='main-app' style={{
-        width: '100%'
-        // width: cp ? '67%' : '100%'
+        width: cp ? '60%' : '100%'
       }}>
         {me && <Room {...{me, users, checkpoints}} />}
         <Menu {...{me, users, checkpoints, clearLocal}} />
-        {cp && <CheckpointDrawer checkpoint={cp} />}
+        {cp && <CheckpointDrawer me={me} checkpoint={cp} />}
       </div>
     )
   }

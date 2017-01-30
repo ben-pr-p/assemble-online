@@ -6,9 +6,7 @@ import EditCheckpoint from './edit-checkpoint'
 import UserBrowse from './user-browse'
 import CheckpointBrowse from './checkpoint-browse'
 import IconButton from '../../common/icon-button'
-import { FromPeers } from '../../lib/emitters'
 import store from 'store'
-import wildcardify from 'wildcards'
 
 import {
   Settings, Person, Bug, Widgets, Close, People, Checkpoint, NewCheckpoint,
@@ -87,22 +85,6 @@ export default class Menu extends Component {
     newCheckpointForm: false
   }
 
-  componentWillMount () {
-    wildcardify(FromPeers, '*', (ev, data) => {
-      /*
-       * If we currently don't have a widget listener for the event,
-       *  - create the proper widget, give it 10 ms to mount, and then re-broadcast
-       *    this event
-       */
-      if (FromPeers.listeners(ev).length == 0) {
-        this.setState({
-          widgets: this.state.widgets.concat(allWidgets.filter(w => w.kind == ev.split('-')[1]).map(w => [w, data]))
-        })
-        setTimeout(() => FromPeers.emit(ev, data), 10)
-      }
-    })
-  }
-
   render ({me, users, checkpoints}, {
     open, editingUser, bugReport, userBrowse, checkpointBrowse,
     newCheckpointForm
@@ -117,6 +99,7 @@ export default class Menu extends Component {
         </IconButton>
 
         {open && this.renderMenu(this.state.currentItems)}
+  
         {/* Actual menu modals that can pop up */}
         {userBrowse &&
           <UserBrowse {...{users}} />}

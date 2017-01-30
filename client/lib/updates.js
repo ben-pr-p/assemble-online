@@ -41,11 +41,11 @@ let width = window.innerWidth
 let height = window.innerHeight
 
 const thirdOn = () => {
-  width = (2/3) * window.innerWidth
+  width = .6 * window.innerWidth
 }
 
 const thirdOff = () => {
-  height = (2/3) * window.innerHeight
+  width = .6 * window.innerWidth
 }
 
 const getMac = () => transitioning ? mac * .01 : mac
@@ -62,8 +62,8 @@ Updates.on('location', ([clientX, clientY]) => {
       isNearEdge(myLoc[1], translate[1], height)
     ) {
       translate = [
-        (-1) * myLoc[0] + (window.innerWidth / 2) - 50,
-        (-1) * myLoc[1] + (window.innerHeight / 2) - 50
+        (-1) * myLoc[0] + (width / 2) - 50,
+        (-1) * myLoc[1] + (height / 2) - 50
       ]
 
       transitioning = true

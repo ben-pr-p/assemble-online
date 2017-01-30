@@ -5,13 +5,17 @@ export default class TimerWidget extends Component {
   static icon = (<Timer />)
   static kind = 'Timer'
   static initial = {
-    minutes: 0,
+    minutes: 10,
     seconds: 0
+  }
+
+  componentWillMount () {
+    this.countDown()
   }
 
   intervalId = null
 
-  countDown = () => intervalId = setInterval(() =>
+  countDown = () => this.intervalId = setInterval(() =>
     this.props.minutes == 0 && this.props.seconds == 0
       ? (clearInterval(this.intervalId), intervalId = null)
       : this.props.seconds == 0

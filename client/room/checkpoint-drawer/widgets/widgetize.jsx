@@ -8,14 +8,16 @@ export default WrappedComponent =>
   class extends Component {
     static kind = WrappedComponent.name
     kind = WrappedComponent.name
-    spatial = WrappedComponent.spatial
+
+    constructor () {
+      super()
+
+      this.state = Object.assign({
+        owner: null,
+      }, WrappedComponent.initial)
+    }
 
     state = {
-      pos: {x: 100, y: 100},
-      size: {x: 300, y: 500},
-      translate: {x: 0, y: 0},
-      dragging: false,
-      sizing: false,
       owner: null
     }
 
@@ -124,8 +126,13 @@ export default WrappedComponent =>
       : `translate(${pos.x}px, ${pos.y}px)`
 
     render ({me}, {owner, ...state}) {
+      const toPass = Object.assign({
+        me: me,
+        update: this.update
+      }, state)
+
       return (
-        <WrappedComponent me={me} update={this.update} {...state} />
+        <WrappedComponent {...toPass} />
       )
     }
   }

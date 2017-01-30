@@ -56,29 +56,10 @@
   * Two people can only merge if they are a certain distance from each other
 
 ## Immediate
-* Establish benchmarks - implement them
-* Digest structure development
-  * needs to be structured by sub conversation
-
-# Interested people
-Nikhil
-Ricky
-Yunhan
-Moumita
-That Ryan Guy
-Martin
-Hans
-Nidhi
-Irene
-Mair
-Megan Brophy
-DemocracyOS
-Democracy.Earth
-Simone
-Pritika
-Byrne
-Rachel
-Elizabeth Lee
-Zane
-ProgCode
-David Duahalde
+* Style widget selector
+* Finish timer widget
+* Sync widget state users
+* Let new checkpoint member get all widgets
+* Delete widgets
+* Delete checkpoints
+* Add new widget
