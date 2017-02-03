@@ -1,6 +1,6 @@
 const config = require('./config')
 const client = require('./client')
-const log = require('assemble:garbage-collection')
+const log = require('debug')('assemble:garbage-collection')
 
 const {
   sortbine, objectify, keyify, callbackify, distance, array, print
@@ -18,7 +18,7 @@ e.user = (room, uid) => new Promise((resolve, reject) => {
       uids.map(keyify('loc')),
       uids.map(keyify('vol')),
       uids.map(keyify('vol')),
-      others.map(sortbine(me)).filter(sbnd => sbnd).map((keyfify('att')))
+      others.map(sortbine(me)).filter(sbnd => sbnd).map((keyify('att')))
     )
 
     client

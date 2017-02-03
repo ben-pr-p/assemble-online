@@ -44,9 +44,12 @@ module.exports = {
     add: (room) => new Promise((resolve, reject) =>
       client.sadd('rooms', room, callbackify(resolve, reject))
     ),
-    remove: (room) => new Promise((resolve, reject) =>
-      client.srem('rooms', room, callbackify(resolve, reject))
-    )
+    remove: (room) => Promise.all([
+      new Promise((resolve, reject) =>
+        client.srem('rooms', room, callbackify(resolve, reject))
+      ),
+      gc.room(room)
+    ])
   },
 
   room: (room) => ({
