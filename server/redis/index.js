@@ -2,7 +2,8 @@ const Emitter = require('events')
 const redis = require('redis')
 const log = require('debug')('assemble:redis')
 
-const client = redis.createClient(process.env.REDIS_URL)
+const client = require('./client')
+const gc = require('./gc')
 const subscriber = redis.createClient(process.env.REDIS_URL)
 const publisher = redis.createClient(process.env.REDIS_URL)
 
@@ -73,13 +74,7 @@ module.exports = {
         client.scard(`${room}:users`, callbackify(resolve, reject))
       ),
 
-      remove: (uid) => new Promise((resolve, reject) =>
-        client
-          .multi()
-          .srem(`${room}:users`, uid)
-          .del(keyify('users')(uid))
-          .exec(callbackify(resolve, reject))
-      ),
+      remove: (uid) => gc.user(room, uid)
     },
 
     locations: {
@@ -217,13 +212,7 @@ module.exports = {
         })
       }),
 
-      remove: (cid) => new Promise((resolve, reject) =>
-        client
-          .multi()
-          .srem(`${room}:checks`, cid)
-          .del(keyify('checks')(cid))
-          .exec(callbackify(resolve, reject))
-      ),
+      remove: (cid) => gc.check(room, cid)
     },
 
     updates: {

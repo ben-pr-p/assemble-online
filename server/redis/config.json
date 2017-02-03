@@ -1,0 +1,15 @@
+{
+  "room": [
+    "users",
+    "checks"
+  ],
+  "users": [
+    "users",
+    "loc",
+    "vol",
+    "att"
+  ],
+  "checks": [
+    "checks"
+  ]
+}
