@@ -3,29 +3,34 @@ import Sock from '../../lib/sock'
 import Updates from '../../lib/updates'
 import { ToPeers, FromPeers } from '../../lib/emitters'
 import Peer from 'simple-peer'
+import VolumeDetector from '../room/volume-detector'
+
+const DEBUG = true
 
 export default class Connection extends Component {
   peer = null
-  state = {}
 
   componentWillMount () {
     const {myId, partnerId, localStream} = this.props
-
-    if (myId != partnerId)
+    if (myId != partnerId && localStream) {
       this.initialize()
-    else
-      this.state.remoteSrc = window.URL.createObjectURL(localStream)
+    } else {
+      if (DEBUG) console.log('Waiting for stream')
+    }
 
     Updates.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
     ToPeers.on(`to-${partnerId}`, this.sendData)
     ToPeers.on('to-all', this.sendData)
   }
 
-  componentDidMount () {
-    const {myId, partnerId, localStream} = this.props
-
-    if (myId == partnerId)
-      this.vidEl.volume = 0
+  componentWillReceiveProps ({localStream, myId, partnerId}) {
+    if (
+      myId != partnerId
+      && localStream
+      && localStream != this.props.localStream
+    ) {
+      this.initialize()
+    }
   }
 
   sendData = data => this.peer
@@ -52,6 +57,7 @@ export default class Connection extends Component {
 
   initialize = () => {
     const {partnerId, localStream, setStatus} = this.props
+    if (DEBUG) console.log(`sending stream ${localStream}`)
 
     this.peer = new Peer({
       initiator: Sock.id < partnerId,
@@ -64,22 +70,22 @@ export default class Connection extends Component {
     })
 
     this.peer.on('connect', () => {
+      if (DEBUG) console.log(`connected to ${partnerId}`)
       setStatus('connected')
       ToPeers.emit(`connected-to-${partnerId}`)
     })
 
     setStatus('connecting')
-
     this.peer.on('signal', config =>
       Sock.emit('signal', {
         to: partnerId,
         data: config
-      })
-    )
+      }))
 
     Sock.on(`signal-from-${partnerId}`, this.handleSignal)
 
     this.peer.on('stream', remoteStream => {
+      if (DEBUG) console.log(`received stream from ${partnerId}`)
       if (this.vidEl)
         this.vidEl.srcObject = remoteStream
       setStatus('connected')
@@ -91,9 +97,8 @@ export default class Connection extends Component {
   handleSignal = config => this.peer.signal(config)
 
   handleAttenuation = (vol) => {
-    this.vidEl
-      ? this.vidEl.volume = vol
-      : null
+    if (this.vidEl)
+      this.vidEl.volume = 1
   }
 
   setRef = ref => this.vidEl = ref

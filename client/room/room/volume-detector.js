@@ -9,7 +9,7 @@ let processor
 let rms
 let intervalId
 
-const register = (stream, myId) => {
+const register = (stream, fn) => {
   ac = new AC()
   inputNode = ac.createMediaStreamSource(stream)
   processor = ac.createScriptProcessor(4096,2,2)
@@ -27,7 +27,7 @@ const register = (stream, myId) => {
   processor.connect(ac.destination)
 
   intervalId = window.setInterval(() => {
-    Sock.emit('volume', rms)
+    fn(rms)
   }, UPDATE_INTERVAL)
 }
 
