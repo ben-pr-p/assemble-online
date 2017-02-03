@@ -21,6 +21,7 @@ describe('some property of the stats', () => {
 
   it('audio transfer', () => {
     const stats = chromeA.getStats(5000)
-    expect(stats.max.audio).to.have.property('inputLevel')
+    expect(stats.max.audio.inbound).to.have.property('outputLevel')
+    expect(stats.max.audio.outbound).to.have.property('inputLevel')
   })
 })

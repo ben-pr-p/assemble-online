@@ -62,7 +62,7 @@ export default class Room extends Component {
   moveUser = () => Updates.emit('location', this.mousePos)
 
   render ({me, users, checkpoints}, {translate, dimensions, localStream}) {
-    const userBlobs = users.map((u, idx) => (
+    const userBlobs = users.filter(u => u).map((u, idx) => (
       <UserBlob key={u.id}
         user={u}
         localStream={localStream}

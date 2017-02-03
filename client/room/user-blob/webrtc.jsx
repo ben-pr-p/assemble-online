@@ -13,6 +13,7 @@ export default class Connection extends Component {
   componentWillMount () {
     const {myId, partnerId, localStream} = this.props
     if (myId != partnerId && localStream) {
+      if (DEBUG) console.log(`Initializing with localStream ${localStream}`)
       this.initialize()
     } else {
       if (DEBUG) console.log('Waiting for stream')
@@ -23,21 +24,20 @@ export default class Connection extends Component {
     ToPeers.on('to-all', this.sendData)
   }
 
-  componentWillReceiveProps ({localStream, myId, partnerId}) {
-    if (
-      myId != partnerId
-      && localStream
-      && localStream != this.props.localStream
-    ) {
+  componentDidUpdate () {
+    const {myId, partnerId, localStream} = this.props
+    if (myId != partnerId && localStream && this.peer == null)
       this.initialize()
-    }
   }
 
   sendData = data => this.peer
     ? this.peer.send(JSON.stringify(data))
     : null
 
-  handleData = raw => this._handleData(JSON.parse(raw.toString()))
+  handleData = raw => {
+    console.log(raw)
+    this._handleData(JSON.parse(raw.toString()))
+  }
   _handleData = data => data.event
     ? FromPeers.emit(data.event, data.data)
     : null
@@ -57,6 +57,8 @@ export default class Connection extends Component {
 
   initialize = () => {
     const {partnerId, localStream, setStatus} = this.props
+    setStatus('connecting')
+
     if (DEBUG) console.log(`sending stream ${localStream}`)
 
     this.peer = new Peer({
@@ -75,32 +77,38 @@ export default class Connection extends Component {
       ToPeers.emit(`connected-to-${partnerId}`)
     })
 
-    setStatus('connecting')
-    this.peer.on('signal', config =>
+    this.peer.on('signal', config => {
+      if (DEBUG) console.log(`sending signal ${JSON.stringify(config)}`)
+
       Sock.emit('signal', {
         to: partnerId,
         data: config
-      }))
+      })
+    })
 
     Sock.on(`signal-from-${partnerId}`, this.handleSignal)
 
     this.peer.on('stream', remoteStream => {
       if (DEBUG) console.log(`received stream from ${partnerId}`)
-      if (this.vidEl)
+
+      if (this.vidEl) {
         this.vidEl.srcObject = remoteStream
+        if (DEBUG) console.log(`setting src object`)
+      }
+
+      debugger
       setStatus('connected')
     })
 
     this.peer.on('data', this.handleData)
   }
 
-  handleSignal = config => this.peer.signal(config)
-
-  handleAttenuation = (vol) => {
-    if (this.vidEl)
-      this.vidEl.volume = 1
+  handleSignal = config => {
+    if (DEBUG) console.log(`got signal ${JSON.stringify(config)}`)
+    this.peer.signal(config)
   }
 
+  handleAttenuation = vol => { if (this.vidEl) this.vidEl.volume = 1 }
   setRef = ref => this.vidEl = ref
 
   render ({myId, partnerId}) {
