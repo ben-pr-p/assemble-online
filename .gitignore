@@ -5,6 +5,7 @@ private
 logs
 *.log
 npm-debug.log*
+error-shots/
 
 # Runtime data
 pids
