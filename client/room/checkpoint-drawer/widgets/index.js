@@ -1,7 +1,8 @@
 import Timer from './widgets/timer'
+import Queue from './widgets/queue'
 import widgetize from './widgetize'
 
-export default [Timer].map(w => widgetize(w))
+export default [Timer, Queue].map(w => widgetize(w))
 
 /*
  * TODO

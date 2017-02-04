@@ -17,10 +17,6 @@ export default WrappedComponent =>
       }, WrappedComponent.initial)
     }
 
-    state = {
-      owner: null
-    }
-
     isOwner = () => this.state.owner == this.props.me.id
     eventPrefix = () => `widget-${this.kind}`
     ownerIsDead = mids =>

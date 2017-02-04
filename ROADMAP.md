@@ -56,7 +56,6 @@
   * Two people can only merge if they are a certain distance from each other
 
 ## Immediate
-* Get audio working again with a test
 * Write queue widget
 * Sync widget state users
 * Let new checkpoint member get all widgets
