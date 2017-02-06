@@ -31,8 +31,6 @@ export default class CheckpointBlob extends Component {
     Object.assign(blobStyle, this.computeWidthHeight(isFar))
     Object.assign(blobStyle, this.computeTransform(isFar, {x, y, translate}))
 
-    console.log(blobStyle)
-
     return (
       <div className='checkpoint-blob' id={id}
         style={blobStyle}

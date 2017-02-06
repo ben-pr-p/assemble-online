@@ -34,10 +34,7 @@ export default class Connection extends Component {
     ? this.peer.send(JSON.stringify(data))
     : null
 
-  handleData = raw => {
-    console.log(raw)
-    this._handleData(JSON.parse(raw.toString()))
-  }
+  handleData = raw => this._handleData(JSON.parse(raw.toString()))
   _handleData = data => data.event
     ? FromPeers.emit(data.event, data.data)
     : null
