@@ -57,22 +57,22 @@ app.get('/room-status', (req, res) =>
 const namespaces = require('./namespaces')(socketServer)
 
 app.get('/room/:room', (req, res) => {
-    log('Request GET /%s', req.params.room)
+  log('Request GET /%s', req.params.room)
 
     /* Reject bad room names */
-    if (encodeURIComponent(req.params.room) != req.params.room)
-      return res.status(400).json(print({error: 'invalid room name'}))
+  if (encodeURIComponent(req.params.room) != req.params.room)
+    return res.status(400).json(print({error: 'invalid room name'}))
 
     /* Ensure room exists in redis */
-    if (namespaces.has(req.params.room)) {
-      log('Room %s exists', req.params.room)
-    } else {
-      log('Creating room %s', req.params.room)
-      namespaces.create(req.params.room)
-    }
-
-    res.render('room', {room: req.params.room})
+  if (namespaces.has(req.params.room)) {
+    log('Room %s exists', req.params.room)
+  } else {
+    log('Creating room %s', req.params.room)
+    namespaces.create(req.params.room)
   }
+
+  res.render('room', {room: req.params.room})
+}
 )
 
 const PORT = process.env.PORT

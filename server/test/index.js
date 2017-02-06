@@ -1,3 +1,5 @@
+/*global NUM_PARTICIPANTS GET_ROOM_URL SOCKET_OPTIONS socks TIMEOUT*/
+
 /*
  * Set up socket connections
  */

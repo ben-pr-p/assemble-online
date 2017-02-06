@@ -1,8 +1,9 @@
+/*global NUM_PARTICIPANTS GET_ROOM_URL socks SOCKET_OPTIONS TIMEOUT*/
+
 const expect = require('chai').expect
 const randomString = require('random-string')
+const { print } = require('../utils')
 const io = require('socket.io-client')
-
-const print = s => {console.log(s); return s}
 
 const expectNumUsersAfter = (num, after, done) =>
   setTimeout(() => {

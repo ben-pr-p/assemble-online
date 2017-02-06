@@ -125,7 +125,19 @@ module.exports = {
           .multi()
           .set(key, vol)
           .exec(callbackify(resolve, reject))
-      })
+      }),
+
+      getAll: () => new Promise((resolve, reject) =>
+        client.smembers(`${room}:users`, (err, uids) =>
+          uids.length > 0
+            ? client.mget(uids.map(keyify('vol')), (err, vols) =>
+                err
+                  ? reject(err)
+                  : resolve(objectify(uids, vols))
+              )
+            : {}
+        )
+      )
     },
 
     attenuations: {
@@ -148,11 +160,11 @@ module.exports = {
           .exec((err, cps) => err
             ? reject(err)
             : resolve(cps.map(cp => ({
-                id: cp.id,
-                name: cp.name,
-                members: JSON.parse(cp.members),
-                loc: JSON.parse(cp.loc)
-              })))
+              id: cp.id,
+              name: cp.name,
+              members: JSON.parse(cp.members),
+              loc: JSON.parse(cp.loc)
+            })))
           )
         )
       ),
@@ -236,10 +248,10 @@ module.exports = {
               err
                 ? reject(err)
                 : resolve([
-                    objectify(uids, all[0]),
-                    objectify(uids, all[1]),
-                    objectify(withoutMe, all[2])
-                  ])
+                  objectify(uids, all[0]),
+                  objectify(uids, all[1]),
+                  objectify(withoutMe, all[2])
+                ])
             )
         })
       )

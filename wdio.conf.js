@@ -1,3 +1,5 @@
+/*global browser*/
+
 const conf = {
   //
   // ==================

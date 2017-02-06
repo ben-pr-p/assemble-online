@@ -81,6 +81,7 @@ describe('users', () => {
     .then(numRemoved => {
       room.users.getAll()
       .then(users => {
+        console.log(users)
         expect(extract(users)).to.deep.equal(extract(testUsers.slice(1)))
         done()
       })

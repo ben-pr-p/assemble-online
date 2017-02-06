@@ -11,8 +11,7 @@ module.exports = server => ({
   ,
 
   destroy: room => (
-    namespaces[room].implode(),
-    delete namespaces[room],
+    server.nsps['/' + room].implode(),
     delete server.nsps[room]
   )
 })

@@ -1,6 +1,5 @@
 import { h, Component } from 'preact'
 import { ToPeers, FromPeers } from '../../../lib/emitters'
-import Portal from 'preact-portal'
 import IconButton from '../../../common/icon-button'
 import GrainIcon from '../../../common/icons/grain'
 

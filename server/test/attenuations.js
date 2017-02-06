@@ -1,3 +1,5 @@
+/*global socks NUM_PARTICIPANTS GET_ROOM_URL SOCKET_OPTIONS TIMEOUT*/
+
 const expect = require('chai').expect
 
 const objSort = (a, b) => a.x - b.x

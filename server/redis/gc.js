@@ -9,17 +9,15 @@ const {
 const e = {}
 
 e.user = (room, uid) => new Promise((resolve, reject) => {
-  const otherUsers = client.smembers(`${room}:users`, (err, uids) => {
+  client.smembers(`${room}:users`, (err, uids) => {
     const me = uid
     const others = uids.filter(u => u != me)
 
-    const toDel = [].concat(
-      uids.map(keyify('users')),
-      uids.map(keyify('loc')),
-      uids.map(keyify('vol')),
-      uids.map(keyify('vol')),
-      others.map(sortbine(me)).filter(sbnd => sbnd).map((keyify('att')))
-    )
+    const toDel = [
+      keyify('users')(me),
+      keyify('loc')(me),
+      keyify('vol')(me)
+    ].concat(others.map(sortbine(me)).filter(sbnd => sbnd).map((keyify('att'))))
 
     client
     .multi()
@@ -40,7 +38,7 @@ e.check = (room, cid) => new Promise((resolve, reject) =>
   client
   .multi()
   .srem(`${room}:checks`, cid)
-  .del(keyfify('checks')(cid))
+  .del(keyify('checks')(cid))
   .exec((err, numDeleted) => {
     if (err) {
       log('Could not garbage collect check %s: %j', cid, err)
