@@ -40,15 +40,14 @@ let mac = .1
 let width = window.innerWidth
 let height = window.innerHeight
 
-const thirdOn = () => {
+const thirdOn = () =>
   width = .6 * window.innerWidth
-}
 
-const thirdOff = () => {
-  width = .6 * window.innerWidth
-}
+const thirdOff = () =>
+  width = window.innerWidth
 
-const getMac = () => transitioning ? mac * .01 : mac
+const getMac = () =>
+  transitioning ? mac * .01 : mac
 
 Updates.on('location', ([clientX, clientY]) => {
   Sock.emit('location', [

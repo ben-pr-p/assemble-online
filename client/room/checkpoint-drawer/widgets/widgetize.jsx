@@ -127,7 +127,12 @@ export default WrappedComponent =>
       }, state)
 
       return (
-        <WrappedComponent {...toPass} />
+        <div className='widget-border'>
+          <div className='widget-header'>
+            {this.kind}
+          </div>
+          <WrappedComponent {...toPass} />
+        </div>
       )
     }
   }

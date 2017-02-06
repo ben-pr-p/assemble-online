@@ -10,7 +10,8 @@ export default class Queue extends Component {
   }
 
   alreadyInQueue = () =>
-    this.props.queue.filter(u => u.id != Sock.id).length > 0
+    this.props.queue.filter(u => u.id != Sock.id).length > 0 ||
+    (this.props.speaking && this.props.speaking.id == Sock.id)
 
   endTurn = () => {
     const copy = this.props.queue.slice()
@@ -41,7 +42,7 @@ export default class Queue extends Component {
       <div className='queue'>
         <div className='speaking-box'>
           <div className='avatar-container'>
-            <Avatar form={true} src={speaking ? speaking.imgSrc : null} />
+            <Avatar form={true} src={speaking ? speaking.avatar : null} />
           </div>
           <div className='name-volume-container'>
             <div className='name'>
@@ -59,14 +60,14 @@ export default class Queue extends Component {
         <div className='buttons-layer'>
           {!this.alreadyInQueue() && (
             <Button
-              className='add-me'
+              className='queue-button add-me'
               onClick={this.addMeToQueue}
               text='Add Me'
             />
           )}
           {(speaking && speaking.id == me.id) && (
             <Button
-              className='done-speaking'
+              className='queue-button done-speaking'
               onClick={this.endTurn}
               text='Done'
             />
