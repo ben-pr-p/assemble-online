@@ -15,10 +15,14 @@ export default class CheckpointDrawer extends Component {
     widgets: this.state.widgets.concat([widget])
   })
 
-  wrapAddWidget = name => ev => {
-    this.addWidget(name)
+  wrapAddWidget = kind => ev => {
+    this.addWidget(kind)
     this.toggleDrawer()
   }
+
+  delete = kind => this.setState({
+    widgets: this.state.widgets.filter(w => w.kind != kind)
+  })
 
   toggleDrawer = () => this.setState({drawerOpen: !this.state.drawerOpen})
 
@@ -83,5 +87,10 @@ export default class CheckpointDrawer extends Component {
   }
 
   _renderWidget = (W, initialState) =>
-    <W me={this.props.me} initialState={initialState} members={this.props.checkpoint.members} />
+    <W
+      me={this.props.me}
+      initialState={initialState}
+      members={this.props.checkpoint.members}
+      delete={this.delete}
+    />
 }

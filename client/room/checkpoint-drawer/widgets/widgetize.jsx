@@ -2,7 +2,7 @@ import { h, Component } from 'preact'
 import { ToPeers, FromPeers } from '../../../lib/emitters'
 import Sock from '../../../lib/sock'
 import IconButton from '../../../common/icon-button'
-import GrainIcon from '../../../common/icons/grain'
+import { Close } from '../../../common/icons'
 
 export default WrappedComponent =>
   class extends Component {
@@ -17,7 +17,7 @@ export default WrappedComponent =>
       }, WrappedComponent.initial)
     }
 
-    isOwner = () => this.state.owner == this.props.me.id
+    isOwner = () => this.state.owner == Sock.id
     eventPrefix = () => `widget-${this.kind}`
     ownerIsDead = mids =>
       mids.filter(mids => mids == this.state.owner).length == 0
@@ -88,7 +88,6 @@ export default WrappedComponent =>
 
    declareOwnership = () => {
      this.state.owner = Sock.id
-
      this.sendToAll(this.state)
    }
 
@@ -123,6 +122,8 @@ export default WrappedComponent =>
       ? `translate(${pos.x + translate.x}px, ${pos.y + translate.y}px)`
       : `translate(${pos.x}px, ${pos.y}px)`
 
+    suicide = () => this.props.delete(this.kind)
+
     render ({me}, {owner, ...state}) {
       const toPass = Object.assign({
         me: me,
@@ -133,6 +134,9 @@ export default WrappedComponent =>
         <div className='widget-border'>
           <div className='widget-header'>
             {this.kind}
+            <IconButton onClick={this.suicide}>
+              <Close />
+            </IconButton>
           </div>
           <WrappedComponent {...toPass} />
         </div>

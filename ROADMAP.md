@@ -1,6 +1,17 @@
-# All Ideas
+# Immediate
+* Edit checkpoints
+* Style checkpoints in view
+* Checkpoint can collapse
+* Style menu
+* Style modals
+* Mute self
 
-## All Unsorted
+# Questions
+
+Should deleting widgets delete them for everybody?
+Who should be able to delete checkpoints?
+
+# All Ideas
 * kick out / mute for facillitator
 * mode where only facillitator can make announcements
 * location reference for squares
@@ -21,18 +32,12 @@
 * click on heads and go to the person
 * optional video communication
 * minimap like games for when lost
-
-## Dreamers
 * Documents, where you can select a few grids and it turns into a document
 * MS Paint style drawing with ability to draw sound barriers
 * When two people bump into each other, a video session is started - then on the
   right there's the video chat
-
-## For fun
 * Voice art
 * Disappearing trails
-
-## Practical
 * Doodle / scheduling system
 * Chat
 * Mute yourself
@@ -45,8 +50,6 @@
 * CLI
 * Latex build scenario
 * Logo + little name
-
-## MVP
 * Landing page / better packaging, as well as blog style thing
 * Arrow key movement
 * Someway to find lots of people at once
@@ -54,9 +57,3 @@
 * Collage and absorption for offscreen people on overlap
   * Two people can only merge if they are a certain distance from each other
   * Two people can only merge if they are a certain distance from each other
-
-## Immediate
-* Let new checkpoint member get all widgets
-* Delete widgets
-* Delete checkpoints
-* Add new widget

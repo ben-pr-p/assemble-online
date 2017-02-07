@@ -44,6 +44,8 @@ e.check = (room, cid) => new Promise((resolve, reject) =>
       log('Could not garbage collect check %s: %j', cid, err)
       return reject(err)
     }
+
+    return resolve(numDeleted)
   })
 )
 

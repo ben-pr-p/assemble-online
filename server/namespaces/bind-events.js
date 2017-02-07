@@ -1,7 +1,7 @@
 const redis = require('../redis')
 const queueWorkers = require('../workers')
 const colors = require('./user-colors')
-const {print} = require('../utils')
+const { print } = require('../utils')
 const debug = require('debug')
 const crypto = require('crypto')
 
@@ -114,15 +114,16 @@ module.exports = (io, nsp, name) => {
     socket.on('checkpoint-destroy', checkpoint =>
       room.checkpoints
         .remove(checkpoint.id)
-        .then(() =>
+        .then(() => {
+          log('check is gone')
+
           room.checkpoints
             .getAll()
             .then(all => {
-              log('Have checkpoints %j', all)
               nsp.emit('checkpoints', all)
             })
             .catch(panic)
-        )
+        })
         .catch(panic)
     )
 

@@ -1,5 +1,7 @@
 import { Component, h } from 'preact'
-import { Checkpoint } from '../../common/icons'
+import { Checkpoint, Close } from '../../common/icons'
+import IconButton from '../../common/icon-button'
+import Sock from '../../lib/sock'
 
 const r = 50
 const d = r * 2
@@ -12,7 +14,15 @@ const sd = sr * 2
  */
 
 export default class CheckpointBlob extends Component {
-  render ({checkpoint, translate}) {
+  state = { editing: false }
+
+  edit = () => this.setState({editing: !this.state.editing})
+  delete = () => {
+    console.log('emitting checkpoint-destroy')
+    Sock.emit('checkpoint-destroy', this.props.checkpoint)
+  }
+
+  render ({checkpoint, translate}, {editing}) {
     const { id, loc, members, color, name } = checkpoint
 
     let [ x, y ] = loc
@@ -34,7 +44,13 @@ export default class CheckpointBlob extends Component {
     return (
       <div className='checkpoint-blob' id={id}
         style={blobStyle}
+        onDblClick={this.edit}
       >
+        {editing && (
+          <IconButton className='delete-checkpoint-icon' onClick={this.delete} >
+            <Close color='red' />
+          </IconButton>
+        )}
         <div className='checkpoint-icon'>
           <Checkpoint color={color} />
         </div>
