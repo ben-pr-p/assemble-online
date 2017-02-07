@@ -17,10 +17,7 @@ export default class CheckpointBlob extends Component {
   state = { editing: false }
 
   edit = () => this.setState({editing: !this.state.editing})
-  delete = () => {
-    console.log('emitting checkpoint-destroy')
-    Sock.emit('checkpoint-destroy', this.props.checkpoint)
-  }
+  delete = () => Sock.emit('checkpoint-destroy', this.props.checkpoint)
 
   render ({checkpoint, translate}, {editing}) {
     const { id, loc, members, color, name } = checkpoint
