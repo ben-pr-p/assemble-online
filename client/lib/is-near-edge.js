@@ -2,11 +2,11 @@ const SEGMENT = 6
 
 export default (pos, trans, windim) => {
   const curr = pos + trans
-  const edge = windim / SEGMENT
+  const chunk = windim / SEGMENT
 
   return (
-    curr < edge
+    curr < chunk
       ||
-    curr > (windim - edge)
+    (windim - curr) < chunk
   )
 }

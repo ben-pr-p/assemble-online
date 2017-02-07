@@ -1,6 +1,4 @@
 # Immediate
-* Make near checkpoint edge trigger retranslate
-* Calc translate on load
 * Edit checkpoints
 * Checkpoint can collapse
 * Style menu

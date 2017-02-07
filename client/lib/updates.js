@@ -2,17 +2,32 @@ import Sock from './sock'
 import Emitter from 'component-emitter'
 import isNearEdge from './is-near-edge'
 
+let myLoc = []
+let translate = [0, 0]
+let needTranslate = true
+let dimensions = [window.innerWidth, window.innerHeight]
+let transitioning = false
+let mac = .1
 
+let width = window.innerWidth
+let height = window.innerHeight
 
 const Updates = new Emitter()
+
 /*
  * Broadcast updates
  */
 Sock.on('update', ([loc, vol, att]) => {
   for (let uid in loc) {
     Updates.emit(`location-${uid}`, loc[uid])
-    if (uid == Sock.id)
+    if (uid == Sock.id) {
       myLoc = loc[uid]
+
+      if (needTranslate) {
+        needTranslate = false
+        setTranslate()
+      }
+    }
   }
 
   for (let uid in vol) {
@@ -30,24 +45,24 @@ Sock.on('dimensions', dims => dimensions = dims)
  * Gooey translate stuff
  */
 
-let myLoc = []
-let translate = [0, 0]
-let dimensions = [window.innerWidth, window.innerHeight]
-let transitioning = false
-let mac = .1
-
-
-let width = window.innerWidth
-let height = window.innerHeight
-
-const thirdOn = () =>
-  width = .6 * window.innerWidth
-
-const thirdOff = () =>
-  width = window.innerWidth
+const third = {
+  on: () => width = .6 * window.innerWidth,
+  off: () => width = window.innerWidth
+}
 
 const getMac = () =>
   transitioning ? mac * .01 : mac
+
+const setTranslate = () => {
+  translate = [
+    (-1) * myLoc[0] + (width / 2) - 50,
+    (-1) * myLoc[1] + (height / 2) - 50
+  ]
+
+  transitioning = true
+  Updates.emit('translate', translate)
+  setTimeout(() => transitioning = false, 2000)
+}
 
 Updates.on('location', ([clientX, clientY]) => {
   Sock.emit('location', [
@@ -57,19 +72,11 @@ Updates.on('location', ([clientX, clientY]) => {
 
   setTimeout(() => {
     if (
-      isNearEdge(myLoc[0], translate[0], width) ||
+      isNearEdge(myLoc[0], translate[0], width)
+      ||
       isNearEdge(myLoc[1], translate[1], height)
-    ) {
-      translate = [
-        (-1) * myLoc[0] + (width / 2) - 50,
-        (-1) * myLoc[1] + (height / 2) - 50
-      ]
-
-      transitioning = true
-      Updates.emit('translate', translate)
-
-      setTimeout(() => transitioning = false, 2000)
-    }
+    )
+      setTranslate()
   }, 0)
 })
 
@@ -81,7 +88,7 @@ Updates.on('checkpoint-new', checkpoint => {
   Sock.emit('checkpoint-new', checkpoint)
 })
 
-Updates.on('cp-on', thirdOn)
-Updates.on('cp-off', thirdOff)
+Updates.on('cp-on', third.on)
+Updates.on('cp-off', third.off)
 
 export default Updates
