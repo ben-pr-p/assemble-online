@@ -10,12 +10,13 @@ export default class Queue extends Component {
   }
 
   alreadyInQueue = () =>
-    this.props.queue.filter(u => u.id != Sock.id).length > 0 ||
+    (this.props.queue.filter(u => u.id == Sock.id).length > 0)
+    ||
     (this.props.speaking && this.props.speaking.id == Sock.id)
 
   endTurn = () => {
     const copy = this.props.queue.slice()
-    const popped = copy.shift()
+    const popped = copy.shift() || null
     this.props.update({
       speaking: popped,
       queue: copy

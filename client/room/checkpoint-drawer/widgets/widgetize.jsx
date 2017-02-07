@@ -1,5 +1,6 @@
 import { h, Component } from 'preact'
 import { ToPeers, FromPeers } from '../../../lib/emitters'
+import Sock from '../../../lib/sock'
 import IconButton from '../../../common/icon-button'
 import GrainIcon from '../../../common/icons/grain'
 
@@ -60,34 +61,36 @@ export default WrappedComponent =>
        *    events from the corresponding webrtc components, then broadcast
        *    ourselves as owners
        */
-       const mids = members.map(m => m.id)
-      this.checkOwnerDeath(mids)
+      if (this.isOwner())
+        this.tellNewFriends(members)
+      else
+        this.checkOwnerDeath(members)
+    }
+
+    tellNewFriends = mids => {
+      const toTell = new Set(this.newFriends(mids))
+      if (toTell.size > 0) {
+        toTell.forEach(uid =>
+          ToPeers.on(`connected-to-${uid}`, () => {
+            toTell.delete(uid)
+            if (toTell.size == 0) {
+              this.declareOwnership()
+            }
+          })
+        )
+      }
     }
 
     checkOwnerDeath = mids => {
       if (this.ownerIsDead(mids))
-        this.setState({owner: null})
-
-      if (this.isOwner()) {
-        const toTell = new Set(this.newFriends(mids))
-        if (toTell.size > 0) {
-          toTell.forEach(uid =>
-            ToPeers.on(`connected-to-${uid}`, () => {
-              toTell.delete(uid)
-              if (toTell.size == 0) {
-                this.declareOwnership()
-              }
-            })
-          )
-        }
-      }
+        this.state.owner = null
     }
 
-   declareOwnership = () =>
-     this.sendToAll({
-       owner: this.props.me.id,
-       ...this.state
-     })
+   declareOwnership = () => {
+     this.state.owner = Sock.id
+
+     this.sendToAll(this.state)
+   }
 
     sendToAll = data =>
       ToPeers.emit(`to-all`, {

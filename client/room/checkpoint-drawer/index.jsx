@@ -83,5 +83,5 @@ export default class CheckpointDrawer extends Component {
   }
 
   _renderWidget = (W, initialState) =>
-    <W me={this.props.me} initialState={initialState} />
+    <W me={this.props.me} initialState={initialState} members={this.props.checkpoint.members} />
 }

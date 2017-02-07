@@ -5,7 +5,7 @@ import { ToPeers, FromPeers } from '../../lib/emitters'
 import Peer from 'simple-peer'
 import VolumeDetector from '../room/volume-detector'
 
-const DEBUG = true
+const DEBUG = false
 
 export default class Connection extends Component {
   peer = null
@@ -93,7 +93,6 @@ export default class Connection extends Component {
         if (DEBUG) console.log(`setting src object`)
       }
 
-      debugger
       setStatus('connected')
     })
 
