@@ -32,7 +32,7 @@ export default class CheckpointBlob extends Component {
     const specificD = (isFar ? sd: d)
 
     const blobStyle = {
-      border: `2px solid ${color}`
+      border: `5px solid ${color}`
     }
 
     Object.assign(blobStyle, this.computeWidthHeight(isFar))
@@ -51,7 +51,7 @@ export default class CheckpointBlob extends Component {
         <div className='checkpoint-icon'>
           <Checkpoint color={color} />
         </div>
-        <div className='checkpoint-label'>
+        <div className='checkpoint-label' style={{color}} >
           {name}
         </div>
       </div>

@@ -1,5 +1,4 @@
 # Immediate
-* Style checkpoints in view
 * Make near checkpoint edge trigger retranslate
 * Calc translate on load
 * Edit checkpoints

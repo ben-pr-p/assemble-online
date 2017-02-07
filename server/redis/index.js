@@ -28,8 +28,6 @@ module.exports = {
   emitter: {
     on: (msg, fn) => emitter.on(msg, fn),
     emit: (msg, data) => {
-      log(msg)
-      log(data)
       publisher.publish('channel', JSON.stringify({msg, data}))
     },
   },
@@ -162,6 +160,7 @@ module.exports = {
             : resolve(cps.map(cp => ({
               id: cp.id,
               name: cp.name,
+              color: cp.color,
               members: JSON.parse(cp.members),
               loc: JSON.parse(cp.loc)
             })))
@@ -176,6 +175,7 @@ module.exports = {
           .hmset(keyify('checks')(cid), {
             id: cid,
             name: check.name,
+            color: check.color,
             loc: JSON.stringify(check.loc),
             members: JSON.stringify([])
           })
@@ -201,12 +201,7 @@ module.exports = {
                     key,
                     'members',
                     JSON.stringify(array.add(JSON.parse(members), uid)),
-                    (err, response) => {
-                      if (err) return reject(err)
-                      log(response)
-                      resolve(response)
-                    }
-                    // callbackify(resolve, reject)
+                    callbackify(resolve, reject)
                   )
             )
         }),

@@ -1,14 +1,15 @@
 const redis = require('../redis')
 const queueWorkers = require('../workers')
-const colors = require('./user-colors')
+const colors = require('./colors')
 const { print } = require('../utils')
 const debug = require('debug')
 const crypto = require('crypto')
 
-let colorIdx = 0
-
 const transformId = raw =>
   raw.split('#')[1]
+
+const randInt = (lower, upper) =>
+  Math.floor(Math.random() * (upper - lower)) + lower
 
 const ignore = _ => _
 const panic = err => {
@@ -37,7 +38,7 @@ module.exports = (io, nsp, name) => {
       room.users
         .add(uid, Object.assign(user, {
           id: uid,
-          color: colors[colorIdx % colors.length]
+          color: colors.user[randInt(0, colors.user.length)]
         }))
         .then(room.users.getAll)
         .then(allUsers => {
@@ -60,7 +61,6 @@ module.exports = (io, nsp, name) => {
         })
         .catch(panic)
 
-      colorIdx++
       pings[uid] = 50
     })
 
@@ -82,7 +82,9 @@ module.exports = (io, nsp, name) => {
 
     socket.on('checkpoint-new', checkpoint =>
       room.checkpoints
-        .add(hashObj(checkpoint), checkpoint)
+        .add(hashObj(checkpoint), Object.assign(checkpoint, {
+          color: colors.checkpoints[randInt(0, colors.checkpoints.length)]
+        }))
         .then(() =>
           room.checkpoints
             .getAll()
