@@ -48,3 +48,10 @@ server.pass.key
 server.key
 server.csr
 server.crt
+
+# Latex Stuff
+**/*.aux
+**/*.fdb_latexmk
+**/*.fls
+**/*.pdf
+**/*.synctex.gz

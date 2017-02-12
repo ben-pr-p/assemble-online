@@ -1,9 +1,13 @@
 # Immediate
+* Take a picture
+* Draggable checkpoints
 * Edit checkpoints
 * Checkpoint can collapse
 * Style menu
 * Style modals
 * Mute self
+* Placeholder for checkpoint while creating
+* Quiet shutoff
 
 # Questions
 

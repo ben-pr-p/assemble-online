@@ -1,10 +1,10 @@
 import { h, Component } from 'preact'
-import request from 'superagent'
-import { Enter } from '../common/icons'
-import { Create } from '../common/icons'
+import { Create, Mail, Github } from '../common/icons'
+import IconButton from '../common/icon-button'
 import randomString from 'random-string'
 import Button from '../common/button'
 import TextInput from '../common/text-input'
+import Blog from '../common/blog'
 
 const hinttextoptions = [
   'Super Important Meeting',
@@ -20,33 +20,6 @@ const encodeName = name =>
   encodeURI(name.replace(/ /g, '-').replace(/[\\.']/g, '').toLowerCase())
 
 export default class Portal extends Component {
-  state = {
-    rooms: {},
-    hintidx: 0,
-    newRoomUrl: null,
-  }
-
-  updateIntervalId = null
-
-  componentWillMount () {
-    this.update()
-    this.updateIntervalId = setInterval(this.update, 3000)
-    this.hintIntervalId = setInterval(this.cycleHint, 10000)
-  }
-
-  update = () =>
-    request
-    .get('/room-status')
-    .query({random: Math.random()})
-    .end((err, res) => {
-      this.setState({rooms: res.body})
-    })
-
-  cycleHint = () =>
-    this.setState({
-      hintidx: (this.state.hintidx + 1) % hinttextoptions.length
-    })
-
   enterRoom = (room) =>
     () => window.location.pathname = '/room/' + room
 
@@ -59,18 +32,38 @@ export default class Portal extends Component {
 
   render (props, {rooms, hintidx, newRoomUrl}) {
     return (
-      <div className='center-with-padding'>
-        <div className='overlay'></div>
-        <div className='room-status-container' >
-          <div className='room-status'>
-            <h3>Publicly Joinable Rooms</h3>
-            <div className='divider' />
-            <div className='room-list-container'>
-              {this.renderRooms(rooms)}
+      <div className='page'>
+        <div className='header-bar'>
+
+          <div className='left-side'>
+            <img src='/img/logo.png' style={{
+              height: '40px',
+              width: '40px',
+              padding: '10px'
+            }} />
+            <div className='text'>
+              Assemble
             </div>
           </div>
-          <div className='divider' />
 
+          <div className='right-side' >
+            <IconButton href='mailto:ben.paul.ryan.packer@gmail.com' target='_blank'>
+              <Mail color='white' />
+            </IconButton>
+            <IconButton href='https://github.com/ben-pr-p/assemble' target='_blank'>
+              <Github />
+            </IconButton>
+          </div>
+
+        </div>
+
+        <div className='explanation'>
+          <h3> A many party audio and video meeting and decision making platform that's secure, open source, P2P, and a little bit trippy. </h3>
+
+          <Blog />
+        </div>
+
+        <div className='room-status-container' >
           <h3>Create Your Own Room</h3>
           <TextInput label='What would you like to name your room?'
             placeholder={hinttextoptions[hintidx]}
@@ -80,27 +73,17 @@ export default class Portal extends Component {
 
           {/* If they're typing in a new room */}
           {(newRoomUrl && newRoomUrl != '') && <span>{`https://www.assemble.live/room/${newRoomUrl}`}</span>}
-
           <br />
-          <br />
-
-          <Button text='Create Room'
-            onClick={this.createAndEnterRoom}
-          >
+          <Button text='Create Room' onClick={this.createAndEnterRoom} >
             <Create />
           </Button>
 
-        <br/>
-        <br/>
-        <span>Want a private room? That's coming soon. If you really want it, <a style={{color: '#80d4ff'}} href='mailto:ben.paul.ryan.packer@gmail.com'>email me</a></span>
-
-        <br/>
-        <br/>
-
-        <a href='/blog'>
-          <span className='button-label'> Blog/About </span>
-        </a>
-
+          <br/>
+          <br/>
+          <span>{'Questions? This thing works but is not near production level. '}
+            <a style={{color: '#80d4ff'}} href='mailto:ben.paul.ryan.packer@gmail.com'>Email me</a>
+          </span>
+          <br/>
         </div>
       </div>
     )

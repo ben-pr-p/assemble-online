@@ -1,4 +1,5 @@
 import { Component, h } from 'preact'
+import Webcam from 'webcamjs'
 import Dialog from '../../../common/dialog'
 import Avatar from '../../../common/avatar'
 import Button from '../../../common/button'
@@ -7,6 +8,20 @@ import store from 'store'
 import randomString from 'random-string'
 import { Bus } from '../../../lib/emitters'
 import Sock from '../../../lib/sock'
+import IconButton from '../../../common/icon-button'
+import { Camera } from '../../../common/icons'
+
+Webcam.set({
+  enable_flash: false,
+  width: 100,
+  height: 100,
+  dest_width: 100,
+  dest_height: 100,
+  crop_width: 100,
+  crop_height: 100,
+  image_format: 'jpeg',
+  jpeg_quality: 70
+})
 
 const labelMap = {
   avatar: 'Paste a Image Address to be your Avatar',
@@ -32,7 +47,7 @@ export default class NewUserModal extends Component {
 
   submit = () => {
     let user = {}
-    for (let attr in this.state) {
+    for (let attr in labelMap) {
       user[attr] = this.state[attr]
     }
 
@@ -80,11 +95,38 @@ export default class NewUserModal extends Component {
     )
   }
 
+  startSnapping = () => {
+    this.setState({
+      snapping: true
+    })
+
+    setTimeout(() => {
+      Webcam.attach('#preview')
+      console.log('Attached preview')
+    }, 10)
+  }
+
+  snapPic = () => {
+    Webcam.snap(data => this.setState({
+      avatar: data,
+      snapping: false
+    }))
+  }
+
   renderField = (attr) => {
     if (attr == 'avatar') {
       return (
         <div className='avatar-field-container' key={attr}>
-          <Avatar form={true} src={this.state.avatar} letters={this.state.name} />
+          {!this.state.snapping
+            ? (<Avatar form={true} letters={this.state.name}
+                src={this.state.avatar
+                      ? this.state.avatar
+                      : <Camera />
+                    }
+                onClick={this.startSnapping}
+              />)
+            : <div id='preview' onClick={this.snapPic} />
+          }
           <TextInput id={attr}
             name={attr}
             value={this.state[attr]}

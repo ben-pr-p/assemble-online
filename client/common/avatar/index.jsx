@@ -20,6 +20,7 @@ export default class Avatar extends Component {
 
   render ({form, src, letters, className, ...others}, {failedImg}) {
     const imageSuccess = src && !failedImg
+    const Src = src
 
     return (
       <div {...{
@@ -29,9 +30,9 @@ export default class Avatar extends Component {
         }}
       >
         {imageSuccess
-          ? (
-              <img src={src} ref={this.receiveRef} style={{display: 'none'}} />
-            )
+          ? typeof src == 'string'
+            ? ( <img src={src} ref={this.receiveRef} style={{display: 'none'}} /> )
+            : ( <Src />)
           : (
               <span className='avatar-letters'>
                 {letters && letters != '' ? letters.toString() : '?'}
