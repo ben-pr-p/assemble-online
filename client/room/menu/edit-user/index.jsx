@@ -119,10 +119,7 @@ export default class NewUserModal extends Component {
         <div className='avatar-field-container' key={attr}>
           {!this.state.snapping
             ? (<Avatar form={true} letters={this.state.name}
-                src={this.state.avatar
-                      ? this.state.avatar
-                      : <Camera />
-                    }
+                src={this.state.avatar}
                 onClick={this.startSnapping}
               />)
             : <div id='preview' onClick={this.snapPic} />

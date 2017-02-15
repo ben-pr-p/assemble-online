@@ -1,5 +1,6 @@
 import { Component, h } from 'preact'
 import joinClass from '../join-class'
+import { Camera } from '../icons'
 
 export default class Avatar extends Component {
   state = {
@@ -30,12 +31,13 @@ export default class Avatar extends Component {
         }}
       >
         {imageSuccess
-          ? typeof src == 'string'
-            ? ( <img src={src} ref={this.receiveRef} style={{display: 'none'}} /> )
-            : ( <Src />)
+          ? ( <img src={src} ref={this.receiveRef} style={{display: 'none'}} /> )
           : (
               <span className='avatar-letters'>
-                {letters && letters != '' ? letters.toString() : '?'}
+                {(letters && letters != '')
+                  ? letters.toString()
+                  : <Camera/>
+                }
               </span>
             )
         }

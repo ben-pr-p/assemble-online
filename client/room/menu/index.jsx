@@ -99,8 +99,7 @@ export default class Menu extends Component {
         </IconButton>
 
         {open && this.renderMenu(this.state.currentItems)}
-  
-        {/* Actual menu modals that can pop up */}
+
         {userBrowse &&
           <UserBrowse {...{users}} />}
         {checkpointBrowse &&

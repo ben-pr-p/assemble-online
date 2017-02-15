@@ -45,12 +45,14 @@ export default class Main extends Component {
     this.forceUpdate()
   }
 
-  render (props, { me, users, checkpoints, theme }) {
+  render (props, { me, users, checkpoints}) {
     const { clearLocal } = this
     const cp = checkpoints.filter(c => c.members.includes(Sock.id))[0]
 
     if (cp) Updates.emit('cp-on')
     if (!cp) Updates.emit('cp-off')
+
+    console.log({me, users, checkpoints})
 
     return (
       <div id='main-app' style={{
