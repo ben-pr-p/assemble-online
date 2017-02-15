@@ -104,7 +104,10 @@ export default class Connection extends Component {
     this.peer.signal(config)
   }
 
-  handleAttenuation = vol => { if (this.vidEl) this.vidEl.volume = 1 }
+  handleAttenuation = vol => {
+    if (this.vidEl) this.vidEl.volume = vol
+  }
+
   setRef = ref => this.vidEl = ref
 
   render ({myId, partnerId}) {
