@@ -1,15 +1,12 @@
 # Immediate
-* I'm away feature
 * Arrow key movement
 * Flip image horizontally
 * Draggable checkpoints
 * Edit checkpoints
 * Checkpoint can collapse
-* Style menu
-* Style modals
-* Mute self
-* Placeholder for checkpoint while creating
 * Browse checkpoints
+* Mute button working
+* Video chat
 * Quiet shutoff
 
 # Questions
@@ -18,6 +15,9 @@ Should deleting widgets delete them for everybody?
 Who should be able to delete checkpoints?
 
 # Polishing
+* Style menu
+* Style modals
+* Placeholder for checkpoint while creating
 * Take a picture
 
 # All Ideas

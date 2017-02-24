@@ -15,7 +15,10 @@ export default class Room extends Component {
     dimensions: [],
     translate: [0, 0],
     localMedia: {audio: true, video: false},
-    localStream: null
+    localStream: null,
+    keysDown: {
+      left: false, right: false, up: false, down: false
+    }
   }
 
   mousePos = {}
@@ -56,9 +59,25 @@ export default class Room extends Component {
   }
 
   onMouseUp = () => clearInterval(this.intervalId)
+  onMouseMove = ev => this.mousePos = [ev.clientX, ev.clientY]
 
-  onMouseMove = (ev) =>
-    this.mousePos = [ev.clientX, ev.clientY]
+  onKeyDown = ({key}) => {
+    const direction = {
+      ArrowLeft: 'left', ArrowRight: 'right' , ArrowDown: 'down', ArrowUp: 'up'
+    }[key]
+
+    this.state.keysDown[direction] = true
+    this.forceUpdate()
+  }
+
+  onKeyUp = ({key}) => {
+    const direction = {
+      ArrowLeft: 'left', ArrowRight: 'right', ArrowDown: 'down', ArrowUp: 'up'
+    }[key]
+
+    this.state.keysDown[direction] = true
+    this.forceUpdate()
+  }
 
   moveUser = () => Updates.emit('location', this.mousePos)
 
@@ -80,10 +99,10 @@ export default class Room extends Component {
     ))
 
     return (
-      <div id='plaza'
-        onMouseDown={this.onMouseDown}
-        onMouseUp={this.onMouseUp}
-        onMouseMove={this.onMouseMove}
+      <div id='plaza' tabIndex='1'
+        onMouseDown={this.onMouseDown} onMouseUp={this.onMouseUp}
+        onMouseMove={this.onMouseMove} onKeyDown={this.onKeyDown}
+        onKeyUp={this.onKeyUp}
       >
         <div id='viewport' style={{
           transform: `translate(${translate[0]}px, ${translate[1]}px)`
