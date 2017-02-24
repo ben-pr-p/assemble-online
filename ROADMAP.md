@@ -1,5 +1,7 @@
 # Immediate
-* Take a picture
+* I'm away feature
+* Arrow key movement
+* Flip image horizontally
 * Draggable checkpoints
 * Edit checkpoints
 * Checkpoint can collapse
@@ -7,6 +9,7 @@
 * Style modals
 * Mute self
 * Placeholder for checkpoint while creating
+* Browse checkpoints
 * Quiet shutoff
 
 # Questions
@@ -14,7 +17,12 @@
 Should deleting widgets delete them for everybody?
 Who should be able to delete checkpoints?
 
+# Polishing
+* Take a picture
+
 # All Ideas
+* google maps style zoom out - plus minus icon buttons - looking across the room
+* mute yourself without moving
 * kick out / mute for facillitator
 * mode where only facillitator can make announcements
 * location reference for squares

@@ -9,12 +9,17 @@ import Create from './close'
 import Enter from './enter'
 import Github from './github'
 import Mail from './mail'
+import MicOn from './mic-on'
+import MicOff from './mic-off'
 import NewCheckpoint from './new-checkpoint'
 import Open from './open'
 import People from './people'
 import Person from './person'
+import Run from './run'
 import Settings from './settings'
 import Timer from './timer'
+import VideoOn from './video-on'
+import VideoOff from './video-off'
 import Widgets from './widgets'
 
 export {
@@ -29,11 +34,16 @@ export {
   Enter,
   Github,
   Mail,
+  MicOn,
+  MicOff,
   NewCheckpoint,
   Open,
   People,
   Person,
+  Run,
   Settings,
   Timer,
+  VideoOn,
+  VideoOff,
   Widgets
 }

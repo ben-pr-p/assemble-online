@@ -17,7 +17,6 @@ export default class Main extends Component {
   componentWillMount () {
     Sock.on('users', this.handleUsers)
     Sock.on('checkpoints', this.handleCheckpoints)
-    Bus.on('me', this.handleMe)
 
     this.state.me = store.get('me')
     if (this.state.me) this.announceMe(this.state.me)
@@ -28,16 +27,18 @@ export default class Main extends Component {
     Sock.off('checkpoints', this.handleCheckpoints)
   }
 
-  handleUsers = users => users
-    ? this.setState({ users })
-    : null
+  handleUsers = users => {
+    if (users) {
+      const me = users.filter(u => u.id == Sock.id)[0]
+      this.setState({ users, me })
+    }
+  }
 
   handleCheckpoints = checkpoints => checkpoints
     ? this.setState({ checkpoints })
     : null
 
   announceMe = data => Sock.emit('me', data)
-  handleMe = me => this.setState({ me })
 
   clearLocal = () => {
     store.clear()
@@ -51,8 +52,6 @@ export default class Main extends Component {
 
     if (cp) Updates.emit('cp-on')
     if (!cp) Updates.emit('cp-off')
-
-    console.log({me, users, checkpoints})
 
     return (
       <div id='main-app' style={{

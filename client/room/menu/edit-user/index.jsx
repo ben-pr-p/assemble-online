@@ -13,10 +13,10 @@ import { Camera } from '../../../common/icons'
 
 Webcam.set({
   enable_flash: false,
-  width: 100,
-  height: 100,
-  dest_width: 100,
-  dest_height: 100,
+  width: 140,
+  height: 105,
+  dest_width: 140,
+  dest_height: 105,
   crop_width: 100,
   crop_height: 100,
   image_format: 'jpeg',
