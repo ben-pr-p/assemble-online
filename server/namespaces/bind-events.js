@@ -52,10 +52,14 @@ module.exports = (io, nsp, name) => {
             300 * allUsers.length
           ])
 
-          room.locations.set(uid, [
-            200 * allUsers.length,
-            150 * allUsers.length
-          ])
+          room.locations.get(uid)
+          .then(loc => loc == null
+            ? room.locations.set(uid, [
+                200 * allUsers.length,
+                150 * allUsers.length
+              ])
+            : Promise.resolve(null)
+          )
           .then(rez => queueWorkers({room: name, uid: uid}))
           .catch(panic)
         })

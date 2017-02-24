@@ -48,9 +48,11 @@ export default class Room extends Component {
   handleDimensions = (data) => this.setState({ dimensions: data })
   handleTranslate = (data) => this.setState({ translate: data })
 
-  onMouseDown = () => {
-    if (this.intervalId) clearInterval(this.intervalId)
-    this.intervalId = setInterval(this.moveUser, UPDATE_INTERVAL)
+  onMouseDown = (ev) => {
+    if (['plaza', 'grid-main'].includes(ev.target.id)) {
+      if (this.intervalId) clearInterval(this.intervalId)
+      this.intervalId = setInterval(this.moveUser, UPDATE_INTERVAL)
+    }
   }
 
   onMouseUp = () => clearInterval(this.intervalId)

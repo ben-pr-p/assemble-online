@@ -7,7 +7,8 @@ import store from 'store'
 export default class Controls extends Component {
   state = {}
 
-  toggleCore = toToggle => {
+  toggleCore = (ev, toToggle) => {
+    ev.stopPropagation()
     const me = store.get('me')
     me[toToggle] = !me[toToggle]
     store.set('me', me)
@@ -16,9 +17,9 @@ export default class Controls extends Component {
   }
 
   toggle = {
-    audio: () => this.toggleCore('audio'),
-    video: () => this.toggleCore('video'),
-    away: () => this.toggleCore('away')
+    audio: ev => this.toggleCore(ev, 'audio'),
+    video: ev => this.toggleCore(ev, 'video'),
+    away: ev => this.toggleCore(ev, 'away')
   }
 
   render ({me, audio, video, away}) {

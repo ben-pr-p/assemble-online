@@ -63,13 +63,21 @@ module.exports = {
         )
       ),
 
-      add: (uid, user) => new Promise((resolve, reject) =>
+      add: (uid, user) => new Promise((resolve, reject) => {
+        const key = keyify('users')(uid)
         client
-          .multi()
-          .sadd(`${room}:users`, uid)
-          .hmset(keyify('users')(uid), user)
-          .exec(callbackify(resolve, reject))
-      ),
+          .hgetall(key, (err, existing) => err
+            ? reject(err)
+            : client
+              .multi()
+              .sadd(`${room}:users`, uid)
+              .hmset(key, existing
+                ? Object.assign(user, {color: existing.color})
+                : user
+              )
+              .exec(callbackify(resolve, reject))
+          )
+      }),
 
       size: () => new Promise((resolve, reject) =>
         client.scard(`${room}:users`, callbackify(resolve, reject))
