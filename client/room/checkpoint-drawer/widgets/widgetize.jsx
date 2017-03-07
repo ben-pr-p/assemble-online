@@ -6,8 +6,9 @@ import { Close } from '../../../common/icons'
 
 export default WrappedComponent =>
   class extends Component {
-    static kind = WrappedComponent.name
-    kind = WrappedComponent.name
+    static kind = WrappedComponent.kind
+    static icon = WrappedComponent.icon
+    kind = WrappedComponent.kind
 
     constructor () {
       super()

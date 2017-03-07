@@ -15,6 +15,7 @@ import NewCheckpoint from './new-checkpoint'
 import Open from './open'
 import People from './people'
 import Person from './person'
+import Queue from './queue'
 import Run from './run'
 import Settings from './settings'
 import Timer from './timer'
@@ -40,6 +41,7 @@ export {
   Open,
   People,
   Person,
+  Queue,
   Run,
   Settings,
   Timer,

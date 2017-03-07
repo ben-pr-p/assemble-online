@@ -2,8 +2,11 @@ import { Component, h } from 'preact'
 import Avatar from '../../../../../common/avatar'
 import Button from '../../../../../common/button'
 import Sock from '../../../../../lib/sock'
+import { Queue } from '../../../../../common/icons'
 
-export default class Queue extends Component {
+export default class QueueWidget extends Component {
+  static icon = (<Queue style={{transform: 'scale(2)'}} />)
+  static kind = 'Queue'
   static initial = {
     speaking: null,
     queue: []

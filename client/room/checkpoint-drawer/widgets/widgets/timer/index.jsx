@@ -2,7 +2,7 @@ import { Component, h } from 'preact'
 import { Timer } from '../../../../../common/icons'
 
 export default class TimerWidget extends Component {
-  static icon = (<Timer />)
+  static icon = (<Timer style={{transform: 'scale(2)'}} />)
   static kind = 'Timer'
   static initial = {
     minutes: 10,

@@ -27,14 +27,22 @@ export default class CheckpointDrawer extends Component {
 
   wrapAddWidget = kind => ev => {
     this.addWidget(kind)
-    this.toggleDrawer()
+    this.collapseWidgetDrawer()
   }
 
   delete = kind => this.setState({
     widgets: this.state.widgets.filter(w => w.kind != kind)
   })
 
-  toggleDrawer = () => this.setState({widgetsSelector: !this.state.widgetsSelector})
+  openWidgetDrawer = ev => {
+    this.setState({widgetsSelector: true})
+    setTimeout(() => document.addEventListener('click', this.collapseWidgetDrawer), 1)
+  }
+
+  collapseWidgetDrawer = ev => {
+    document.removeEventListener('click', this.collapseWidgetDrawer)
+    this.setState({widgetsSelector: false})
+  }
 
   componentWillMount () {
     wildcardify(FromPeers, '*', (ev, data) => {
@@ -63,7 +71,7 @@ export default class CheckpointDrawer extends Component {
       <div className='cp-drawer'>
 
         <div className='cp-title'>
-          <IconButton onClick={this.toggleDrawer}>
+          <IconButton onClick={widgetsSelector ? this.collapseWidgetDrawer : this.openWidgetDrawer}>
             <Build/>
           </IconButton>
           <div className='cp-title-text' onClick={this.editName}>
