@@ -117,6 +117,20 @@ module.exports = (io, nsp, name) => {
         .catch(panic)
     )
 
+    socket.on('checkpoint-move', ({id, loc}) =>
+      room.checkpoints
+        .moveTo(id, loc)
+        .then(() =>
+          room.checkpoints
+            .getAll()
+            .then(all => {
+              log('Have checkpoints %j', all)
+              nsp.emit('checkpoints', all)
+            })
+            .catch(panic)
+        )
+    )
+
     socket.on('checkpoint-destroy', checkpoint =>
       room.checkpoints
         .remove(checkpoint.id)

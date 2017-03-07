@@ -9,18 +9,33 @@ const d = r * 2
 const sr = 25
 const sd = sr * 2
 
-/*
- * TODO
- */
-
 export default class CheckpointBlob extends Component {
-  state = { editing: false }
+  state = {
+    loc: []
+  }
 
-  edit = () => this.setState({editing: !this.state.editing})
+  componentWillMount () {
+    this.state.loc = this.props.checkpoint.loc
+  }
+
+  move = ev => this.setState({
+    loc: [this.state.loc[0] + ev.movementX, this.state.loc[1] + ev.movementY]
+  })
+
+  startTracking = () => {
+    document.addEventListener('mousemove', this.move)
+    setTimeout(() => document.addEventListener('mouseup', this.stopTracking), 1)
+  }
+
+  stopTracking = () => {
+    document.removeEventListener('mousemove', this.move)
+    Sock.emit('checkpoint-move', Object.assign({id: this.props.checkpoint.id}, {loc: this.state.loc}))
+  }
+
   delete = () => Sock.emit('checkpoint-destroy', this.props.checkpoint)
 
-  render ({checkpoint, translate}, {editing}) {
-    const { id, loc, members, color, name } = checkpoint
+  render ({checkpoint, translate}, {loc}) {
+    const { id, members, color, name } = checkpoint
 
     let [ x, y ] = loc
     if (!x || isNaN(x)) x = 0
@@ -41,13 +56,9 @@ export default class CheckpointBlob extends Component {
     return (
       <div className='checkpoint-blob' id={id}
         style={blobStyle}
-        onDblClick={this.edit}
+        onMouseDown={this.startTracking}
+        onMouseUp={this.stopTracking}
       >
-        {editing && (
-          <IconButton className='delete-checkpoint-icon' onClick={this.delete} >
-            <Close color='red' />
-          </IconButton>
-        )}
         <div className='checkpoint-icon'>
           <Checkpoint color={color} />
         </div>

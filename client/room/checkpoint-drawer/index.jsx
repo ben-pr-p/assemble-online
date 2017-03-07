@@ -4,12 +4,22 @@ import { Build } from '../../common/icons'
 import IconButton from '../../common/icon-button'
 import wildcardify from 'wildcards'
 import { FromPeers } from '../../lib/emitters'
+import Sock from '../../lib/sock'
 
 export default class CheckpointDrawer extends Component {
   state = {
-    drawerOpen: false,
-    widgets: []
+    widgetsSelector: false,
+    widgets: [],
+    tempName: false
   }
+
+  editName = () => this.setState({tempName: this.props.checkpoint.name})
+  handleNameInput = ev => this.setState({tempName: ev.target.value})
+  onNameInputPress = ev => ev.which == 13
+    ? Sock.emit('checkpoint-edit', {id: this.props.checkpoint.id, name: this.state.tempName})
+    : ev.which == 27
+      ? this.setState({tempName: false})
+      : null
 
   addWidget = widget => this.setState({
     widgets: this.state.widgets.concat([widget])
@@ -24,7 +34,7 @@ export default class CheckpointDrawer extends Component {
     widgets: this.state.widgets.filter(w => w.kind != kind)
   })
 
-  toggleDrawer = () => this.setState({drawerOpen: !this.state.drawerOpen})
+  toggleDrawer = () => this.setState({widgetsSelector: !this.state.widgetsSelector})
 
   componentWillMount () {
     wildcardify(FromPeers, '*', (ev, data) => {
@@ -46,7 +56,7 @@ export default class CheckpointDrawer extends Component {
     })
   }
 
-  render ({checkpoint}, {widgets, drawerOpen}) {
+  render ({checkpoint}, {widgets, widgetsSelector, tempName}) {
     const {name, members} = checkpoint
 
     return (
@@ -56,14 +66,22 @@ export default class CheckpointDrawer extends Component {
           <IconButton onClick={this.toggleDrawer}>
             <Build/>
           </IconButton>
-          {name}
+          <div className='cp-title-text' onClick={this.editName}>
+            {!tempName
+              ? name
+              : <input value={tempName}
+                  onInput={this.handleNameInput}
+                  onKeyPress={this.onNameInputPress}
+                />
+            }
+          </div>
         </div>
 
         <div className='cp-body'>
           {widgets.map(w => this.renderWidget(w))}
         </div>
 
-        {drawerOpen && (
+        {widgetsSelector && (
           <div className='cp-widget-drawer'>
 
             {WidgetComponents.map(wc => (

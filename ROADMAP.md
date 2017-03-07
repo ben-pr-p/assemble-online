@@ -1,8 +1,4 @@
 # Immediate
-* Arrow key movement
-* Flip image horizontally
-* Draggable checkpoints
-* Edit checkpoints
 * Checkpoint can collapse
 * Browse checkpoints
 * Mute button working
@@ -11,8 +7,9 @@
 
 # Questions
 
-Should deleting widgets delete them for everybody?
-Who should be able to delete checkpoints?
+* Arrow key movement
+* Should deleting widgets delete them for everybody?
+* Who should be able to delete checkpoints?
 
 # Polishing
 * Style menu
@@ -38,10 +35,7 @@ Who should be able to delete checkpoints?
 * Disappearing trails
 * searchable public rooms sorted by number of active users, if same number then alphabetized
 * chat
-* mute yourself option
-* take a picture with camera
 * click on heads and go to the person
-* optional video communication
 * minimap like games for when lost
 * Documents, where you can select a few grids and it turns into a document
 * MS Paint style drawing with ability to draw sound barriers
@@ -68,3 +62,16 @@ Who should be able to delete checkpoints?
 * Collage and absorption for offscreen people on overlap
   * Two people can only merge if they are a certain distance from each other
   * Two people can only merge if they are a certain distance from each other
+
+# Hypothesis vs. same thing just conference calling vs. physical interaction
+* More people will be familiar with each other at end
+* Diversity of proposed solutions will be greater
+* More people will listen
+
+# Timeline
+* Prior work - solutions and prior research as justification for different
+    decisions
+* Construct an experiment
+* May 1st need lots of data
+* May 15th writeup due
+* May 22nd presentation due

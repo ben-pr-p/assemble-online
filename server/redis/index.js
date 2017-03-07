@@ -197,6 +197,15 @@ module.exports = {
           .exec(callbackify(resolve, reject))
       ),
 
+      set: (cid, check) => new Promise((resolve, reject) =>
+        client
+          .multi()
+          .hmset(print(keyify('checks')(cid)), print({
+            name: check.name
+          }))
+          .exec(callbackify(resolve, reject))
+      ),
+
       user: uid => ({
         join: cid => new Promise((resolve, reject) => {
           const key = keyify('checks')(cid)
