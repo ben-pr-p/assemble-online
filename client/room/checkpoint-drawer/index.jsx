@@ -1,6 +1,8 @@
 import { Component, h } from 'preact'
 import WidgetComponents from './widgets'
 import { Build, Close } from '../../common/icons'
+import Button from '../../common/button'
+import Dialog from '../../common/dialog'
 import IconButton from '../../common/icon-button'
 import wildcardify from 'wildcards'
 import { FromPeers } from '../../lib/emitters'
@@ -34,7 +36,12 @@ export default class CheckpointDrawer extends Component {
     widgets: this.state.widgets.filter(w => w.kind != kind)
   })
 
-  delete = () => Sock.emit('checkpoint-destroy', this.props.checkpoint.id)
+  deleteModal = () => this.setState({deleteModal: true})
+  closeDeleteModal = () => this.setState({deleteModal: false})
+  doDelete = () => {
+    Sock.emit('checkpoint-destroy', this.props.checkpoint.id)
+    this.setState({deleteModal: false})
+  }
 
   openWidgetDrawer = ev => {
     this.setState({widgetsSelector: true})
@@ -66,11 +73,22 @@ export default class CheckpointDrawer extends Component {
     })
   }
 
-  render ({checkpoint}, {widgets, widgetsSelector, tempName}) {
+  render ({checkpoint}, {widgets, widgetsSelector, tempName, deleteModal}) {
     const {name, members} = checkpoint
 
     return (
       <div className='cp-drawer'>
+        {deleteModal && (
+          <Dialog title='Are you sure you want to delete the checkpoint?'
+            actions={[(
+              <Button text='Cancel' onClick={this.closeDeleteModal} />
+            ),(
+              <Button text='Done' onClick={this.doDelete} />
+            )]}
+          >
+            All of the checkpoints data will be lost forever.
+          </Dialog>
+        )}
 
         <div className='cp-title'>
           <IconButton onClick={widgetsSelector ? this.collapseWidgetDrawer : this.openWidgetDrawer}>
@@ -85,7 +103,7 @@ export default class CheckpointDrawer extends Component {
                 />
             }
           </div>
-          <IconButton style={{marginLeft: 'auto'}} onClick={this.delete}>
+          <IconButton style={{marginLeft: 'auto'}} onClick={this.deleteModal}>
             <Close />
           </IconButton>
         </div>
