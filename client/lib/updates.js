@@ -2,6 +2,8 @@ import Sock from './sock'
 import Emitter from 'component-emitter'
 import isNearEdge from './is-near-edge'
 
+let loc, vol, att
+
 let myLoc = []
 let translate = [0, 0]
 let needTranslate = true
@@ -17,7 +19,9 @@ const Updates = new Emitter()
 /*
  * Broadcast updates
  */
-Sock.on('update', ([loc, vol, att]) => {
+Sock.on('update', update => {
+  [loc, vol, att] = update
+
   for (let uid in loc) {
     Updates.emit(`location-${uid}`, loc[uid])
     if (uid == Sock.id) {
@@ -53,10 +57,12 @@ const third = {
 const getMac = () =>
   transitioning ? mac * .01 : mac
 
-const setTranslate = () => {
+const setTranslate = loc => {
+  const to = loc || myLoc
+
   translate = [
-    (-1) * myLoc[0] + (width / 2) - 50,
-    (-1) * myLoc[1] + (height / 2) - 50
+    (-1) * to[0] + (width / 2) - 50,
+    (-1) * to[1] + (height / 2) - 50
   ]
 
   transitioning = true
@@ -90,7 +96,13 @@ Updates.on('checkpoint-new', checkpoint => {
 
 Updates.on('move-to', newLoc => {
   Sock.emit('location', newLoc)
-  setTimeout(setTranslate, 100)
+  setTranslate(newLoc)
+})
+
+Updates.on('move-to-user', id => {
+  const newLoc = loc[id]
+  Socket.emit('location', newLoc)
+  setTranslate(newLoc)
 })
 
 Updates.on('cp-on', third.on)

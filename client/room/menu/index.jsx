@@ -86,7 +86,7 @@ export default class Menu extends Component {
   }
 
   closeCheckpointBrowse = () => this.setState({checkpointBrowse: false})
-  closeUserBrowse = () => this.setState({closeUserBrowse: false})
+  closeUserBrowse = () => this.setState({userBrowse: false})
 
   render ({me, users, checkpoints}, {
     open, editingUser, bugReport, userBrowse, checkpointBrowse,
