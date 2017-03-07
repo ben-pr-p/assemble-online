@@ -35,7 +35,7 @@ export default class Avatar extends Component {
           : (
               <span className='avatar-letters'>
                 {(letters && letters != '')
-                  ? letters.toString()
+                  ? Array.isArray(letters) ? letters.join('') : letters.toString()
                   : <Camera/>
                 }
               </span>
