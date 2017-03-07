@@ -131,9 +131,9 @@ module.exports = (io, nsp, name) => {
         )
     )
 
-    socket.on('checkpoint-destroy', checkpoint =>
+    socket.on('checkpoint-destroy', id =>
       room.checkpoints
-        .remove(checkpoint.id)
+        .remove(id)
         .then(() => {
           log('check is gone')
 

@@ -1,6 +1,6 @@
 import { Component, h } from 'preact'
 import WidgetComponents from './widgets'
-import { Build } from '../../common/icons'
+import { Build, Close } from '../../common/icons'
 import IconButton from '../../common/icon-button'
 import wildcardify from 'wildcards'
 import { FromPeers } from '../../lib/emitters'
@@ -30,9 +30,11 @@ export default class CheckpointDrawer extends Component {
     this.collapseWidgetDrawer()
   }
 
-  delete = kind => this.setState({
+  deleteWidget = kind => this.setState({
     widgets: this.state.widgets.filter(w => w.kind != kind)
   })
+
+  delete = () => Sock.emit('checkpoint-destroy', this.props.checkpoint.id)
 
   openWidgetDrawer = ev => {
     this.setState({widgetsSelector: true})
@@ -83,6 +85,9 @@ export default class CheckpointDrawer extends Component {
                 />
             }
           </div>
+          <IconButton style={{marginLeft: 'auto'}} onClick={this.delete}>
+            <Close />
+          </IconButton>
         </div>
 
         <div className='cp-body'>
@@ -117,6 +122,6 @@ export default class CheckpointDrawer extends Component {
       me={this.props.me}
       initialState={initialState}
       members={this.props.checkpoint.members}
-      delete={this.delete}
+      delete={this.deleteWidget}
     />
 }

@@ -23,14 +23,7 @@ e.user = (room, uid) => new Promise((resolve, reject) => {
     .multi()
     .srem(`${room}:users`, me)
     .del(toDel)
-    .exec((err, numDeleted) => {
-      if (err) {
-        log('Could not garbage collect user %s: %j', uid, err)
-        return reject(err)
-      }
-
-      return resolve(numDeleted)
-    })
+    .exec((err, numDeleted) => err ? reject(err) : resolve(numDeleted))
   })
 })
 
@@ -39,14 +32,7 @@ e.check = (room, cid) => new Promise((resolve, reject) =>
   .multi()
   .srem(`${room}:checks`, cid)
   .del(keyify('checks')(cid))
-  .exec((err, numDeleted) => {
-    if (err) {
-      log('Could not garbage collect check %s: %j', cid, err)
-      return reject(err)
-    }
-
-    return resolve(numDeleted)
-  })
+  .exec((err, numDeleted) => err ? reject(err) : resolve(numDeleted))
 )
 
 e.room = (room) => new Promise((resolve, reject) =>
