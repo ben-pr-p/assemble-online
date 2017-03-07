@@ -16,8 +16,9 @@ import {
 const RADIUS = 200
 
 export default class Menu extends Component {
-  toggleOpen = () =>
-    this.setState({open: !this.state.open})
+  toggleOpen = () => this.state.currentItems.length == this.config.length
+    ? this.setState({open: !this.state.open})
+    : this.setState({currentItems: this.config})
 
   endBugReport = () =>
     this.setState({bugReport: false})
@@ -43,11 +44,6 @@ export default class Menu extends Component {
 
   config = [
     {
-      icon: <Person />,
-      label: 'Edit Me',
-      action: this.wrapAction(() => this.setState({editingUser: true}))
-    },
-    {
       icon: <Bug />,
       label: 'File a Bug Report',
       action: this.wrapAction(() => this.setState({bugReport: true}))
@@ -67,6 +63,11 @@ export default class Menu extends Component {
           action: this.wrapAction(() => this.setState({checkpointBrowse: true}))
         }
       ]
+    },
+    {
+      icon: <Person />,
+      label: 'Edit Me',
+      action: this.wrapAction(() => this.setState({editingUser: true}))
     },
     {
       icon: <People />,

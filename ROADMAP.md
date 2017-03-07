@@ -1,5 +1,4 @@
 # Immediate
-* Menu Revamp
 * Delete checkpoint
 * Collapse checkpoint
 * No collisions
