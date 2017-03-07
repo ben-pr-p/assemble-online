@@ -7,7 +7,7 @@ class UserItem extends Component {
 
   render ({item}) {
     return (
-      <div className='user-item'>
+      <div className='user-item' onClick={this.goTo}>
         <div className='user-avatar'
           style={{'background-image': `url(${item.avatar})`}}
         />

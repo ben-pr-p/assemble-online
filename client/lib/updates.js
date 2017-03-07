@@ -101,7 +101,7 @@ Updates.on('move-to', newLoc => {
 
 Updates.on('move-to-user', id => {
   const newLoc = loc[id]
-  Socket.emit('location', newLoc)
+  Sock.emit('location', newLoc)
   setTranslate(newLoc)
 })
 

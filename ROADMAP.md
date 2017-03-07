@@ -1,8 +1,8 @@
 # Immediate
-* Browse checkpoints / users
 * Menu Revamp
 * Delete checkpoint
 * Collapse checkpoint
+* No collisions
 * Mute button working
 * Video chat
 * Quiet shutoff
