@@ -1,6 +1,4 @@
 # Immediate
-* Delete checkpoint
-* Collapse checkpoint
 * No collisions
 * Mute button working
 * Video chat

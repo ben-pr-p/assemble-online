@@ -1,3 +1,8 @@
+.cp-collapse-toggle
+  position absolute
+  top 10px
+  left 10px
+
 .cp-drawer
   position fixed
   right 0
@@ -38,24 +43,25 @@
     padding 20px
     overflow-y scroll
 
-    .widget-preview
-      cursor pointer
-      margin-bottom 10px
+.widget-preview
+  cursor pointer
+  margin-top 5px
+  margin-bottom 5px
 
-      .widget-square
-        width 100%
-        height 85px
-        border 1px solid #ddd
-        display flex
-        justify-content center
-        align-items center
+  .widget-square
+    width 100%
+    height 85px
+    border 1px solid #ddd
+    display flex
+    justify-content center
+    align-items center
 
-        .icon-core
-          fill white
+    .icon-core
+      fill white
 
-      .widget-label
-        margin-top 10px
-        text-align center
+  .widget-label
+    margin-top 10px
+    text-align center
 
 @keyframes slide-from-right
   0%

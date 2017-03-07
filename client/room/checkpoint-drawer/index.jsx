@@ -1,6 +1,6 @@
 import { Component, h } from 'preact'
 import WidgetComponents from './widgets'
-import { Build, Close } from '../../common/icons'
+import { Build, Close, Left, Right } from '../../common/icons'
 import Button from '../../common/button'
 import Dialog from '../../common/dialog'
 import IconButton from '../../common/icon-button'
@@ -12,7 +12,8 @@ export default class CheckpointDrawer extends Component {
   state = {
     widgetsSelector: false,
     widgets: [],
-    tempName: false
+    tempName: false,
+    collapsed: false
   }
 
   editName = () => this.setState({tempName: this.props.checkpoint.name})
@@ -53,6 +54,12 @@ export default class CheckpointDrawer extends Component {
     this.setState({widgetsSelector: false})
   }
 
+  uncollapse = () => this.setState({collapsed: false})
+  collapse = ev => {
+    ev.stopPropagation()
+    this.setState({collapsed: true})
+  }
+
   componentWillMount () {
     wildcardify(FromPeers, '*', (ev, data) => {
       /*
@@ -73,11 +80,15 @@ export default class CheckpointDrawer extends Component {
     })
   }
 
-  render ({checkpoint}, {widgets, widgetsSelector, tempName, deleteModal}) {
+  render ({checkpoint}, {widgets, widgetsSelector, tempName, deleteModal, collapsed}) {
     const {name, members} = checkpoint
+
+    if (collapsed) return this.renderCollapsed(checkpoint, widgets)
 
     return (
       <div className='cp-drawer'>
+        <IconButton className='cp-collapse-toggle' onClick={this.collapse}> <Right /> </IconButton>
+
         {deleteModal && (
           <Dialog title='Are you sure you want to delete the checkpoint?'
             actions={[(
@@ -142,4 +153,19 @@ export default class CheckpointDrawer extends Component {
       members={this.props.checkpoint.members}
       delete={this.deleteWidget}
     />
+
+  renderCollapsed = ({name}, widgets) => (
+    <div className='cp-drawer' onClick={this.uncollapse} style={{width: 100}}>
+      <IconButton className='cp-collapse-toggle' onClick={this.uncollapse}> <Left /> </IconButton>
+      <div className='cp-title'> <div className='cp-title-text'>
+        {name}
+      </div> </div>
+      {widgets.map(w => (
+        <div className='widget-preview'>
+          <div className='widget-square'> {w.icon} </div>
+          <div className='widget-label'> {w.kind} </div>
+        </div>
+      ))}
+    </div>
+  )
 }

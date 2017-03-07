@@ -8,6 +8,7 @@ import Close from './close'
 import Create from './close'
 import Enter from './enter'
 import Github from './github'
+import Left from './left'
 import Mail from './mail'
 import MicOn from './mic-on'
 import MicOff from './mic-off'
@@ -16,6 +17,7 @@ import Open from './open'
 import People from './people'
 import Person from './person'
 import Queue from './queue'
+import Right from './right'
 import Run from './run'
 import Settings from './settings'
 import Timer from './timer'
@@ -34,6 +36,7 @@ export {
   Create,
   Enter,
   Github,
+  Left,
   Mail,
   MicOn,
   MicOff,
@@ -42,6 +45,7 @@ export {
   People,
   Person,
   Queue,
+  Right,
   Run,
   Settings,
   Timer,
