@@ -1,32 +1,44 @@
 import { Component, h } from 'preact'
+import Portal from 'preact-portal'
+import IconButton from '../icon-button'
+import { Close } from '../icons'
 
 const matches = search => item =>
   Object.keys(item).filter(field =>
-    item[field].match(search)
+    search
+      ? typeof item[field] == 'string' && item[field].match(search)
+      : true
   ).length > 0
 
 export default class ListBrowser extends Component {
   state = {
     searching: null,
-    items: []
+    search: null
   }
 
   onSearchChange = ev => this.setState({searching: ev.target.value})
 
-  render ({title, ItemDisplay, items}, {searching}) {
+  render ({title, ItemDisplay, items}, {searching, search}) {
+    const found = items.filter(matches(search))
+
     return (
       <Portal into='body'>
-        <div className='top-left-modal'>
+        <div className='list-browser'>
           <div className='title'>
             {title}
+            <IconButton onClick={this.props.close}>
+              <Close />
+            </IconButton>
           </div>
 
-          <div className='search'>
-            <input type='text' onChange={this.onSearchChange} />
-          </div>
+          {searching && (
+            <div className='search'>
+              <input type='text' onChange={this.onSearchChange} />
+            </div>
+          )}
 
           <div className='list-container'>
-            {items.filter(matches(searching)).map(i => (
+            {found.map(i => (
               <div className='list-item'>
                 <ItemDisplay item={i} />
               </div>

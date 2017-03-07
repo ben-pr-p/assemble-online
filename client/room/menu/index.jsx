@@ -85,6 +85,9 @@ export default class Menu extends Component {
     newCheckpointForm: false
   }
 
+  closeCheckpointBrowse = () => this.setState({checkpointBrowse: false})
+  closeUserBrowse = () => this.setState({closeUserBrowse: false})
+
   render ({me, users, checkpoints}, {
     open, editingUser, bugReport, userBrowse, checkpointBrowse,
     newCheckpointForm
@@ -101,9 +104,9 @@ export default class Menu extends Component {
         {open && this.renderMenu(this.state.currentItems)}
 
         {userBrowse &&
-          <UserBrowse {...{users}} />}
+          <UserBrowse {...{users, close: this.closeUserBrowse}} />}
         {checkpointBrowse &&
-          <CheckpointBrowse {...{users}} />}
+          <CheckpointBrowse {...{checkpoints, close: this.closeCheckpointBrowse}} />}
         {newCheckpointForm &&
           <EditCheckpoint {...{closeModal: this.closeModal}} />}
         {bugReport &&

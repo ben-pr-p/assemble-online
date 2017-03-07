@@ -1,6 +1,6 @@
 # Immediate
-* Checkpoint can collapse
 * Browse checkpoints / users
+* Menu Revamp
 * Mute button working
 * Video chat
 * Quiet shutoff

@@ -88,6 +88,11 @@ Updates.on('checkpoint-new', checkpoint => {
   Sock.emit('checkpoint-new', checkpoint)
 })
 
+Updates.on('move-to', newLoc => {
+  Sock.emit('location', newLoc)
+  setTimeout(setTranslate, 100)
+})
+
 Updates.on('cp-on', third.on)
 Updates.on('cp-off', third.off)
 
