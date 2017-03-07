@@ -1,6 +1,7 @@
 # Immediate
-* No collisions
+* Audio working for any number of participants
 * Mute button working
+* No collisions
 * Video chat
 * Quiet shutoff
 
