@@ -222,7 +222,8 @@ module.exports = (io, nsp, name) => {
     }
   }
 
-  queue.process('update', ({event, data}, done) => {
+  queue.process('update', (job, done) => {
+    const {event, data} = job.data
     log('Emitting %s: %j', event, data)
     nsp.emit(event, data)
     done()
