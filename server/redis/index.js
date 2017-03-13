@@ -1,37 +1,13 @@
-const Emitter = require('events')
 const redis = require('redis')
 const log = require('debug')('assemble:redis')
-
 const client = require('./client')
 const gc = require('./gc')
-const subscriber = redis.createClient(process.env.REDIS_URL)
-const publisher = redis.createClient(process.env.REDIS_URL)
 
 const {
   sortbine, objectify, keyify, callbackify, distance, array, print
 } = require('../utils')
 
-const emitter = new Emitter()
-
-/*
- * TODO - only happens once, not for each require
- */
-
-subscriber.on('message', (channel, raw) => {
-  const {msg, data} = JSON.parse(raw)
-  emitter.emit(msg, data)
-})
-
-subscriber.subscribe('channel')
-
 module.exports = {
-  emitter: {
-    on: (msg, fn) => emitter.on(msg, fn),
-    emit: (msg, data) => {
-      publisher.publish('channel', JSON.stringify({msg, data}))
-    },
-  },
-
   rooms: {
     getAll: () => new Promise((resolve, reject) =>
       client.smembers('rooms', callbackify(resolve, reject))
@@ -245,7 +221,7 @@ module.exports = {
     updates: {
       for: (uid) => new Promise((resolve, reject) =>
         client.smembers(`${room}:users`, (err, uids) => {
-          let queued = client.multi()
+          let delayed = client.multi()
             .mget(uids.map(keyify('loc')))
             .mget(uids.map(keyify('vol')))
 
@@ -253,9 +229,9 @@ module.exports = {
           const attQuery = withoutMe.map(sortbine(uid)).filter(sbnd => sbnd).map(keyify('att'))
 
           if (attQuery.length > 0)
-            queued = queued.mget(attQuery)
+            delayed = delayed.mget(attQuery)
 
-          queued
+          delayed
             .exec((err, all) =>
               err
                 ? reject(err)

@@ -3,7 +3,7 @@ const log = require('debug')('assemble:checkpoint-action')
 const { distance, filterobj } = require('../utils')
 const panic = err => {throw err}
 
-const CHECKPOINT_JOIN_DISTANCE = 700
+const CHECKPOINT_JOIN_DISTANCE = 500
 
 const determineLeaveJoins = (uid, [checks, loc]) => {
   const toLeave = []
@@ -36,7 +36,7 @@ const doLeaveJoins = (redisRoom, uid, should) => new Promise((resolve, reject) =
   .catch(reject)
 })
 
-module.exports = ({room, uid}) => new Promise((resolve, reject) => {
+module.exports = ({room, uid}, queue) => new Promise((resolve, reject) => {
   const redisRoom = redis.room(room)
 
   Promise.all([
@@ -50,7 +50,7 @@ module.exports = ({room, uid}) => new Promise((resolve, reject) => {
 
       redisRoom.checkpoints.getAll()
       .then(data => {
-        redis.emitter.emit('update', {event, data})
+        queue.create('update', {event, data}).save()
         resolve(null)
       })
       .catch(reject)

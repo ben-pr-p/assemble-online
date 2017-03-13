@@ -11,7 +11,8 @@
     "url": "https://github.com/assemble-live/assemble.git"
   },
   "scripts": {
-    "start": "node server/app.js",
+    "server": "node server/app.js",
+    "worker": "node server/worker/index.js",
     "build": "gulp build",
     "bs": "gulp build && node server/app.js",
     "bw": "gulp bw",
@@ -27,6 +28,7 @@
     "dragula": "^3.7.1",
     "express": "^4.14.0",
     "github": "^2.4.1",
+    "kue": "^0.11.5",
     "line-intersect": "^1.0.0",
     "node-getopt": "^0.2.3",
     "preact": "^6.4.0",

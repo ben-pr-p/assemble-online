@@ -1,9 +1,13 @@
 const redis = require('../redis')
-const queueWorkers = require('../workers')
 const colors = require('./colors')
 const { print } = require('../utils')
 const debug = require('debug')
 const crypto = require('crypto')
+
+const kue = require('kue')
+const queue = kue.createQueue({
+  redis: process.env.REDIS_URL
+})
 
 const transformId = raw =>
   raw.split('#')[1]
@@ -60,7 +64,7 @@ module.exports = (io, nsp, name) => {
               ])
             : Promise.resolve(null)
           )
-          .then(rez => queueWorkers({room: name, uid: uid}))
+          .then(rez => queue.create('location-change', {room: name, uid: uid}).save())
           .catch(panic)
         })
         .catch(panic)
@@ -74,7 +78,7 @@ module.exports = (io, nsp, name) => {
         .then(ignore)
         .catch(panic)
 
-      queueWorkers({room: name, uid: uid})
+      queue.create('location-change', {room: name, uid: uid}).save()
     })
 
     socket.on('volume', vol =>
@@ -218,9 +222,10 @@ module.exports = (io, nsp, name) => {
     }
   }
 
-  redis.emitter.on('update', ({event, data}) => {
-    log('Emitting %s: %s', event, JSON.stringify(data))
+  queue.process('update', ({event, data}, done) => {
+    log('Emitting %s: %j', event, data)
     nsp.emit(event, data)
+    done()
   })
 
   return nsp

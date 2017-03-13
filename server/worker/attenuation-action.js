@@ -6,7 +6,7 @@ const panic = err => {throw err}
 const attify = dist =>
   Math.min(1 / (Math.pow(dist - 70, 2) / 5000), 1)
 
-module.exports = ({room, uid}) => new Promise((resolve, reject) => {
+module.exports = ({room, uid}, queue) => new Promise((resolve, reject) => {
   const redisRoom = redis.room(room)
 
   redisRoom
