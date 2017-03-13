@@ -1,5 +1,5 @@
 # Immediate
-* Audio working for any number of participants
+* Audio / RTC working for any number of participants
 * Mute button working
 * No collisions
 * Video chat
