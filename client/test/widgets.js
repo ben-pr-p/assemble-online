@@ -8,20 +8,36 @@ const messageFromC = genMessage('C')
 
 describe('A creates a checkpoint', function () {
   it('A can click menu, checkpoint, create checkpoint', function () {
-    chromeA
-      .click('.menu')
-      .click('#Checkpoints')
-      .click('#New Checkpoint')
-      .click('#name', 'ChromeA Checkpoint')
-      .click('.submit')
+    chromeA.click('.menu')
+    chromeA.pause(1000)
+    chromeA.click('#Checkpoints')
+    chromeA.click('[id="New Checkpoint"]')
+    chromeA.click('#name', 'ChromeA Checkpoint')
+    chromeA.click('.submit')
 
     browser.pause(300)
   })
 
   it('All should see checkpoint', function () {
     expect(
-      browser.getTagName('.cp-drawer')
-    ).to.equal('div')
+      Object.values(browser.getTagName('.cp-drawer'))
+    ).to.deep.equal(new Array(numBrowsers).fill('div'))
+  })
+})
+
+describe('After A creates widget, everyone sees it', function () {
+  it('A can create widget', function () {
+    chromeA
+      .click('#widget-edit')
+      .click('#Queue')
+
+    browser.pause(300)
+  })
+
+  it('Everyone else sees the widget', function () {
+    expect(
+      Object.values(browser.getTagName('.queue'))
+    ).to.deep.equal(new Array(numBrowsers).fill('div'))
   })
 })
 

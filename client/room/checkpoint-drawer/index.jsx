@@ -102,7 +102,9 @@ export default class CheckpointDrawer extends Component {
         )}
 
         <div className='cp-title'>
-          <IconButton onClick={widgetsSelector ? this.collapseWidgetDrawer : this.openWidgetDrawer}>
+          <IconButton id='widget-edit'
+            onClick={widgetsSelector ? this.collapseWidgetDrawer : this.openWidgetDrawer}
+          >
             <Build/>
           </IconButton>
           <div className='cp-title-text' onClick={this.editName}>
@@ -127,7 +129,9 @@ export default class CheckpointDrawer extends Component {
           <div className='cp-widget-drawer'>
 
             {WidgetComponents.map(wc => (
-              <div className='widget-preview' onClick={this.wrapAddWidget(wc)}>
+              <div id={wc.kind} className='widget-preview'
+                onClick={this.wrapAddWidget(wc)}
+              >
                 <div className='widget-square'> {wc.icon} </div>
                 <div className='widget-label'> {wc.kind} </div>
               </div>

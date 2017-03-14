@@ -216,7 +216,7 @@ const createChrome = n => ({
   }
 })
 
-const numBrowsers = parseInt(opt.options.numBrowsers) || 3
+global.numBrowsers = parseInt(opt.options.numBrowsers) || 3
 const chromes = new Array(numBrowsers).fill(null)
   .forEach((_, idx) => {
     Object.assign(conf.capabilities, createChrome(idx))

@@ -29,12 +29,8 @@ if (cluster.isMaster) {
   })
 
   queue.process('checkpoint-change', 10, (job, done) => {
-    log('Got checkpoint change job')
     action.checkMembers(job.data, queue)
-    .then(() => {
-      log('Finished checkpoint change job')
-      done()
-    })
+    .then(() => done())
     .catch(err => {
       log('Found error')
       log(err)

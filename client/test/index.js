@@ -1,3 +1,3 @@
-// require('./blobs-up')
-// require('./rtc')
+require('./blobs-up')
+require('./rtc')
 require('./widgets')
