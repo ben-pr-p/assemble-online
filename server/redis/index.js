@@ -142,29 +142,35 @@ module.exports = {
           .exec((err, cps) => err
             ? reject(err)
             : resolve(cps.map(cp => ({
-              id: cp.id,
-              name: cp.name,
-              color: cp.color,
-              members: JSON.parse(cp.members),
-              loc: JSON.parse(cp.loc)
-            })))
+                  id: cp.id,
+                  name: cp.name,
+                  color: cp.color,
+                  members: JSON.parse(cp.members),
+                  loc: JSON.parse(cp.loc)
+                })
+              ))
           )
         )
       ),
 
-      add: (cid, check) => new Promise((resolve, reject) =>
+      add: (cid, check) => new Promise((resolve, reject) => {
+        const toCreate = {
+          id: cid,
+          name: check.name,
+          color: check.color,
+          loc: JSON.stringify(check.loc),
+          members: JSON.stringify([])
+        }
+
         client
           .multi()
           .sadd(`${room}:checks`, cid)
-          .hmset(keyify('checks')(cid), {
-            id: cid,
-            name: check.name,
-            color: check.color,
-            loc: JSON.stringify(check.loc),
-            members: JSON.stringify([])
-          })
-          .exec(callbackify(resolve, reject))
-      ),
+          .hmset(keyify('checks')(cid), toCreate)
+          .exec((err, result) => err
+            ? reject(err)
+            : resolve(toCreate)
+          )
+      }),
 
       moveTo: (cid, loc) => new Promise((resolve, reject) =>
         client
@@ -172,6 +178,15 @@ module.exports = {
           .hset(keyify('checks')(cid), 'loc', JSON.stringify(loc))
           .exec(callbackify(resolve, reject))
       ),
+
+      setMembers: (cid, members) => new Promise((resolve, reject) => {
+        log(cid)
+        log(JSON.stringify(members))
+        client
+          .multi()
+          .hset(keyify('checks')(cid), 'members', JSON.stringify(members))
+          .exec(callbackify(resolve, reject))
+      }),
 
       set: (cid, check) => new Promise((resolve, reject) =>
         client
@@ -181,6 +196,19 @@ module.exports = {
           }))
           .exec(callbackify(resolve, reject))
       ),
+
+      get: (cid) => new Promise((resolve, reject) => {
+        client.hgetall(keyify('checks')(cid), (err, cp) => err
+          ? reject(err)
+          : resolve({
+              id: cp.id,
+              name: cp.name,
+              color: cp.color,
+              members: JSON.parse(cp.members),
+              loc: JSON.parse(cp.loc)
+            })
+        )
+      }),
 
       user: uid => ({
         join: cid => new Promise((resolve, reject) => {

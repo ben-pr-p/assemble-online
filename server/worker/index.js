@@ -8,22 +8,37 @@ const queue = kue.createQueue({
 const clusterWorkerSize = require('os').cpus().length;
 
 const action = {
-  attenuation: require('./attenuation-action'),
-  checkpoint:  require('./checkpoint-action')
+  setAttenuations: require('./set-attenuations'),
+  joinCheckpoints:  require('./user-checkpoints'),
+  checkMembers: require('./check-members')
 }
 
 if (cluster.isMaster) {
-  kue.app.listen(8080)
+  log('Worker booted up, ready to recieve jobs')
   for (let i = 0; i < clusterWorkerSize; i++) {
     cluster.fork()
   }
 } else {
   queue.process('location-change', 10, (job, done) => {
     Promise.all([
-      action.checkpoint(job.data, queue),
-      action.attenuation(job.data, queue)
+      action.setAttenuations(job.data, queue),
+      action.joinCheckpoints(job.data, queue)
     ])
     .then(() => done())
     .catch(done)
+  })
+
+  queue.process('checkpoint-change', 10, (job, done) => {
+    log('Got checkpoint change job')
+    action.checkMembers(job.data, queue)
+    .then(() => {
+      log('Finished checkpoint change job')
+      done()
+    })
+    .catch(err => {
+      log('Found error')
+      log(err)
+      done(err)
+    })
   })
 }

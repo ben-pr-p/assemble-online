@@ -1,5 +1,5 @@
 const redis = require('../redis')
-const log = require('debug')('assemble:attenuation-worker')
+const log = require('debug')('assemble:set-attenuations')
 const { distance } = require('../utils')
 const panic = err => {throw err}
 

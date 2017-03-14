@@ -1,5 +1,5 @@
 const redis = require('../redis')
-const log = require('debug')('assemble:checkpoint-action')
+const log = require('debug')('assemble:user-checkpoints')
 const { distance, filterobj } = require('../utils')
 const panic = err => {throw err}
 

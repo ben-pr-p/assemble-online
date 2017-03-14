@@ -93,12 +93,13 @@ module.exports = (io, nsp, name) => {
         .add(hashObj(checkpoint), Object.assign(checkpoint, {
           color: colors.checkpoints[randInt(0, colors.checkpoints.length)]
         }))
-        .then(() =>
+        .then(created =>
           room.checkpoints
             .getAll()
             .then(all => {
               log('Requested add checkpoint %j', checkpoint)
               log('Have checkpoints %j', all)
+              queue.create('checkpoint-change', {room: name, cid: created.id}).save()
               nsp.emit('checkpoints', all)
             })
             .catch(panic)
@@ -114,6 +115,7 @@ module.exports = (io, nsp, name) => {
             .getAll()
             .then(all => {
               log('Have checkpoints %j', all)
+              queue.create('checkpoint-change', {room: name, cid: checkpoint.id}).save()
               nsp.emit('checkpoints', all)
             })
             .catch(panic)
@@ -129,6 +131,7 @@ module.exports = (io, nsp, name) => {
             .getAll()
             .then(all => {
               log('Have checkpoints %j', all)
+              queue.create('checkpoint-change', {room: name, cid: id}).save()
               nsp.emit('checkpoints', all)
             })
             .catch(panic)
