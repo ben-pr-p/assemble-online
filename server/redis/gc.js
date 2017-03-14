@@ -35,7 +35,9 @@ e.check = (room, cid) => new Promise((resolve, reject) =>
   .exec((err, numDeleted) => err ? reject(err) : resolve(numDeleted))
 )
 
-e.room = (room) => new Promise((resolve, reject) =>
+e.room = (room) => new Promise((resolve, reject) => {
+  log('Garbage collecting %s', room)
+
   client
   .multi()
   .smembers(`${room}:users`)
@@ -49,6 +51,6 @@ e.room = (room) => new Promise((resolve, reject) =>
     .then(resolve)
     .catch(reject)
   )
-)
+})
 
 module.exports = e

@@ -1,4 +1,3 @@
-const redis = require('redis')
 const log = require('debug')('assemble:redis')
 const client = require('./client')
 const gc = require('./gc')

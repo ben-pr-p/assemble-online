@@ -31,6 +31,10 @@ module.exports = (io, nsp, name) => {
   const log = debug('assemble:' + name)
   let updateIntervalId = null
 
+  redis.rooms.add(name).then(() =>
+    log('Room %s created', name)
+  ).catch(err => log('Could not create %s: %j', name, err))
+
   log('Binding events')
 
   nsp.on('connection', socket => {
@@ -187,6 +191,13 @@ module.exports = (io, nsp, name) => {
                       log('Imploding...')
                       nsp.implode()
                       clearInterval(updateIntervalId)
+
+                      redis.rooms.remove(name)
+                      .then(() =>
+                        log('Successfully removed %s', name)
+                      ).catch(err =>
+                        log('Could not remove %s: %j', name, err)
+                      )
                     }
                   })
                   .catch(panic)
