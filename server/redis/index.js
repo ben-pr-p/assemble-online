@@ -180,8 +180,6 @@ module.exports = {
       ),
 
       setMembers: (cid, members) => new Promise((resolve, reject) => {
-        log(cid)
-        log(JSON.stringify(members))
         client
           .multi()
           .hset(keyify('checks')(cid), 'members', JSON.stringify(members))
