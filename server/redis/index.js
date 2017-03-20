@@ -40,6 +40,7 @@ module.exports = {
 
       add: (uid, user) => new Promise((resolve, reject) => {
         const key = keyify('users')(uid)
+        
         client
           .hgetall(key, (err, existing) => err
             ? reject(err)
@@ -188,9 +189,9 @@ module.exports = {
       set: (cid, check) => new Promise((resolve, reject) =>
         client
           .multi()
-          .hmset(print(keyify('checks')(cid)), print({
+          .hmset(keyify('checks')(cid), {
             name: check.name
-          }))
+          })
           .exec(callbackify(resolve, reject))
       ),
 

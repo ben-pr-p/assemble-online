@@ -6,7 +6,7 @@ const AC = window.AudioContext || window.webkitAudioContext
 let ac
 let inputNode
 let processor
-let rms
+let rms = 0
 let intervalId
 
 const register = (stream, fn) => {

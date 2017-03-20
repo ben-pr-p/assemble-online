@@ -1,11 +1,5 @@
 /*global chromeA chromeB chromeC expect browser*/
 
-const genMessage = source => JSON.stringify({source, number: Math.random()})
-
-const messageFromA = genMessage('A')
-const messageFromB = genMessage('B')
-const messageFromC = genMessage('C')
-
 describe('A creates a checkpoint', function () {
   it('A can click menu, checkpoint, create checkpoint', function () {
     chromeA.click('.menu')
@@ -21,7 +15,7 @@ describe('A creates a checkpoint', function () {
   it('All should see checkpoint', function () {
     expect(
       Object.values(browser.getTagName('.cp-drawer'))
-    ).to.deep.equal(new Array(numBrowsers).fill('div'))
+    ).to.deep.equal(new Array(global.numBrowsers).fill('div'))
   })
 })
 

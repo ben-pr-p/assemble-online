@@ -17,7 +17,7 @@
     "bs": "gulp build && node server/app.js",
     "bw": "gulp bw",
     "lint": "./node_modules/.bin/eslint . --ignore-pattern test",
-    "test-front": "./node_modules/.bin/wdio wdio.conf.js",
+    "test-front": "./node_modules/.bin/wdio wdio.conf.js -n $NUM_BROWSERS",
     "test-back": "./node_modules/.bin/mocha server/test/index.js",
     "test": "npm run test-front && npm run test-back"
   },

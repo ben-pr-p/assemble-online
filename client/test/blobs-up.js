@@ -1,9 +1,8 @@
 /*global chromeA chromeB chromeC expect browser*/
 
-const bs = []
-if (typeof chromeA !== 'undefined') bs.push(chromeA)
-if (typeof chromeB !== 'undefined') bs.push(chromeB)
-if (typeof chromeC !== 'undefined') bs.push(chromeC)
+const bs = new Array(global.numBrowsers)
+  .fill(null)
+  .map(n => eval(`chrome${String.fromCharCode(n + 65)}`))
 
 describe('room should load', function () {
   it('should have #main-app', function () {

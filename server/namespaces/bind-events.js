@@ -1,8 +1,9 @@
-const redis = require('../redis')
-const colors = require('./colors')
-const { print } = require('../utils')
 const debug = require('debug')
 const crypto = require('crypto')
+const redis = require('../redis')
+const colors = require('./colors')
+const calcDimensions = require('./calc-dimensions')
+const { print } = require('../utils')
 
 const kue = require('kue')
 const queue = kue.createQueue({
@@ -50,22 +51,16 @@ module.exports = (io, nsp, name) => {
         }))
         .then(room.users.getAll)
         .then(allUsers => {
-          log('Have users %j', allUsers)
+          log('Have users %j', allUsers.map(u => u.id))
           if (allUsers.length > 0 && !updateIntervalId)
             updateIntervalId = setInterval(nsp.update, 50)
 
           nsp.emit('users', allUsers)
-          nsp.emit('dimensions', [
-            400 * allUsers.length,
-            300 * allUsers.length
-          ])
+          nsp.emit('dimensions', calcDimensions(allUsers.length))
 
           room.locations.get(uid)
           .then(loc => loc == null
-            ? room.locations.set(uid, [
-                200 * allUsers.length,
-                150 * allUsers.length
-              ])
+            ? room.locations.set(uid, calcDimensions(allUsers.length).map(d => d / 2))
             : Promise.resolve(null)
           )
           .then(rez => queue.create('location-change', {room: name, uid: uid}).save())
@@ -77,6 +72,8 @@ module.exports = (io, nsp, name) => {
     })
 
     socket.on('location', loc => {
+      // log('Got location %s %j', uid, loc)
+
       room.locations
         .set(uid, loc)
         .then(ignore)
@@ -85,12 +82,12 @@ module.exports = (io, nsp, name) => {
       queue.create('location-change', {room: name, uid: uid}).save()
     })
 
-    socket.on('volume', vol =>
+    socket.on('volume', vol => {
       room.volumes
         .set(uid, vol)
         .then(ignore)
         .catch(panic)
-    )
+    })
 
     socket.on('checkpoint-new', checkpoint =>
       room.checkpoints
@@ -204,10 +201,7 @@ module.exports = (io, nsp, name) => {
                 }, 200)
               }
 
-              nsp.emit('dimensions', [
-                400 * allUsers.length,
-                300 * allUsers.length
-              ])
+              nsp.emit('dimensions', calcDimensions(allUsers.length))
             })
             .catch(panic)
         )
@@ -216,7 +210,6 @@ module.exports = (io, nsp, name) => {
   })
 
   nsp.implode = () => {
-    Object.keys(nsp.connected).forEach(id => nsp[id].disconnect())
     nsp.removeAllListeners()
     delete io.nsps['/' + name]
   }
