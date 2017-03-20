@@ -24,6 +24,15 @@ export default class Connection extends Component {
     ToPeers.on('to-all', this.sendData)
   }
 
+  componentWillReceiveProps ({localStream}) {
+    if (this.props.localStream !== localStream) {
+      if (this.peer) {
+        this.peer.destroy()
+        this.peer = null
+      }
+    }
+  }
+
   componentDidUpdate () {
     const {myId, partnerId, localStream} = this.props
     if (myId != partnerId && localStream && this.peer == null)

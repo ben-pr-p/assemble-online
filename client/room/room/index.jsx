@@ -15,10 +15,7 @@ export default class Room extends Component {
     dimensions: [],
     translate: [0, 0],
     localMedia: {audio: true, video: false},
-    localStream: null,
-    keysDown: {
-      left: false, right: false, up: false, down: false
-    }
+    localStream: null
   }
 
   mousePos = {}
@@ -37,20 +34,27 @@ export default class Room extends Component {
     VolumeDetector.detach()
   }
 
-  setStream = () => navigator.getUserMedia(
-    this.state.localMedia,
-    // on success
-    stream => {
-      this.setState({localStream: stream})
-      VolumeDetector.register(stream, rms => Sock.emit('volume', rms))
-    },
-    // on failure
-    error => console.log(error)
-  )
+  setStream = () => {
+    if (this.state.localStream) {
+      // kill localStream
+      this.state.localStream.getAudioTracks().forEach(mt => mt.stop())
+      this.state.localStream.getVideoTracks().forEach(mt => mt.stop())
+    }
 
-  toggleMute = () => {
-    const audioInput = this.state.localStream.getAudioTracks()[0]
-    audioInput.enabled = !audioInput.enabled
+    navigator.getUserMedia(this.state.localMedia,
+      // on success
+      stream => {
+        this.setState({localStream: stream})
+        VolumeDetector.register(stream, rms => Sock.emit('volume', rms))
+      },
+      // on failure
+      error => console.log(error)
+    )
+  }
+
+  toggleStream = type => {
+    this.state.localMedia[type] = !this.state.localMedia[type]
+    this.setStream()
   }
 
   handleDimensions = (data) => this.setState({ dimensions: data })
@@ -65,25 +69,6 @@ export default class Room extends Component {
 
   onMouseUp = () => clearInterval(this.intervalId)
   onMouseMove = ev => this.mousePos = [ev.clientX, ev.clientY]
-
-  onKeyDown = ({key}) => {
-    const direction = {
-      ArrowLeft: 'left', ArrowRight: 'right' , ArrowDown: 'down', ArrowUp: 'up'
-    }[key]
-
-    this.state.keysDown[direction] = true
-    this.forceUpdate()
-  }
-
-  onKeyUp = ({key}) => {
-    const direction = {
-      ArrowLeft: 'left', ArrowRight: 'right', ArrowDown: 'down', ArrowUp: 'up'
-    }[key]
-
-    this.state.keysDown[direction] = true
-    this.forceUpdate()
-  }
-
   moveUser = () => Updates.emit('location', this.mousePos)
 
   render ({me, users, checkpoints}, {translate, dimensions, localStream}) {
@@ -93,7 +78,7 @@ export default class Room extends Component {
         localStream={localStream}
         translate={translate}
         isMe={me && u.id == Sock.id}
-        toggleMute={this.toggleMute}
+        toggleStream={this.toggleStream}
       />
     ))
 
