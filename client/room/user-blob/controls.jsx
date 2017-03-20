@@ -14,8 +14,8 @@ export default class Controls extends Component {
     store.set('me', me)
     Sock.emit('me', me)
 
-    if (toToggle == 'audio')
-      this.props.toggleMute()
+    if (toToggle != 'away')
+      this.props.toggleStream(toToggle)
   }
 
   toggle = {
@@ -30,8 +30,8 @@ export default class Controls extends Component {
         <div className='audio'>
           <IconButton onClick={this.toggle.audio} id='mute' >
             {audio
-              ? <MicOff />
-              : <MicOn />
+              ? <MicOn />
+              : <MicOff />
             }
           </IconButton>
         </div>
@@ -39,8 +39,8 @@ export default class Controls extends Component {
         <div className='video'>
           <IconButton onClick={this.toggle.video} id='toggle-video' >
             {video
-              ? <VideoOff />
-              : <VideoOn />
+              ? <VideoOn />
+              : <VideoOff />
             }
           </IconButton>
         </div>

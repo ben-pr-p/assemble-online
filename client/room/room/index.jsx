@@ -14,7 +14,6 @@ export default class Room extends Component {
   state = {
     dimensions: [],
     translate: [0, 0],
-    localMedia: {audio: true, video: false},
     localStream: null
   }
 
@@ -22,6 +21,11 @@ export default class Room extends Component {
   intervalId = null
 
   componentWillMount () {
+    this.state.localMedia = {
+      audio: this.props.me.audio === undefined || this.props.me.audio,
+      video: this.props.me.video === undefined || this.props.me.video
+    }
+
     Sock.on('dimensions', this.handleDimensions)
     Updates.on('translate', this.handleTranslate)
 
@@ -39,6 +43,11 @@ export default class Room extends Component {
       // kill localStream
       this.state.localStream.getAudioTracks().forEach(mt => mt.stop())
       this.state.localStream.getVideoTracks().forEach(mt => mt.stop())
+      VolumeDetector.detach()
+    }
+
+    if (Object.values(this.state.localMedia).every(val => !val)) {
+      return this.setState({localStream: null})
     }
 
     navigator.getUserMedia(this.state.localMedia,

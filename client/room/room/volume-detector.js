@@ -3,25 +3,24 @@ import Sock from '../../lib/sock'
 const UPDATE_INTERVAL = 100
 const AC = window.AudioContext || window.webkitAudioContext
 
-let ac
+let ac = new AC()
+
+/*
+ * Currently takes a fraction (~.35) of a ms - overhead of transferring to web
+ * worker is larger
+ */
+
+let processor = ac.createScriptProcessor(4096,2,2)
+processor.onaudioprocess = (e) => {
+  rms = Math.sqrt(e.inputBuffer.getChannelData(0).reduce((a,b) => a + Math.pow(b,2), 0))
+}
+
 let inputNode
-let processor
 let rms = 0
 let intervalId
 
 const register = (stream, fn) => {
-  ac = new AC()
   inputNode = ac.createMediaStreamSource(stream)
-  processor = ac.createScriptProcessor(4096,2,2)
-
-  /*
-   * Currently takes a fraction (~.35) of a ms - overhead of transferring to web
-   * worker is larger
-   */
-
-  processor.onaudioprocess = (e) => {
-    rms = Math.sqrt(e.inputBuffer.getChannelData(0).reduce((a,b) => a + Math.pow(b,2), 0))
-  }
 
   inputNode.connect(processor)
   processor.connect(ac.destination)
@@ -33,12 +32,10 @@ const register = (stream, fn) => {
 
 const detach = () => {
   if (intervalId) clearInterval(intervalId)
-
   intervalId = null
-  ac = null
-  inputNode = null
-  processor = null
-  rms = null
+
+  inputNode.disconnect(processor)
+  processor.disconnect(ac.destination)
 }
 
 export default {register, detach}

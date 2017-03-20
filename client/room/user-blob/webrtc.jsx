@@ -9,14 +9,28 @@ const DEBUG = false
 
 export default class Connection extends Component {
   peer = null
+  isMe = false
 
   componentWillMount () {
-    const {myId, partnerId, localStream} = this.props
-    if (myId != partnerId && localStream) {
-      if (DEBUG) console.log(`Initializing with localStream ${localStream}`)
-      this.initialize()
+    if (Sock.id == this.props.partnerId)
+      this.isMe = true
+  }
+
+  componentDidMount () {
+    const { partnerId, localStream } = this.props
+
+    if (this.isMe) {
+      if (localStream) {
+        if (DEBUG) console.log(`Initializing with localStream ${localStream}`)
+        this.initialize()
+      } else {
+        if (DEBUG) console.log('Waiting for stream')
+      }
     } else {
-      if (DEBUG) console.log('Waiting for stream')
+      if (localStream) {
+        this.vidEl.srcObject = localStream
+        this.vidEl.volume = 0
+      }
     }
 
     Updates.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
@@ -30,12 +44,18 @@ export default class Connection extends Component {
         this.peer.destroy()
         this.peer = null
       }
+
+      if (this.isMe) {
+        if (DEBUG) console.log('Setting local stream for self video')
+        this.vidEl.srcObject = localStream
+        this.vidEl.volume = 0
+      }
     }
   }
 
   componentDidUpdate () {
-    const {myId, partnerId, localStream} = this.props
-    if (myId != partnerId && localStream && this.peer == null)
+    const {partnerId, localStream} = this.props
+    if (this.isMe && localStream && this.peer == null)
       this.initialize()
   }
 
@@ -119,11 +139,11 @@ export default class Connection extends Component {
 
   setRef = ref => this.vidEl = ref
 
-  render ({myId, partnerId}) {
+  render ({partnerId, localStream}) {
     return (
       <video autoPlay=''
-        width='0'
-        height='0'
+        width={this.isMe ? '100' : '0'}
+        height={this.isMe ? '100' : '0'}
         ref={this.setRef}
       />
     )

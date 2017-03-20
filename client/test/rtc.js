@@ -22,3 +22,4 @@ describe('audio should transfer', () => {
 })
 
 require('./mute')
+require('./video')

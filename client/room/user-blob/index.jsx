@@ -89,15 +89,17 @@ export default class UserBlob extends Component {
             <Run color='white' />
           </div>
         )}
-        <Avatar src={user.avatar} letters={initialize(user.name)} style={{position:'absolute'}} />
-        <VolumeIndicator {...{d: specificD, user, status}} />
+
+        {!video && [
+          <Avatar src={user.avatar} letters={initialize(user.name)} style={{position:'absolute'}} />,
+          <VolumeIndicator {...{d: specificD, user, status}} />
+        ]}
+
         {isMe && controlsShown &&
-          <Controls {...{away, audio, video, toggleMute: this.props.toggleMute}} />
+          <Controls {...{away, audio, video, toggleStream: this.props.toggleStream}} />
         }
-        {!isMe
-          ? <WebRTC partnerId={user.id} localStream={localStream} setStatus={this.setStatus} status={status} />
-          : null
-        }
+
+        <WebRTC partnerId={user.id} localStream={localStream} setStatus={this.setStatus} status={status} />
       </div>
     )
   }
