@@ -1,7 +1,7 @@
 # Immediate
+* Mute button working
 * Audio / RTC working for any number of participants
 * Trigger GC on error
-* Mute button working
 * No collisions
 * Video chat
 * Quiet shutoff

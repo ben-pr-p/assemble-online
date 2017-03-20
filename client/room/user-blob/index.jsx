@@ -77,7 +77,8 @@ export default class UserBlob extends Component {
     const [away, audio, video] = ['away', 'audio', 'video'].map(attr => user[attr] == 'true')
 
     return (
-      <div className='user-blob' id={user.id} onClick={this.toggleControls}
+      <div className={`user-blob ${isMe && 'me'}`}
+        id={user.id} onClick={this.toggleControls}
         style={Object.assign(
           this.computeWidthHeight(isFar),
           this.computeTransform(isFar, {x, y, translate})
@@ -90,7 +91,9 @@ export default class UserBlob extends Component {
         )}
         <Avatar src={user.avatar} letters={initialize(user.name)} style={{position:'absolute'}} />
         <VolumeIndicator {...{d: specificD, user, status}} />
-        {isMe && controlsShown && <Controls {...{away, audio, video}} />}
+        {isMe && controlsShown &&
+          <Controls {...{away, audio, video, toggleMute: this.props.toggleMute}} />
+        }
         {!isMe
           ? <WebRTC partnerId={user.id} localStream={localStream} setStatus={this.setStatus} status={status} />
           : null

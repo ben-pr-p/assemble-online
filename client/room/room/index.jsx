@@ -48,6 +48,11 @@ export default class Room extends Component {
     error => console.log(error)
   )
 
+  toggleMute = () => {
+    const audioInput = this.state.localStream.getAudioTracks()[0]
+    audioInput.enabled = !audioInput.enabled
+  }
+
   handleDimensions = (data) => this.setState({ dimensions: data })
   handleTranslate = (data) => this.setState({ translate: data })
 
@@ -88,6 +93,7 @@ export default class Room extends Component {
         localStream={localStream}
         translate={translate}
         isMe={me && u.id == Sock.id}
+        toggleMute={this.toggleMute}
       />
     ))
 

@@ -1,11 +1,6 @@
 /*global chromeA chromeB chromeC expect browser*/
 
-const bs = []
-if (typeof chromeA !== 'undefined') bs.push(chromeA)
-if (typeof chromeB !== 'undefined') bs.push(chromeB)
-if (typeof chromeC !== 'undefined') bs.push(chromeC)
-
-describe('some property of the stats', () => {
+describe('audio should transfer', () => {
   before(() => {
     chromeA.startAnalyzing()
 
@@ -25,3 +20,5 @@ describe('some property of the stats', () => {
     expect(stats.max.audio.outbound).to.have.property('inputLevel')
   })
 })
+
+require('./mute')

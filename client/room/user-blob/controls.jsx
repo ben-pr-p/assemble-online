@@ -12,8 +12,10 @@ export default class Controls extends Component {
     const me = store.get('me')
     me[toToggle] = !me[toToggle]
     store.set('me', me)
-
     Sock.emit('me', me)
+
+    if (toToggle == 'audio')
+      this.props.toggleMute()
   }
 
   toggle = {
@@ -26,7 +28,7 @@ export default class Controls extends Component {
     return (
       <div className='controls'>
         <div className='audio'>
-          <IconButton onClick={this.toggle.audio} >
+          <IconButton onClick={this.toggle.audio} id='mute' >
             {audio
               ? <MicOff />
               : <MicOn />
@@ -35,7 +37,7 @@ export default class Controls extends Component {
         </div>
 
         <div className='video'>
-          <IconButton onClick={this.toggle.video} >
+          <IconButton onClick={this.toggle.video} id='toggle-video' >
             {video
               ? <VideoOff />
               : <VideoOn />
@@ -44,7 +46,7 @@ export default class Controls extends Component {
         </div>
 
         <div className='away'>
-          <IconButton onClick={this.toggle.away} >
+          <IconButton onClick={this.toggle.away} id='toggle-away' >
             {away
               ? <Run />
               : <Run />
