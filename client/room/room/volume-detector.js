@@ -18,8 +18,15 @@ processor.onaudioprocess = (e) => {
 let inputNode
 let rms = 0
 let intervalId
+let disabled = false
 
 const register = (stream, fn) => {
+  if (stream.getAudioTracks().length == 0) {
+    disabled = true
+    return undefined
+  }
+
+  disabled = false
   inputNode = ac.createMediaStreamSource(stream)
 
   inputNode.connect(processor)
@@ -34,8 +41,10 @@ const detach = () => {
   if (intervalId) clearInterval(intervalId)
   intervalId = null
 
-  inputNode.disconnect(processor)
-  processor.disconnect(ac.destination)
+  if (!disabled) {
+    inputNode.disconnect(processor)
+    processor.disconnect(ac.destination)
+  }
 }
 
 export default {register, detach}

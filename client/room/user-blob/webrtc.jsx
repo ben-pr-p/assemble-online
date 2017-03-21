@@ -140,10 +140,17 @@ export default class Connection extends Component {
   setRef = ref => this.vidEl = ref
 
   render ({partnerId, localStream}) {
+    const showVideo = this.isMe && localStream && localStream.getVideoTracks().length > 0
+
     return (
       <video autoPlay=''
-        width={this.isMe ? '100' : '0'}
-        height={this.isMe ? '100' : '0'}
+        style={{
+          position: 'absolute',
+          left: showVideo ? -18.75 : 0,
+          transform: 'rotateY(180deg)'
+        }}
+        width={showVideo ? '150' : '0'}
+        height={showVideo ? '100' : '0'}
         ref={this.setRef}
       />
     )
