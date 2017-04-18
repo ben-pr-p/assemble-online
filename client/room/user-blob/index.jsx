@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import lineIntersect from 'line-intersect'
 import Avatar from '../../common/avatar'
 import Updates from '../../lib/updates'
@@ -61,7 +61,10 @@ export default class UserBlob extends Component {
   handleLocation = data => this.setState({ location: data })
   toggleControls = () => this.setState({ controlsShown: !this.state.controlsShown })
 
-  render ({user, translate, isMe, localStream}, {location, status, controlsShown}) {
+  render () {
+		const {user, translate, isMe, localStream} = this.props
+		const {location, status, controlsShown} = this.state
+
     let [ x, y ] = location
     if (!x || isNaN(x)) x = 0
     if (!x || isNaN(y)) y = 0

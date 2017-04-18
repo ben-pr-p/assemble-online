@@ -3,6 +3,7 @@ const babelify = require('babelify')
 const bro = require('gulp-bro')
 const uglify = require('gulp-uglify')
 const empty = require('gulp-empty')
+const cssify = require('cssify')
 const vfs = require('vinyl-fs')
 const clientapps = require('./client-apps')
 

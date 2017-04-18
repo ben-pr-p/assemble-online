@@ -1,5 +1,5 @@
-import { Component, h } from 'preact'
-import Portal from 'preact-portal'
+import React, { Component } from 'react'
+import { Modal } from 'antd'
 import IconButton from '../icon-button'
 import { Close } from '../icons'
 
@@ -18,11 +18,14 @@ export default class ListBrowser extends Component {
 
   onSearchChange = ev => this.setState({searching: ev.target.value})
 
-  render ({title, ItemDisplay, items}, {searching, search}) {
+  render () {
+		const {title, ItemDisplay, items} = this.props
+		const {searching, search} = this.state
+
     const found = items.filter(matches(search))
 
     return (
-      <Portal into='body'>
+      <Modal>
         <div className='list-browser'>
           <div className='title'>
             {title}
@@ -46,7 +49,7 @@ export default class ListBrowser extends Component {
           </div>
 
         </div>
-      </Portal>
+      </Modal>
     )
   }
 }

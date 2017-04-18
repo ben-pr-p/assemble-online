@@ -1,8 +1,8 @@
-import { h, Component } from 'preact'
+import React, { Component } from 'react'
 import { Create, Mail, Github } from '../common/icons'
 import IconButton from '../common/icon-button'
 import randomString from 'random-string'
-import Button from '../common/button'
+import { Button, Input } from 'antd'
 import TextInput from '../common/text-input'
 import Blog from '../common/blog'
 
@@ -20,17 +20,25 @@ const encodeName = name =>
   encodeURI(name.replace(/ /g, '-').replace(/[\\.']/g, '').toLowerCase())
 
 export default class Portal extends Component {
+  state = {
+    hintidx: 0,
+    newRoom: null
+  }
+
   enterRoom = (room) =>
     () => window.location.pathname = '/room/' + room
 
   onNewRoomChange = (ev) =>
     this.setState({
-      newRoomUrl: encodeName(ev.target.value)
+      newRoom: encodeName(ev.target.value)
     })
 
   createAndEnterRoom = () => this.enterRoom(this.state.newRoom ? this.state.newRoom : randomString({numeric: false}))()
 
-  render (props, {rooms, hintidx, newRoomUrl}) {
+  render () {
+		const props = this.props
+		const {rooms, hintidx, newRoomUrl} = this.state
+
     return (
       <div className='page'>
         <div className='header-bar'>
@@ -65,17 +73,19 @@ export default class Portal extends Component {
 
         <div className='room-status-container' >
           <h3>Create Your Own Room</h3>
-          <TextInput label='What would you like to name your room?'
+          <Input label='What would you like to name your room?'
             placeholder={hinttextoptions[hintidx]}
-            onInput={this.onNewRoomChange}
+            onChange={this.onNewRoomChange}
+            onPressEnter={this.createAndEnterRoom}
             maxLength='30'
           />
 
           {/* If they're typing in a new room */}
           {(newRoomUrl && newRoomUrl != '') && <span>{`https://www.assemble.live/room/${newRoomUrl}`}</span>}
           <br />
-          <Button text='Create Room' onClick={this.createAndEnterRoom} >
-            <Create />
+          <br />
+          <Button type='primary' onClick={this.createAndEnterRoom}>
+            Create Room
           </Button>
 
           <br/>
@@ -92,7 +102,7 @@ export default class Portal extends Component {
   renderRooms = (rooms) => Object.keys(rooms).length != 0
     ? Object.keys(rooms).map(r => (
         <div key={r} className='room-list-item'>
-          <div className='enter-icon-container' onClick={this.enterRoom(r)} >
+          <div className='enter-icon-container' onClick={this.createAndEnterRoom} >
             <Enter className='enter-icon' />
           </div>
           <div className='text-container'>

@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import { Checkpoint, Close } from '../../common/icons'
 import IconButton from '../../common/icon-button'
 import Sock from '../../lib/sock'
@@ -34,7 +34,10 @@ export default class CheckpointBlob extends Component {
 
   delete = () => Sock.emit('checkpoint-destroy', this.props.checkpoint)
 
-  render ({checkpoint, translate}, {loc}) {
+  render () {
+		const {checkpoint, translate} = this.props
+		const {loc} = this.state
+
     const { id, members, color, name } = checkpoint
 
     let [ x, y ] = loc

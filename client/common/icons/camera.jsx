@@ -1,8 +1,10 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import IconCore from './icon-core'
 
 export default class Camera extends Component {
-  render (props, state) {
+  render () {
+		const props = this.props
+
     return (
       <IconCore {...props} >
         <circle cx="12" cy="12" r="3.2"/>

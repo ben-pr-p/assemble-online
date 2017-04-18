@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import Sock from '../../lib/sock'
 import Updates from '../../lib/updates'
 import { ToPeers, FromPeers } from '../../lib/emitters'
@@ -139,7 +139,9 @@ export default class Connection extends Component {
 
   setRef = ref => this.vidEl = ref
 
-  render ({partnerId, localStream}) {
+  render () {
+    const {partnerId, localStream} = this.props
+  
     const showVideo = this.isMe && localStream && localStream.getVideoTracks().length > 0
 
     return (

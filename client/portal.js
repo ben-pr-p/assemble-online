@@ -1,4 +1,5 @@
-import { h, render } from 'preact'
+import React from 'react'
+import { render } from 'react-dom'
 import Portal from './portal/main'
 
 window.onload = () => {

@@ -8,7 +8,9 @@ const dest = './build'
 function generate (stylname) {
   return function () {
     return gulp.src([`./client/${stylname}`])
-      .pipe(stylus())
+      .pipe(stylus({
+        'include css': true
+      }))
       .on('error', handleErrors)
       .pipe(gulp.dest(dest))
   }

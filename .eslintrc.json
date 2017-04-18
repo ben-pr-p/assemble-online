@@ -37,7 +37,11 @@
       "never"
     ],
     "no-unused-vars": [
-      0
+      1
+    ],
+    "object-curly-spacing": [
+      "error",
+      "always"
     ]
   }
 }

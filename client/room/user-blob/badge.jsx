@@ -1,8 +1,10 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import { icons } from '../common/response-options/response-options'
 
 export default class Badge extends Component {
-  render ({x, y, user, r}) {
+  render () {
+    const {x, y, user, r} = this.props
+
     return (
       <g transform={`translate(${x+(r/2)},${y+(r/2)})`} >
         {user.badge

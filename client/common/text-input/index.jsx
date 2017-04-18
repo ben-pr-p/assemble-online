@@ -1,7 +1,9 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 
 export default class TextInput extends Component {
-  render ({label, ...other}) {
+  render () {
+    const {label, ...other} = this.props
+
     return (
       <form className='text-input-form'>
         {label && <label className='text-input-label'> {label} </label>}

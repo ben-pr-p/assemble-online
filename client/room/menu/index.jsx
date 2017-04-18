@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import Sock from '../../lib/sock'
 import BugReport from './bug-report'
 import EditUser from './edit-user'
@@ -89,10 +89,12 @@ export default class Menu extends Component {
   closeCheckpointBrowse = () => this.setState({checkpointBrowse: false})
   closeUserBrowse = () => this.setState({userBrowse: false})
 
-  render ({me, users, checkpoints}, {
-    open, editingUser, bugReport, userBrowse, checkpointBrowse,
-    newCheckpointForm
-  }) {
+  render () {
+    const { me, users, checkpoints } = this.props
+    const {
+      open, editingUser, bugReport, userBrowse, checkpointBrowse, newCheckpointForm
+    } = this.state
+
     return (
       <div className={`menu`}>
         <IconButton onClick={this.toggleOpen}>

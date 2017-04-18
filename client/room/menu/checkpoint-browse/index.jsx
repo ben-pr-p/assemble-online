@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import ListBrowser from '../../../common/list-browser'
 import Updates from '../../../lib/updates'
 

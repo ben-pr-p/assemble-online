@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import { MicOn, MicOff, Run, VideoOn, VideoOff } from '../../common/icons'
 import IconButton from '../../common/icon-button'
 import Sock from '../../lib/sock'
@@ -24,7 +24,9 @@ export default class Controls extends Component {
     away: ev => this.toggleCore(ev, 'away')
   }
 
-  render ({me, audio, video, away}) {
+  render () {
+    const {me, audio, video, away} = this.props
+
     return (
       <div className='controls'>
         <div className='audio'>

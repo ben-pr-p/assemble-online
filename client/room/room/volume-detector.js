@@ -47,4 +47,4 @@ const detach = () => {
   }
 }
 
-export default {register, detach}
+export default { register, detach }

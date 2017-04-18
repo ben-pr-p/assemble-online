@@ -8,6 +8,6 @@ const dest = './build/workers'
 
 gulp.task('workers', () => {
   return vfs.src('./client/workers/foreman.js')
-    .pipe(bro({transform: babelify}))
+    .pipe(bro({ transform: babelify }))
     .pipe(gulp.dest(dest))
 })

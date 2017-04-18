@@ -1,6 +1,6 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import Dialog from '../../../common/dialog'
-import Button from '../../../common/button'
+import { Button } from 'antd'
 import TextInput from '../../../common/text-input'
 import store from 'store'
 import { Bus } from '../../../lib/emitters'

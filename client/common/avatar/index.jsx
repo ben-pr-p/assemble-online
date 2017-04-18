@@ -1,14 +1,10 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import joinClass from '../join-class'
 import { Camera } from '../icons'
 
 export default class Avatar extends Component {
   state = {
     failedImg: false
-  }
-
-  shouldComponentUpdate () {
-    this.state.failedImg = false
   }
 
   receiveRef = (ref) => this.img = ref
@@ -19,7 +15,10 @@ export default class Avatar extends Component {
     ? this.setState({failedImg: true})
     : null
 
-  render ({form, src, letters, className, ...others}, {failedImg}) {
+  render () {
+		const {form, src, letters, className, ...others} = this.props
+		const {failedImg} = this.state
+
     const imageSuccess = src && !failedImg
     const Src = src
 

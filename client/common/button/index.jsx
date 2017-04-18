@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 
 export default class Button {
   baseClasses = ['button']
@@ -12,7 +12,9 @@ export default class Button {
 
   joinClass = (input) => this.computeClass(input).join(' ')
 
-  render ({onClick, href, className, icon, text}) {
+  render () {
+    const {onClick, href, className, icon, text} = this.props
+
     return (typeof href == 'string')
       ? <a {...{href, className: this.joinClass(className)}}>
           {icon}

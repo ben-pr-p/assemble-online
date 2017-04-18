@@ -1,4 +1,4 @@
-import { h, Component } from 'preact'
+import React, { Component } from 'react'
 import { ToPeers, FromPeers } from '../../../lib/emitters'
 import Sock from '../../../lib/sock'
 import IconButton from '../../../common/icon-button'
@@ -125,7 +125,10 @@ export default WrappedComponent =>
 
     suicide = () => this.props.delete(this.kind)
 
-    render ({me}, {owner, ...state}) {
+    render () {
+		const {me} = this.props
+		const {owner, ...state} = this.state
+
       const toPass = Object.assign({
         me: me,
         update: this.update

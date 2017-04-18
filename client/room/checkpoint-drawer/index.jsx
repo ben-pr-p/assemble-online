@@ -1,7 +1,7 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import WidgetComponents from './widgets'
 import { Build, Close, Left, Right } from '../../common/icons'
-import Button from '../../common/button'
+import { Button } from 'antd'
 import Dialog from '../../common/dialog'
 import IconButton from '../../common/icon-button'
 import wildcardify from 'wildcards'
@@ -80,7 +80,10 @@ export default class CheckpointDrawer extends Component {
     })
   }
 
-  render ({checkpoint}, {widgets, widgetsSelector, tempName, deleteModal, collapsed}) {
+  render () {
+		const {checkpoint} = this.props
+		const {widgets, widgetsSelector, tempName, deleteModal, collapsed} = this.state
+
     const {name, members} = checkpoint
 
     if (collapsed) return this.renderCollapsed(checkpoint, widgets)
@@ -92,9 +95,9 @@ export default class CheckpointDrawer extends Component {
         {deleteModal && (
           <Dialog title='Are you sure you want to delete the checkpoint?'
             actions={[(
-              <Button text='Cancel' onClick={this.closeDeleteModal} />
+              <Button type='secondary' onClick={this.closeDeleteModal}>Cancel</Button>
             ),(
-              <Button text='Done' onClick={this.doDelete} />
+              <Button type='primary' onClick={this.doDelete} />
             )]}
           >
             All of the checkpoints data will be lost forever.

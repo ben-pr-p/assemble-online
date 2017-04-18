@@ -211,7 +211,7 @@ const createChrome = n => ({
         'use-fake-device-for-media-stream',
         'use-fake-ui-for-media-stream',
         'use-file-for-fake-video-capture=./fixtures/sign_irene_qcif.y4m'
-      ]}
+      ] }
     }
   }
 })

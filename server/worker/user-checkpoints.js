@@ -21,7 +21,7 @@ const determineLeaveJoins = (uid, [checks, loc]) => {
     }
   })
 
-  return {join: toJoin, leave: toLeave}
+  return { join: toJoin, leave: toLeave }
 }
 
 const doLeaveJoins = (redisRoom, uid, should) => new Promise((resolve, reject) => {
@@ -36,7 +36,7 @@ const doLeaveJoins = (redisRoom, uid, should) => new Promise((resolve, reject) =
   .catch(reject)
 })
 
-module.exports = ({room, uid}, queue) => new Promise((resolve, reject) => {
+module.exports = ({ room, uid }, queue) => new Promise((resolve, reject) => {
   const redisRoom = redis.room(room)
 
   Promise.all([
@@ -50,7 +50,7 @@ module.exports = ({room, uid}, queue) => new Promise((resolve, reject) => {
 
       redisRoom.checkpoints.getAll()
       .then(data => {
-        queue.create('update', {event, data}).save()
+        queue.create('update', { event, data }).save()
         resolve(null)
       })
       .catch(reject)

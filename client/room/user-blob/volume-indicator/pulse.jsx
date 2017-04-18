@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import Updates from '../../../lib/updates'
 import {MAX_VOLUME, NUM_CIRCLES, BORDER_THICKNESS} from './vol-consts'
 
@@ -30,7 +30,9 @@ export default class Pulse extends Component {
     prev.classList.remove('animatable')
   }
 
-  render ({x, y, d, user, status}) {
+  render () {
+    const { x, y, d, user, status } = this.props
+
     return (
       <div className='volume-conatiners'>
         {new Array(NUM_CIRCLES).fill(null).map((nil, idx) => (

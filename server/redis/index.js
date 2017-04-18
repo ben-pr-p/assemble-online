@@ -48,7 +48,7 @@ module.exports = {
               .multi()
               .sadd(`${room}:users`, uid)
               .hmset(key, existing
-                ? Object.assign(user, {color: existing.color})
+                ? Object.assign(user, { color: existing.color })
                 : user
               )
               .exec(callbackify(resolve, reject))
@@ -142,12 +142,12 @@ module.exports = {
           .exec((err, cps) => err
             ? reject(err)
             : resolve(cps.map(cp => ({
-                  id: cp.id,
-                  name: cp.name,
-                  color: cp.color,
-                  members: JSON.parse(cp.members),
-                  loc: JSON.parse(cp.loc)
-                })
+              id: cp.id,
+              name: cp.name,
+              color: cp.color,
+              members: JSON.parse(cp.members),
+              loc: JSON.parse(cp.loc)
+            })
               ))
           )
         )
@@ -199,12 +199,12 @@ module.exports = {
         client.hgetall(keyify('checks')(cid), (err, cp) => err
           ? reject(err)
           : resolve({
-              id: cp.id,
-              name: cp.name,
-              color: cp.color,
-              members: JSON.parse(cp.members),
-              loc: JSON.parse(cp.loc)
-            })
+            id: cp.id,
+            name: cp.name,
+            color: cp.color,
+            members: JSON.parse(cp.members),
+            loc: JSON.parse(cp.loc)
+          })
         )
       }),
 

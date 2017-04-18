@@ -63,7 +63,7 @@ module.exports = (io, nsp, name) => {
             ? room.locations.set(uid, calcDimensions(allUsers.length).map(d => d / 2))
             : Promise.resolve(null)
           )
-          .then(rez => queue.create('location-change', {room: name, uid: uid}).save())
+          .then(rez => queue.create('location-change', { room: name, uid: uid }).save())
           .catch(panic)
         })
         .catch(panic)
@@ -79,7 +79,7 @@ module.exports = (io, nsp, name) => {
         .then(ignore)
         .catch(panic)
 
-      queue.create('location-change', {room: name, uid: uid}).save()
+      queue.create('location-change', { room: name, uid: uid }).save()
     })
 
     socket.on('volume', vol => {
@@ -100,7 +100,7 @@ module.exports = (io, nsp, name) => {
             .then(all => {
               log('Requested add checkpoint %j', checkpoint)
               log('Have checkpoints %j', all)
-              queue.create('checkpoint-change', {room: name, cid: created.id}).save()
+              queue.create('checkpoint-change', { room: name, cid: created.id }).save()
               nsp.emit('checkpoints', all)
             })
             .catch(panic)
@@ -116,7 +116,7 @@ module.exports = (io, nsp, name) => {
             .getAll()
             .then(all => {
               log('Have checkpoints %j', all)
-              queue.create('checkpoint-change', {room: name, cid: checkpoint.id}).save()
+              queue.create('checkpoint-change', { room: name, cid: checkpoint.id }).save()
               nsp.emit('checkpoints', all)
             })
             .catch(panic)
@@ -124,7 +124,7 @@ module.exports = (io, nsp, name) => {
         .catch(panic)
     )
 
-    socket.on('checkpoint-move', ({id, loc}) =>
+    socket.on('checkpoint-move', ({ id, loc }) =>
       room.checkpoints
         .moveTo(id, loc)
         .then(() =>
@@ -132,7 +132,7 @@ module.exports = (io, nsp, name) => {
             .getAll()
             .then(all => {
               log('Have checkpoints %j', all)
-              queue.create('checkpoint-change', {room: name, cid: id}).save()
+              queue.create('checkpoint-change', { room: name, cid: id }).save()
               nsp.emit('checkpoints', all)
             })
             .catch(panic)
@@ -230,7 +230,7 @@ module.exports = (io, nsp, name) => {
   }
 
   queue.process('update', (job, done) => {
-    const {event, data} = job.data
+    const { event, data } = job.data
     log('Emitting %s: %j', event, data)
     nsp.emit(event, data)
     done()

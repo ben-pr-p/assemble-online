@@ -1,10 +1,12 @@
 import { Component, h, render } from 'preact'
-import Portal from 'preact-portal'
+import { Modal } from 'antd'
 
 export default class Dialog extends Component {
-  render ({title, children, actions}) {
+  render () {
+    const {title, children, actions} = this.props
+
     return (
-      <Portal into='body'>
+      <Modal>
         <div className='whole-screen'>
           <div className='dialog'>
             <h1>
@@ -18,7 +20,7 @@ export default class Dialog extends Component {
             </div>
           </div>
         </div>
-      </Portal>
+      </Modal>
     )
   }
 }

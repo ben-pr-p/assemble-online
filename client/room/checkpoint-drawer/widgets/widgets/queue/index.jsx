@@ -1,6 +1,6 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import Avatar from '../../../../../common/avatar'
-import Button from '../../../../../common/button'
+import { Button } from 'antd'
 import Sock from '../../../../../lib/sock'
 import { Queue } from '../../../../../common/icons'
 
@@ -41,7 +41,9 @@ export default class QueueWidget extends Component {
     }
   }
 
-  render ({speaking, queue, me}) {
+  render () {
+    const {speaking, queue, me} = this.props
+
     return (
       <div className='queue'>
         <div className='speaking-box'>

@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import store from 'store'
 import Menu from './menu'
 import Room from './room'
@@ -46,7 +46,10 @@ export default class Main extends Component {
     this.forceUpdate()
   }
 
-  render (props, { me, users, checkpoints}) {
+  render () {
+		const props = this.props
+		const { me, users, checkpoints} = this.state
+
     const { clearLocal } = this
     const cp = checkpoints.filter(c => c.members.includes(Sock.id))[0]
 
