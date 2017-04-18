@@ -5,6 +5,7 @@
 * No collisions
 * Video chat
 * Quiet shutoff
+* Safari error messages
 
 # Questions
 
