@@ -1,4 +1,14 @@
 # Immediate
+* Antd everything
+  * Antd each modal
+    * Bug report working (saving and mongo)
+    * New checkpoint working
+    * Browse checkpoints working and antd
+    * Edit me working and antd
+    * Browse users working and antd
+* Feedback on connection state
+  * Popovers on change
+* Fix bugs
 * Mute button working
 * Audio / RTC working for any number of participants
 * Trigger GC on error

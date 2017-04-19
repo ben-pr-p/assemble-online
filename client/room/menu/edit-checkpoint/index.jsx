@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import Dialog from '../../../common/dialog'
-import { Button } from 'antd'
+import { Button, Modal } from 'antd'
 import TextInput from '../../../common/text-input'
 import store from 'store'
 import { Bus } from '../../../lib/emitters'
@@ -29,33 +28,28 @@ export default class NewCheckpointModal extends Component {
     this.props.closeModal()
   }
 
-  cancel = () =>
-    this.props.closeModal({shouldSave: null})
+  cancel = () => this.props.close()
 
   render () {
     const fields = Object.keys(this.state).map(this.renderField)
 
-    const actions = [
-      (<Button key='cancel' text='Cancel' onClick={this.cancel} />),
-      (<Button className='submit' key='ok' text='Get Started' onClick={this.submit} />)
-    ]
-
     return (
-      <Dialog title='Create a New Checkpoint'
-        actions={actions}
+      <Modal title='Create a New Checkpoint' visible={true}
+        onCancel={this.cancel}
+        onOk={this.submit} okText='Get Started'
       >
-        <div className='fields-container'>
-          {fields}
-        </div>
-      </Dialog>
+        {fields}
+      </Modal>
     )
   }
 
   renderField = (attr) => (
-    <TextInput id={attr} key={attr}
-      value={this.state[attr]}
-      onInput={this.onChange}
-      label={labelMap[attr]}
-    />
+    <div>
+      {labelMap[attr]}
+      <TextInput id={attr} key={attr}
+        value={this.state[attr]}
+        onInput={this.onChange}
+      />
+    </div>
   )
 }

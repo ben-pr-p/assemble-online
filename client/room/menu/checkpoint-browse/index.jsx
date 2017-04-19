@@ -18,7 +18,9 @@ class CheckpointItem extends Component {
 }
 
 export default class CheckpointBrowser extends Component {
-  render ({checkpoints}) {
+  render () {
+    const { checkpoints } = this.props
+  
     return (
       <ListBrowser
         title='Checkpoints'

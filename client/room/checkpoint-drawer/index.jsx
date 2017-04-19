@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import WidgetComponents from './widgets'
 import { Build, Close, Left, Right } from '../../common/icons'
-import { Button } from 'antd'
-import Dialog from '../../common/dialog'
+import { Button, Modal } from 'antd'
 import IconButton from '../../common/icon-button'
 import wildcardify from 'wildcards'
 import { FromPeers } from '../../lib/emitters'
@@ -93,15 +92,12 @@ export default class CheckpointDrawer extends Component {
         <IconButton className='cp-collapse-toggle' onClick={this.collapse}> <Right /> </IconButton>
 
         {deleteModal && (
-          <Dialog title='Are you sure you want to delete the checkpoint?'
-            actions={[(
-              <Button type='secondary' onClick={this.closeDeleteModal}>Cancel</Button>
-            ),(
-              <Button type='primary' onClick={this.doDelete} />
-            )]}
+          <Modal title='Are you sure you want to delete the checkpoint?'
+            onCancel={this.closeDeleteModal}
+            onOk={this.doDelete} okText='Delete'
           >
-            All of the checkpoints data will be lost forever.
-          </Dialog>
+            All of the checkpoint's data will be lost forever.
+          </Modal>
         )}
 
         <div className='cp-title'>

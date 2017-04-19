@@ -25,7 +25,7 @@ export default class ListBrowser extends Component {
     const found = items.filter(matches(search))
 
     return (
-      <Modal>
+      <Modal visible={true} >
         <div className='list-browser'>
           <div className='title'>
             {title}

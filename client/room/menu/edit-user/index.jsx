@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import Webcam from 'webcamjs'
-import Dialog from '../../../common/dialog'
 import Avatar from '../../../common/avatar'
-import { Button } from 'antd'
+import { Button, Modal } from 'antd'
 import TextInput from '../../../common/text-input'
 import store from 'store'
 import randomString from 'random-string'
@@ -85,13 +84,11 @@ export default class NewUserModal extends Component {
     ))
 
     return (
-      <Dialog title='Create a New Profile'
-        actions={actions}
-      >
+      <Modal title='Create a New Profile' footer={actions} visible={true} >
         <div className='fields-container'>
           {fields}
         </div>
-      </Dialog>
+      </Modal>
     )
   }
 
