@@ -33,11 +33,11 @@ export default class Connection extends Component {
         this.vidEl.srcObject = localStream
         this.vidEl.volume = 0
       }
-    }
 
-    Updates.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
-    ToPeers.on(`to-${partnerId}`, this.sendData)
-    ToPeers.on('to-all', this.sendData)
+      Updates.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
+      ToPeers.on(`to-${partnerId}`, this.sendData)
+      ToPeers.on('to-all', this.sendData)
+    }
   }
 
   componentWillReceiveProps ({ localStream }) {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import joinClass from '../join-class'
-import { Camera } from '../icons'
+import { Camera, Question } from '../icons'
 
 export default class Avatar extends Component {
   state = {
@@ -12,30 +12,31 @@ export default class Avatar extends Component {
   componentDidUpdate () { this.checkFailedImg() }
 
   checkFailedImg = () => this.img && !this.img.complete
-    ? this.setState({failedImg: true})
+    ? this.setState({ failedImg: true })
     : null
 
   render () {
-		const {form, src, letters, className, ...others} = this.props
-		const {failedImg} = this.state
+    const { form, src, letters, className, questionMark, ...others } = this.props
+    const { failedImg } = this.state
 
     const imageSuccess = src && !failedImg
     const Src = src
 
     return (
       <div {...{
-          ...others,
-          className: joinClass(className, `avatar ${!form ? 'blob' : 'form'}`),
-          style: {backgroundImage: imageSuccess ? `url("${src}")` : 'none'}
-        }}
-      >
+        ...others,
+        className: joinClass(className, `avatar ${!form ? 'blob' : 'form'}`),
+        style: { backgroundImage: imageSuccess ? `url("${src}")` : 'none' }
+      }}>
         {imageSuccess
-          ? ( <img src={src} ref={this.receiveRef} style={{display: 'none'}} /> )
+          ? ( <img src={src} ref={this.receiveRef} style={{ display: 'none' }} /> )
           : (
               <span className='avatar-letters'>
                 {(letters && letters != '')
                   ? Array.isArray(letters) ? letters.join('') : letters.toString()
-                  : <Camera/>
+                  : questionMark
+                    ? <Question />
+                    : <Camera/>
                 }
               </span>
             )

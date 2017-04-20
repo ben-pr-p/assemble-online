@@ -98,7 +98,7 @@ export default class CheckpointDrawer extends Component {
       <div className='cp-drawer'>
         {deleteModal && (
           <Modal title='Are you sure you want to delete the checkpoint?'
-            onCancel={this.closeDeleteModal}
+            onCancel={this.closeDeleteModal} visible={true}
             onOk={this.doDelete} okText='Delete'
           >
             All of the checkpoint's data will be lost forever.

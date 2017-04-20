@@ -3,6 +3,7 @@ import { ToPeers, FromPeers } from '../../../lib/emitters'
 import Sock from '../../../lib/sock'
 import IconButton from '../../../common/icon-button'
 import { Close } from '../../../common/icons'
+import { Card } from 'antd'
 
 export default WrappedComponent =>
   class extends Component {
@@ -51,7 +52,7 @@ export default WrappedComponent =>
       FromPeers.off(this.eventPrefix)
     }
 
-    componentWillReceiveProps ({members}) {
+    componentWillReceiveProps ({ members }) {
       /*
        * Listen to changes in members for 2 purposes
        * 1) Check and set if the owner is dead
@@ -87,13 +88,13 @@ export default WrappedComponent =>
         this.state.owner = null
     }
 
-   declareOwnership = () => {
-     this.state.owner = Sock.id
-     this.sendToAll(this.state)
-   }
+    declareOwnership = () => {
+      this.state.owner = Sock.id
+      this.sendToAll(this.state)
+    }
 
     sendToAll = data =>
-      ToPeers.emit(`to-all`, {
+      ToPeers.emit('to-all', {
         event: this.eventPrefix(),
         data
       })
@@ -117,7 +118,7 @@ export default WrappedComponent =>
       })
 
     updateIfAnarchy = change =>
-      this.updateIfBoss(Object.assign(change, {owner: this.props.me.id}))
+      this.updateIfBoss(Object.assign(change, { owner: this.props.me.id }))
 
     calcTransform = (pos, translate) => this.spatial
       ? `translate(${pos.x + translate.x}px, ${pos.y + translate.y}px)`
@@ -126,8 +127,8 @@ export default WrappedComponent =>
     suicide = () => this.props.delete(this.kind)
 
     render () {
-		const {me} = this.props
-		const {owner, ...state} = this.state
+      const { me } = this.props
+      const { owner, ...state } = this.state
 
       const toPass = Object.assign({
         me: me,
@@ -135,15 +136,16 @@ export default WrappedComponent =>
       }, state)
 
       return (
-        <div className='widget-border'>
-          <div className='widget-header'>
-            {this.kind}
+        <Card className='widget-border'
+          title={this.kind}
+          extra={(
             <IconButton onClick={this.suicide}>
               <Close />
             </IconButton>
-          </div>
+          )}
+        >
           <WrappedComponent {...toPass} />
-        </div>
+        </Card>
       )
     }
   }

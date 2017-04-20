@@ -5,7 +5,7 @@ import Sock from '../../../../../lib/sock'
 import { Queue } from '../../../../../common/icons'
 
 export default class QueueWidget extends Component {
-  static icon = (<Queue style={{transform: 'scale(2)'}} />)
+  static icon = (<Queue style={{ transform: 'scale(2)' }} />)
   static kind = 'Queue'
   static initial = {
     speaking: null,
@@ -30,31 +30,33 @@ export default class QueueWidget extends Component {
     if (!this.alreadyInQueue()) {
       const copy = this.props.queue.slice()
 
-      const fullme = Object.assign(this.props.me, {id: Sock.id})
+      const fullme = Object.assign(this.props.me, { id: Sock.id })
       copy.push(fullme)
-      const update = {queue: copy}
+      const update = { queue: copy }
 
       if (this.props.speaking == null)
-        this.props.update({speaking: fullme})
+        this.props.update({ speaking: fullme })
       else
-        this.props.update({queue: copy})
+        this.props.update({ queue: copy })
     }
   }
 
   render () {
-    const {speaking, queue, me} = this.props
+    const { speaking, queue, me } = this.props
 
     return (
       <div className='queue'>
         <div className='speaking-box'>
           <div className='avatar-container'>
-            <Avatar form={true} src={speaking ? speaking.avatar : null} />
+            <Avatar form={true} src={speaking ? speaking.avatar : null}
+              questionMark={true}
+            />
           </div>
           <div className='name-volume-container'>
             <div className='name'>
               {speaking
                 ? `${speaking.name}'s turn!`
-                : `No one is speaking!`
+                : 'No one is speaking!'
               }
             </div>
             <div className='volume'>
@@ -68,15 +70,19 @@ export default class QueueWidget extends Component {
             <Button
               className='queue-button add-me'
               onClick={this.addMeToQueue}
-              text='Add Me'
-            />
+              type='primary'
+            >
+              Add Me
+            </Button>
           )}
           {(speaking && speaking.id == me.id) && (
             <Button
+              type='primary'
               className='queue-button done-speaking'
               onClick={this.endTurn}
-              text='Done'
-            />
+            >
+              Done
+            </Button>
           )}
         </div>
 

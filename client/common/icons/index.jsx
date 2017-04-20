@@ -16,6 +16,7 @@ import NewCheckpoint from './new-checkpoint'
 import Open from './open'
 import People from './people'
 import Person from './person'
+import Question from './question'
 import Queue from './queue'
 import Right from './right'
 import Run from './run'
@@ -44,6 +45,7 @@ export {
   Open,
   People,
   Person,
+  Question,
   Queue,
   Right,
   Run,
