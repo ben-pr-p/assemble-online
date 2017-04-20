@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import WidgetComponents from './widgets'
 import { Build, Close, Left, Right } from '../../common/icons'
-import { Button, Modal } from 'antd'
+import { Button, Input, Layout, Modal, Tooltip } from 'antd'
 import IconButton from '../../common/icon-button'
 import wildcardify from 'wildcards'
 import { FromPeers } from '../../lib/emitters'
 import Sock from '../../lib/sock'
+
+const { Header, Content } = Layout
 
 export default class CheckpointDrawer extends Component {
   state = {
@@ -17,11 +19,16 @@ export default class CheckpointDrawer extends Component {
 
   editName = () => this.setState({ tempName: this.props.checkpoint.name })
   handleNameInput = ev => this.setState({ tempName: ev.target.value })
-  onNameInputPress = ev => ev.which == 13
-    ? Sock.emit('checkpoint-edit', { id: this.props.checkpoint.id, name: this.state.tempName })
-    : ev.which == 27
-      ? this.setState({ tempName: false })
-      : null
+  onPressEnter = ev => {
+    Sock.emit('checkpoint-edit', {
+      id: this.props.checkpoint.id,
+      name: this.state.tempName,
+    })
+
+    this.setState({ tempName: false })
+  }
+
+  onBlur = () => this.setState({ tempName: false })
 
   addWidget = widget => this.setState({
     widgets: this.state.widgets.concat([widget])
@@ -36,27 +43,27 @@ export default class CheckpointDrawer extends Component {
     widgets: this.state.widgets.filter(w => w.kind != kind)
   })
 
-  deleteModal = () => this.setState({deleteModal: true})
-  closeDeleteModal = () => this.setState({deleteModal: false})
+  deleteModal = () => this.setState({ deleteModal: true })
+  closeDeleteModal = () => this.setState({ deleteModal: false })
   doDelete = () => {
     Sock.emit('checkpoint-destroy', this.props.checkpoint.id)
-    this.setState({deleteModal: false})
+    this.setState({ deleteModal: false })
   }
 
   openWidgetDrawer = ev => {
-    this.setState({widgetsSelector: true})
+    this.setState({ widgetsSelector: true })
     setTimeout(() => document.addEventListener('click', this.collapseWidgetDrawer), 1)
   }
 
   collapseWidgetDrawer = ev => {
     document.removeEventListener('click', this.collapseWidgetDrawer)
-    this.setState({widgetsSelector: false})
+    this.setState({ widgetsSelector: false })
   }
 
-  uncollapse = () => this.setState({collapsed: false})
+  uncollapse = () => this.setState({ collapsed: false })
   collapse = ev => {
     ev.stopPropagation()
-    this.setState({collapsed: true})
+    this.setState({ collapsed: true })
   }
 
   componentWillMount () {
@@ -80,17 +87,15 @@ export default class CheckpointDrawer extends Component {
   }
 
   render () {
-		const {checkpoint} = this.props
-		const {widgets, widgetsSelector, tempName, deleteModal, collapsed} = this.state
+    const { checkpoint } = this.props
+    const { widgets, widgetsSelector, tempName, deleteModal, collapsed } = this.state
 
-    const {name, members} = checkpoint
+    const { name, members } = checkpoint
 
     if (collapsed) return this.renderCollapsed(checkpoint, widgets)
 
     return (
       <div className='cp-drawer'>
-        <IconButton className='cp-collapse-toggle' onClick={this.collapse}> <Right /> </IconButton>
-
         {deleteModal && (
           <Modal title='Are you sure you want to delete the checkpoint?'
             onCancel={this.closeDeleteModal}
@@ -100,35 +105,47 @@ export default class CheckpointDrawer extends Component {
           </Modal>
         )}
 
-        <div className='cp-title'>
-          <IconButton id='widget-edit'
-            onClick={widgetsSelector ? this.collapseWidgetDrawer : this.openWidgetDrawer}
-          >
-            <Build/>
-          </IconButton>
-          <div className='cp-title-text' onClick={this.editName}>
-            {!tempName
-              ? name
-              : <input value={tempName}
-                  onChange={this.handleNameInput}
-                  onKeyPress={this.onNameInputPress}
-                />
-            }
-          </div>
-          <IconButton style={{marginLeft: 'auto'}} onClick={this.deleteModal}>
-            <Close />
-          </IconButton>
-        </div>
+        <Header className='cp-header'>
+          <Tooltip placement='bottom' title='Collapse Drawer'>
+            <IconButton className='cp-header-icon' onClick={this.collapse} >
+              <Right />
+            </IconButton>
+          </Tooltip>
+          <Tooltip placement='bottom' title='Add Widget'>
+            <IconButton className='cp-header-icon'
+              onClick={widgetsSelector ? this.collapseWidgetDrawer : this.openWidgetDrawer}
+            >
+              <Build/>
+            </IconButton>
+          </Tooltip>
+          {!tempName
+            ? (
+                <Tooltip placement='bottomLeft' title='Edit Name'>
+                  <h3 onClick={this.editName}> {name} </h3>
+                </Tooltip>
+              )
+            : <Input value={tempName}
+                onBlur={this.onBlur}
+                onChange={this.handleNameInput}
+                onPressEnter={this.onPressEnter}
+              />
+          }
+          <Tooltip placement='bottom' title='Delete Checkpoint'>
+            <IconButton className='cp-header-icon' onClick={this.deleteModal}>
+              <Close />
+            </IconButton>
+          </Tooltip>
+        </Header>
 
-        <div className='cp-body'>
+        <Content style={{ padding: 10 }}>
           {widgets.map(w => this.renderWidget(w))}
-        </div>
+        </Content>
 
         {widgetsSelector && (
           <div className='cp-widget-drawer'>
 
             {WidgetComponents.map(wc => (
-              <div id={wc.kind} className='widget-preview'
+              <div id={wc.kind} key={wc.kind} className='widget-preview'
                 onClick={this.wrapAddWidget(wc)}
               >
                 <div className='widget-square'> {wc.icon} </div>
@@ -151,24 +168,26 @@ export default class CheckpointDrawer extends Component {
 
   _renderWidget = (W, initialState) =>
     <W
+      key={W.kind}
       me={this.props.me}
       initialState={initialState}
       members={this.props.checkpoint.members}
       delete={this.deleteWidget}
     />
 
-  renderCollapsed = ({name}, widgets) => (
-    <div className='cp-drawer' onClick={this.uncollapse} style={{width: 100}}>
-      <IconButton className='cp-collapse-toggle' onClick={this.uncollapse}> <Left /> </IconButton>
-      <div className='cp-title'> <div className='cp-title-text'>
-        {name}
-      </div> </div>
-      {widgets.map(w => (
-        <div className='widget-preview'>
-          <div className='widget-square'> {w.icon} </div>
-          <div className='widget-label'> {w.kind} </div>
-        </div>
-      ))}
+  renderCollapsed = ({ name }, widgets) => (
+    <div className='cp-drawer small' onClick={this.uncollapse}>
+      <Header className='cp-header'>
+        <h3> {name} </h3>
+      </Header>
+      <Content>
+        {widgets.map(w => (
+          <div className='widget-preview' key={w.kind} >
+            <div className='widget-square'> {w.icon} </div>
+            <div className='widget-label'> {w.kind} </div>
+          </div>
+        ))}
+      </Content>
     </div>
   )
 }

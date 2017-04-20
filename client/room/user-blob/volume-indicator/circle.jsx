@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Updates from '../../../lib/updates'
 import { MAX_VOLUME, BORDER_THICKNESS } from './vol-consts'
+import { Badge } from 'antd'
 
 export default class Circle extends Component {
   state = {
@@ -18,15 +19,18 @@ export default class Circle extends Component {
 
   handleVolume = raw => {
     const vol = Math.min(raw / MAX_VOLUME, 1)
-    this.setState({vol})
+    this.setState({ vol })
   }
 
   render () {
-		const { x, y, d, user, status } = this.props
-		const { vol, filler } = this.state
+    const { x, y, d, user, status } = this.props
+    const { vol, filler } = this.state
 
     return (
       <div className='volume-circle'>
+        <div className='badge-container'>
+          {this.renderStatusBadge()}
+        </div>
 
         <div className='spinner circle'
           style={{
@@ -75,4 +79,13 @@ export default class Circle extends Component {
   }
 
   calcRotate = vol => -45 + (vol * 360)
+  renderStatusBadge = () => {
+    const status = {
+      disconnected: 'default',
+      connecting: 'processing',
+      connected: 'success'
+    }[this.state.status]
+
+    return <Badge status={status} />
+  }
 }

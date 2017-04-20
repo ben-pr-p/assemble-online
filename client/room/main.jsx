@@ -60,8 +60,8 @@ export default class Main extends Component {
         width: cp ? '60%' : '100%'
       }}>
         {me && <Room {...{ me, users, checkpoints }} />}
-        <Menu {...{ me, users, checkpoints, clearLocal }} />
         {cp && <CheckpointDrawer me={me} checkpoint={cp} />}
+        <Menu {...{ me, users, checkpoints, clearLocal }} />
       </div>
     )
   }

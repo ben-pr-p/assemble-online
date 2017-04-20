@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Menu, Button } from 'antd'
+import { Menu, Button, Tooltip } from 'antd'
 import Sock from '../../lib/sock'
 import BugReport from './bug-report'
 import EditUser from './edit-user'
@@ -18,8 +18,7 @@ export default class MainMenu extends Component {
   config = {
     'File a Bug Report': {
       icon: Bug,
-      Component: BugReport,
-
+      Component: BugReport
     },
     'New Checkpoint': {
       icon: NewCheckpoint,
@@ -53,15 +52,18 @@ export default class MainMenu extends Component {
     const attrs = { me, users, checkpoints, close: this.close }
 
     return (
-      <div>
+      <div className='menu-container'>
         <Menu className='menu' theme='dark' mode='horizontal' onClick={this.allClicks}
           selectedKeys={[selected]}
         >
           {Object.keys(this.config).map(key => (
             <Menu.Item className='menu-item-antd' key={key} >
-              <div className='menu-item'>
-                {key}
-              </div>
+              <Tooltip placement='top' title={key}>
+                <div className='menu-item'>
+                  {this.renderComponent(this.config[key].icon)}
+                  <span> {key} </span>
+                </div>
+              </Tooltip>
             </Menu.Item>
           ))}
         </Menu>
@@ -74,10 +76,4 @@ export default class MainMenu extends Component {
   renderComponent = (Component, attrs) => {
     return <Component {...attrs} />
   }
-
-  renderWidget = (me, widget) => Array.isArray(widget)
-    ? this._renderWidget(me, widget[0], widget[1])
-    : this._renderWidget(me, widget, null)
-
-  _renderWidget = (me, W, initialState) => <W me={me} initialState={initialState} />
 }

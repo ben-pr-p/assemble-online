@@ -1,16 +1,35 @@
-.menu
+.menu-container
   position fixed
   width 100%
   bottom 0px
-  z-index 1000
-  display flex
 
-  .menu-item-antd
-    flex 1
-    text-align center
+  .menu
+    width 100%
+    z-index 1000
+    display flex
 
-    .menu-item
-      display flex
-      flex-direction column
-      align-items center
-      justify-content center
+    .menu-item-antd
+      flex 1
+      width 60px
+      text-align center
+
+      .menu-item
+        display flex
+        flex-direction row
+        align-items center
+        overflow-x hidden
+        height 50px
+
+        span
+          width 40%
+
+        .icon-core
+          margin-right 5px
+          color hsla(0,0%,100%,.67)
+          fill hsla(0,0%,100%,.67)
+
+.cp-drawer + .menu-container
+  width 60%
+
+.cp-drawer.small + .menu-container
+  width calc(100% - 100px)

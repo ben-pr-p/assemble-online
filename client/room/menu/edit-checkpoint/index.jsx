@@ -24,7 +24,7 @@ export default class NewCheckpointModal extends Component {
   submit = () => {
     const checkpoint = Object.assign({}, this.state)
     Updates.emit('checkpoint-new', checkpoint)
-    this.props.closeModal()
+    this.props.close()
   }
 
   cancel = () => this.props.close()

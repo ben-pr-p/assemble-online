@@ -1,7 +1,7 @@
-import { h } from 'preact'
+import React, { Component } from 'react'
 import IconCore from './icon-core'
 
-export default class Bug {
+export default class Bug extends Component {
   render (props) {
     return (
       <IconCore {...props} >

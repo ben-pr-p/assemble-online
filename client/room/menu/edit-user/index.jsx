@@ -131,7 +131,7 @@ export default class EditUserModal extends Component {
       )
     } else {
       return (
-        <div style={{ margin: 10 }}>
+        <div style={{ margin: 10 }} key={attr} >
           {labelMap[attr]}
           <Input id={attr} key={attr}
             value={this.state[attr]}
