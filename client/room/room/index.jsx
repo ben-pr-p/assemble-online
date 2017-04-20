@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import Grid from '../grid'
 import UserBlob from '../user-blob'
 import CheckpointBlob from '../checkpoint-blob'
@@ -80,7 +80,10 @@ export default class Room extends Component {
   onMouseMove = ev => this.mousePos = [ev.clientX, ev.clientY]
   moveUser = () => Updates.emit('location', this.mousePos)
 
-  render ({me, users, checkpoints}, {translate, dimensions, localStream}) {
+  render () {
+		const {me, users, checkpoints} = this.props
+		const {translate, dimensions, localStream} = this.state
+
     const userBlobs = users.filter(u => u).map((u, idx) => (
       <UserBlob key={u.id}
         user={u}

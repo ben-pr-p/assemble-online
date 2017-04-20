@@ -1,24 +1,27 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import ListBrowser from '../../../common/list-browser'
 import Updates from '../../../lib/updates'
+import { Card } from 'antd'
 
 class CheckpointItem extends Component {
   goTo = () => Updates.emit('move-to', this.props.item.loc)
 
-  render ({item}) {
+  render () {
+    const { item } = this.props
     return (
-      <div className='checkpoint-item' onClick={this.goTo} >
+      <Card className='checkpoint-item' onClick={this.goTo} >
         <div className='checkpoint-color'
-          style={{'background-color': item.color}}
+          style={{ backgroundColor: item.color }}
         />
         <div className='checkpoint-label'> {item.name} </div>
-      </div>
+      </Card>
     )
   }
 }
 
 export default class CheckpointBrowser extends Component {
-  render ({checkpoints}) {
+  render () {
+    const { checkpoints } = this.props
     return (
       <ListBrowser
         title='Checkpoints'

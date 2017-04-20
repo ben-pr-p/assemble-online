@@ -1,4 +1,6 @@
-import { Component, h } from 'preact'
+/* eslint no-console: 0 */
+
+import React, { Component } from 'react'
 import Sock from '../../lib/sock'
 import Updates from '../../lib/updates'
 import { ToPeers, FromPeers } from '../../lib/emitters'
@@ -19,26 +21,26 @@ export default class Connection extends Component {
   componentDidMount () {
     const { partnerId, localStream } = this.props
 
-    if (this.isMe) {
+    if (!this.isMe) {
       if (localStream) {
         if (DEBUG) console.log(`Initializing with localStream ${localStream}`)
         this.initialize()
       } else {
         if (DEBUG) console.log('Waiting for stream')
       }
+
+      Updates.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
+      ToPeers.on(`to-${partnerId}`, this.sendData)
+      ToPeers.on('to-all', this.sendData)
     } else {
       if (localStream) {
         this.vidEl.srcObject = localStream
         this.vidEl.volume = 0
       }
     }
-
-    Updates.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
-    ToPeers.on(`to-${partnerId}`, this.sendData)
-    ToPeers.on('to-all', this.sendData)
   }
 
-  componentWillReceiveProps ({localStream}) {
+  componentWillReceiveProps ({ localStream }) {
     if (this.props.localStream !== localStream) {
       if (this.peer) {
         this.peer.destroy()
@@ -54,8 +56,8 @@ export default class Connection extends Component {
   }
 
   componentDidUpdate () {
-    const {partnerId, localStream} = this.props
-    if (this.isMe && localStream && this.peer == null)
+    const { partnerId, localStream } = this.props
+    if (!this.isMe && localStream && this.peer == null)
       this.initialize()
   }
 
@@ -69,7 +71,7 @@ export default class Connection extends Component {
     : null
 
   componentWillUnmount () {
-    const {partnerId} = this.props
+    const { partnerId } = this.props
 
     this.peer.destroy()
     this.peer = null
@@ -82,7 +84,7 @@ export default class Connection extends Component {
   }
 
   initialize = () => {
-    const {partnerId, localStream, setStatus} = this.props
+    const { partnerId, localStream, setStatus } = this.props
     setStatus('connecting')
 
     if (DEBUG) console.log(`sending stream ${localStream}`)
@@ -119,7 +121,7 @@ export default class Connection extends Component {
 
       if (this.vidEl) {
         this.vidEl.srcObject = remoteStream
-        if (DEBUG) console.log(`setting src object`)
+        if (DEBUG) console.log('setting src object')
       }
 
       setStatus('connected')
@@ -139,7 +141,9 @@ export default class Connection extends Component {
 
   setRef = ref => this.vidEl = ref
 
-  render ({partnerId, localStream}) {
+  render () {
+    const { partnerId, localStream } = this.props
+
     const showVideo = this.isMe && localStream && localStream.getVideoTracks().length > 0
 
     return (

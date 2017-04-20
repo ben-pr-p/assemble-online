@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import { Timer } from '../../../../../common/icons'
 
 export default class TimerWidget extends Component {
@@ -33,7 +33,9 @@ export default class TimerWidget extends Component {
     seconds: 0
   })
 
-  render ({minutes, seconds}) {
+  render () {
+    const {minutes, seconds} = this.props
+
     return (
       <div className='timer'>
         <div className='minutes'> {minutes} </div>

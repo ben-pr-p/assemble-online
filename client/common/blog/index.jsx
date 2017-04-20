@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import { Back, Open } from '../icons'
 import IconButton from '../icon-button'
 
@@ -19,7 +19,9 @@ export default class Blog extends Component {
   expand = p => ev => this.setState({viewing: p})
   viewNull = ev => this.setState({viewing: false})
 
-  render (_, {viewing}) {
+  render () {
+		const {viewing} = this.state
+
     if (viewing) {
       return (
         <div style={{height: '100%', width: '100%', overflow: 'scroll'}}>
@@ -42,8 +44,8 @@ export default class Blog extends Component {
           flexWrap: 'wrap',
           textAlign: 'center'
         }} >
-          {pdfs.map(p => (
-            <div style={{
+          {pdfs.map((p,idx) => (
+            <div key={idx} style={{
                 width: '200px',
                 height: '270px',
                 margin: '10px',

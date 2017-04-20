@@ -1,6 +1,7 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import Updates from '../../../lib/updates'
-import {MAX_VOLUME, BORDER_THICKNESS} from './vol-consts'
+import { MAX_VOLUME, BORDER_THICKNESS } from './vol-consts'
+import { Badge, Tooltip } from 'antd'
 
 export default class Circle extends Component {
   state = {
@@ -18,23 +19,29 @@ export default class Circle extends Component {
 
   handleVolume = raw => {
     const vol = Math.min(raw / MAX_VOLUME, 1)
-    this.setState({vol})
+    this.setState({ vol })
   }
 
-  render ({x, y, d, user, status}, {vol, filler}) {
+  render () {
+    const { x, y, d, user, status } = this.props
+    const { vol, filler } = this.state
+
     return (
       <div className='volume-circle'>
+        <div className='badge-container'>
+          {status && this.renderStatusBadge()}
+        </div>
 
         <div className='spinner circle'
           style={{
             width: `${d}px`,
             height: `${d}px`,
-            'border-top': `${BORDER_THICKNESS}px solid ${user.color}`,
-            'border-left': `${BORDER_THICKNESS}px solid ${user.color}`,
-            'border-right': `${BORDER_THICKNESS}px solid black`,
-            'border-bottom': `${BORDER_THICKNESS}px solid black`,
-            'border-radius': '50%',
-            'z-index': 100,
+            borderTop: `${BORDER_THICKNESS}px solid ${user.color}`,
+            borderLeft: `${BORDER_THICKNESS}px solid ${user.color}`,
+            borderRight: `${BORDER_THICKNESS}px solid black`,
+            borderBottom: `${BORDER_THICKNESS}px solid black`,
+            borderRadius: '50%',
+            zIndex: 100,
             transform: `rotate(${this.calcRotate(vol)}deg)`
           }}
         />
@@ -44,9 +51,9 @@ export default class Circle extends Component {
             width: `${d/2}px`,
             height: `${d}px`,
             border: `${BORDER_THICKNESS}px solid black`,
-            'border-right': 0,
-            'border-radius': `${d + BORDER_THICKNESS}px 0px 0px ${d + BORDER_THICKNESS}px`,
-            'z-index': 110,
+            borderRight: 0,
+            borderRadius: `${d + BORDER_THICKNESS}px 0px 0px ${d + BORDER_THICKNESS}px`,
+            zIndex: 110,
             opacity: vol > .5
               ? 0
               : 1
@@ -58,10 +65,10 @@ export default class Circle extends Component {
             width: `${d/2}px`,
             height: `${d}px`,
             border: `${BORDER_THICKNESS}px solid ${user.color}`,
-            'border-left': 0,
-            left: `${d/2 + BORDER_THICKNESS}px`,
-            'border-radius': `0px ${d + BORDER_THICKNESS}px ${d + BORDER_THICKNESS}px 0px`,
-            'z-index': 110,
+            borderLeft: 0,
+            left: `${d/2}px`,
+            borderRadius: `0px ${d + BORDER_THICKNESS}px ${d + BORDER_THICKNESS}px 0px`,
+            zIndex: 110,
             opacity: vol > .5
               ? 1
               : 0
@@ -72,4 +79,23 @@ export default class Circle extends Component {
   }
 
   calcRotate = vol => -45 + (vol * 360)
+  renderStatusBadge = () => {
+    const status = {
+      disconnected: 'default',
+      connecting: 'processing',
+      connected: 'success'
+    }[this.props.status]
+
+    const text = {
+      disconnected: 'Disconnected',
+      connecting: 'Connecting',
+      connected: ''
+    }[this.props.status]
+
+    return (
+      <Tooltip placement='bottomLeft' title='Status'>
+        <Badge className='status-badge' status={status} text={text} />
+      </Tooltip>
+    )
+  }
 }

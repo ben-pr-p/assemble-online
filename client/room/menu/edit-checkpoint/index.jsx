@@ -1,7 +1,5 @@
-import { Component, h } from 'preact'
-import Dialog from '../../../common/dialog'
-import Button from '../../../common/button'
-import TextInput from '../../../common/text-input'
+import React, { Component } from 'react'
+import { Button, Input, Modal } from 'antd'
 import store from 'store'
 import { Bus } from '../../../lib/emitters'
 import Updates from '../../../lib/updates'
@@ -15,7 +13,7 @@ export default class NewCheckpointModal extends Component {
     name: ''
   }
 
-  onChange = (ev) => this.setState({[ev.target.id]: ev.target.value})
+  onChange = ev => this.setState({ [ev.target.id]: ev.target.value })
 
   componentWillMount () {
     if (this.props.checkpoint) {
@@ -26,36 +24,31 @@ export default class NewCheckpointModal extends Component {
   submit = () => {
     const checkpoint = Object.assign({}, this.state)
     Updates.emit('checkpoint-new', checkpoint)
-    this.props.closeModal()
+    this.props.close()
   }
 
-  cancel = () =>
-    this.props.closeModal({shouldSave: null})
+  cancel = () => this.props.close()
 
   render () {
     const fields = Object.keys(this.state).map(this.renderField)
 
-    const actions = [
-      (<Button key='cancel' text='Cancel' onClick={this.cancel} />),
-      (<Button className='submit' key='ok' text='Get Started' onClick={this.submit} />)
-    ]
-
     return (
-      <Dialog title='Create a New Checkpoint'
-        actions={actions}
+      <Modal title='Create a New Checkpoint' visible={true}
+        onCancel={this.cancel}
+        onOk={this.submit} okText='Get Started'
       >
-        <div className='fields-container'>
-          {fields}
-        </div>
-      </Dialog>
+        {fields}
+      </Modal>
     )
   }
 
   renderField = (attr) => (
-    <TextInput id={attr} key={attr}
-      value={this.state[attr]}
-      onInput={this.onChange}
-      label={labelMap[attr]}
-    />
+    <div key={attr} style={{ margin: 10 }}>
+      {labelMap[attr]}
+      <Input id={attr} key={attr}
+        value={this.state[attr]}
+        onChange={this.onChange}
+      />
+    </div>
   )
 }

@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import lineIntersect from 'line-intersect'
 import Avatar from '../../common/avatar'
 import Updates from '../../lib/updates'
@@ -6,6 +6,7 @@ import VolumeIndicator from './volume-indicator'
 import WebRTC from './webrtc'
 import Controls from './controls'
 import { Run } from '../../common/icons'
+import { Tooltip } from 'antd'
 
 const r = 50
 const d = r * 2
@@ -61,7 +62,10 @@ export default class UserBlob extends Component {
   handleLocation = data => this.setState({ location: data })
   toggleControls = () => this.setState({ controlsShown: !this.state.controlsShown })
 
-  render ({user, translate, isMe, localStream}, {location, status, controlsShown}) {
+  render () {
+    const { user, translate, isMe, localStream } = this.props
+    const { location, status, controlsShown } = this.state
+
     let [ x, y ] = location
     if (!x || isNaN(x)) x = 0
     if (!x || isNaN(y)) y = 0
@@ -81,7 +85,7 @@ export default class UserBlob extends Component {
         id={user.id} onClick={this.toggleControls}
         style={Object.assign(
           this.computeWidthHeight(isFar),
-          this.computeTransform(isFar, {x, y, translate})
+          this.computeTransform(isFar, { x, y, translate })
         )}
       >
         {away && (
@@ -90,11 +94,11 @@ export default class UserBlob extends Component {
           </div>
         )}
 
-        {!video && [
-          <Avatar src={user.avatar} letters={initialize(user.name)} style={{position:'absolute'}} />,
-        ]}
+        {!video && (
+          <Avatar src={user.avatar} letters={initialize(user.name)} style={{ position: 'absolute' }} />
+        )}
 
-        <VolumeIndicator {...{d: specificD, user, status}} />
+        <VolumeIndicator {...{ d: specificD, user, status }} />
 
         <div className='video-clip'>
           <WebRTC partnerId={user.id}
@@ -105,21 +109,21 @@ export default class UserBlob extends Component {
         </div>
 
         {isMe && controlsShown &&
-          <Controls {...{away, audio, video, toggleStream: this.props.toggleStream}} />
+          <Controls {...{ away, audio, video, toggleStream: this.props.toggleStream }} />
         }
       </div>
     )
   }
 
-  isFar ({adj, isMe, x, y, translate}) {
+  isFar ({ adj, isMe, x, y, translate }) {
     return (!(isMe) && (adj.x < 0 || adj.x > window.innerWidth || adj.y < 0 || adj.y > window.innerHeight))
   }
 
   computeWidthHeight = (isFar) => !isFar
-    ? {width: `${d}px`, height: `${d}px`}
-    : {width: `${sd}px`, height: `${sd}px`}
+    ? { width: `${d}px`, height: `${d}px` }
+    : { width: `${sd}px`, height: `${sd}px` }
 
-  computeTransform = (isFar, {x, y, translate}) => true //!isFar
-    ? {transform: `translate(${x}px,${y}px)`}
-    : this.computeFarTransform({x, y, translate})
+  computeTransform = (isFar, { x, y, translate }) => !isFar
+    ? { transform: `translate(${x}px,${y}px)` }
+    : this.computeFarTransform({ x, y, translate })
 }

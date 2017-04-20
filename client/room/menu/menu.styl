@@ -1,39 +1,35 @@
-.menu
-  border-radius 50%
+.menu-container
   position fixed
-  bottom 20px
-  left 20px
-  height 40px
-  width 40px
-  border 1px solid black
-  box-shadow 2px 2px 2px black
-  flexbox flex
-  flex-direction column
-  justify-content center
-  align-items center
-  cursor pointer
-  {base}
-  z-index 1000
+  width 100%
+  bottom 0px
 
   .menu
-    animation out 100ms linear
+    width 100%
+    z-index 1000
+    display flex
 
-  :hover
-    .tooltip
-      display block
+    .menu-item-antd
+      flex 1
+      width 60px
+      text-align center
 
-  .tooltip
-    position absolute
-    align-self flex-start
-    transform translateX(55px)
-    width 200px
-    white-space nowrap
-    display none
+      .menu-item
+        display flex
+        flex-direction row
+        align-items center
+        overflow-x hidden
+        height 50px
 
-@keyframes out
-  0%
-    transform translate(0px, 0px)
+        span
+          width 40%
 
-@keyframes in
-  100%
-    transform translate(0px, 0px)
+        .icon-core
+          margin-right 5px
+          color hsla(0,0%,100%,.67)
+          fill hsla(0,0%,100%,.67)
+
+.cp-drawer + .menu-container
+  width 60%
+
+.cp-drawer.small + .menu-container
+  width calc(100% - 100px)

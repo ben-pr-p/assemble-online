@@ -30,7 +30,7 @@ app.set('views', './server/views')
  * -- redis client
  */
 const server = http.createServer(app)
-const socketServer = io.listen(server, {'log level':1})
+const socketServer = io.listen(server, { 'log level':1 })
 
 /*
  * Express endpoints
@@ -61,7 +61,7 @@ app.get('/room/:room', (req, res) => {
 
     /* Reject bad room names */
   if (encodeURIComponent(req.params.room) != req.params.room)
-    return res.status(400).json(print({error: 'invalid room name'}))
+    return res.status(400).json(print({ error: 'invalid room name' }))
 
     /* Ensure room exists in redis */
   if (namespaces.has(req.params.room)) {
@@ -71,7 +71,7 @@ app.get('/room/:room', (req, res) => {
     namespaces.create(req.params.room)
   }
 
-  res.render('room', {room: req.params.room})
+  res.render('room', { room: req.params.room })
 }
 )
 

@@ -1,6 +1,13 @@
-import { h, render } from 'preact'
+import React from 'react'
+import { render } from 'react-dom'
+import { LocaleProvider } from 'antd'
+import enUS from 'antd/lib/locale-provider/en_US'
 import Portal from './portal/main'
 
 window.onload = () => {
-  render(<Portal />, document.querySelector('#reactAppContainer'))
+  render((
+    <LocaleProvider locale={enUS}>
+      <Portal />
+    </LocaleProvider>
+  ), document.querySelector('#reactAppContainer'))
 }

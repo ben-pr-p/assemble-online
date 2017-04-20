@@ -1,14 +1,10 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import joinClass from '../join-class'
-import { Camera } from '../icons'
+import { Camera, Question } from '../icons'
 
 export default class Avatar extends Component {
   state = {
     failedImg: false
-  }
-
-  shouldComponentUpdate () {
-    this.state.failedImg = false
   }
 
   receiveRef = (ref) => this.img = ref
@@ -16,27 +12,35 @@ export default class Avatar extends Component {
   componentDidUpdate () { this.checkFailedImg() }
 
   checkFailedImg = () => this.img && !this.img.complete
-    ? this.setState({failedImg: true})
+    ? this.setState({ failedImg: true })
     : null
 
-  render ({form, src, letters, className, ...others}, {failedImg}) {
+  render () {
+    const { form, src, letters, className, questionMark, ...others } = this.props
+    const { failedImg } = this.state
+
     const imageSuccess = src && !failedImg
     const Src = src
 
     return (
       <div {...{
-          ...others,
-          className: joinClass(className, `avatar ${!form ? 'blob' : 'form'}`),
-          style: {backgroundImage: imageSuccess ? `url("${src}")` : 'none'}
-        }}
-      >
+        ...others,
+        className: joinClass(className, `avatar ${!form ? 'blob' : 'form'}`),
+        style: { backgroundImage: imageSuccess ? `url("${src}")` : 'none' }
+      }}>
         {imageSuccess
-          ? ( <img src={src} ref={this.receiveRef} style={{display: 'none'}} /> )
+          ? ( <img src={src} ref={this.receiveRef} style={{ display: 'none' }} /> )
           : (
               <span className='avatar-letters'>
                 {(letters && letters != '')
-                  ? Array.isArray(letters) ? letters.join('') : letters.toString()
-                  : <Camera/>
+                  ? (
+                      <h3>
+                        {Array.isArray(letters) ? letters.join('') : letters.toString()}
+                      </h3>
+                    )
+                  : questionMark
+                    ? <Question />
+                    : <Camera/>
                 }
               </span>
             )

@@ -1,8 +1,11 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import IconCore from './icon-core'
 
 export default class Github extends Component {
-  render (props, state) {
+  render () {
+		const props = this.props
+		const state = this.state
+
     return (
       <svg className='icon-core' width="24px" height="24px" viewBox="0 0 256 250" version="1.1" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
         <g>

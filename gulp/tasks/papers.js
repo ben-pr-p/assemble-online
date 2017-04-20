@@ -14,7 +14,7 @@ const build = p => new Promise((resolve, reject) =>
 gulp.task('papers', done =>
   exec('mkdir -p ./build/papers', (err, out, code) =>
     Promise.all(papers.map(build)).then(() =>
-      exec(`rm proposal.aux proposal.log`, (err, out, code) => done())
+      exec('rm proposal.aux proposal.log', (err, out, code) => done())
     )
   )
 )

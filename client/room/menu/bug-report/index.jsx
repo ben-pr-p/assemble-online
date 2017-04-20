@@ -1,7 +1,5 @@
-import { Component, h } from 'preact'
-import Dialog from '../../../common/dialog'
-import Button from '../../../common/button'
-import TextInput from '../../../common/text-input'
+import React, { Component } from 'react'
+import { Button, Input, Modal } from 'antd'
 
 const labelMap = {
   user: 'Who are you, and what do you want with assemble.live?',
@@ -16,16 +14,15 @@ export default class BugReport extends Component {
     context: '',
   }
 
-  onChange = (ev) => this.setState({[ev.target.id]: ev.target.value})
+  onChange = (ev) => this.setState({ [ev.target.id]: ev.target.value })
 
   submit = () => {
-    let bug = {}
-    for (let attr in this.state) {
-      bug[attr] = this.state[attr]
-    }
+    const bug = Object.assign(
+      { 'user-agent': navigator.userAgent },
+      this.state
+    )
 
-    bug['user-agent'] = navigator.userAgent
-
+    this.props.close()
     // request
     // .post('/api/bug-report')
     // .send(bug)
@@ -34,8 +31,7 @@ export default class BugReport extends Component {
     // })
   }
 
-  cancel = () =>
-    this.props.endBugReport()
+  cancel = () => this.props.close()
 
   render () {
     let fields = []
@@ -44,37 +40,27 @@ export default class BugReport extends Component {
       fields.push((this.renderField(attr)))
     }
 
-    let actions = [(
-      <Button key='cancel' text='Cancel'
-        onClick={this.cancel.bind(this)}
-      />
-    ), (
-      <Button key='submit' text='Submit Bug/Feature'
-        onClick={this.submit.bind(this)}
-      />
-    )]
-
     return (
-      <Dialog title='Submit a Bug Report or Feature Suggestion'
-        actions={actions}
-        modal={true}
-        open={true}
+      <Modal title='Submit a Bug Report or Feature Suggestion' visible={true}
+        onCancel={this.cancel}
+        onOk={this.submit} okText='Submit'
       >
         <div className='fields-container'>
           {fields}
         </div>
-      </Dialog>
+      </Modal>
     )
   }
 
   renderField (attr) {
     return (
-      <TextInput id={attr} key={attr}
-        value={this.state[attr]}
-        onChange={this.onChange.bind(this)}
-        label={labelMap[attr]}
-        className='full-width-text-field'
-      />
+      <div key={attr} style={{ margin: 10 }}>
+        {labelMap[attr]}
+        <Input id={attr} key={attr}
+          value={this.state[attr]}
+          onChange={this.onChange}
+        />
+      </div>
     )
   }
 }

@@ -1,8 +1,11 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import IconCore from './icon-core'
 
 export default class Grain extends Component {
-  render (props, state) {
+  render () {
+		const props = this.props
+		const state = this.state
+
     return (
       <IconCore {...props} >
         <path d="M0 0h24v24H0z" fill="none"/>

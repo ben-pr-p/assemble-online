@@ -1,4 +1,4 @@
-import { Component, h } from 'preact'
+import React, { Component } from 'react'
 import store from 'store'
 import Menu from './menu'
 import Room from './room'
@@ -46,7 +46,9 @@ export default class Main extends Component {
     this.forceUpdate()
   }
 
-  render (props, { me, users, checkpoints}) {
+  render () {
+    const { me, users, checkpoints } = this.state
+
     const { clearLocal } = this
     const cp = checkpoints.filter(c => c.members.includes(Sock.id))[0]
 
@@ -57,9 +59,9 @@ export default class Main extends Component {
       <div id='main-app' style={{
         width: cp ? '60%' : '100%'
       }}>
-        {me && <Room {...{me, users, checkpoints}} />}
-        <Menu {...{me, users, checkpoints, clearLocal}} />
+        {me && <Room {...{ me, users, checkpoints }} />}
         {cp && <CheckpointDrawer me={me} checkpoint={cp} />}
+        <Menu {...{ me, users, checkpoints, clearLocal }} />
       </div>
     )
   }

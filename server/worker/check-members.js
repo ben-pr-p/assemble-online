@@ -4,7 +4,7 @@ const { CHECKPOINT_JOIN_DISTANCE } = require('./consts')
 const { distance, filterobj } = require('../utils')
 const panic = err => {throw err}
 
-module.exports = ({room, cid}, queue) => new Promise((resolve, reject) => {
+module.exports = ({ room, cid }, queue) => new Promise((resolve, reject) => {
   const redisRoom = redis.room(room)
 
   Promise.all([
@@ -24,7 +24,7 @@ module.exports = ({room, cid}, queue) => new Promise((resolve, reject) => {
     .then(_ => {
       redisRoom.checkpoints.getAll()
       .then(data => {
-        queue.create('update', {event: 'checkpoints', data}).save()
+        queue.create('update', { event: 'checkpoints', data }).save()
         resolve(null)
       })
       .catch(reject)
