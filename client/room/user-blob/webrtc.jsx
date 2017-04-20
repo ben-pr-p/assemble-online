@@ -21,22 +21,22 @@ export default class Connection extends Component {
   componentDidMount () {
     const { partnerId, localStream } = this.props
 
-    if (this.isMe) {
+    if (!this.isMe) {
       if (localStream) {
         if (DEBUG) console.log(`Initializing with localStream ${localStream}`)
         this.initialize()
       } else {
         if (DEBUG) console.log('Waiting for stream')
       }
+
+      Updates.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
+      ToPeers.on(`to-${partnerId}`, this.sendData)
+      ToPeers.on('to-all', this.sendData)
     } else {
       if (localStream) {
         this.vidEl.srcObject = localStream
         this.vidEl.volume = 0
       }
-
-      Updates.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
-      ToPeers.on(`to-${partnerId}`, this.sendData)
-      ToPeers.on('to-all', this.sendData)
     }
   }
 
@@ -57,7 +57,7 @@ export default class Connection extends Component {
 
   componentDidUpdate () {
     const { partnerId, localStream } = this.props
-    if (this.isMe && localStream && this.peer == null)
+    if (!this.isMe && localStream && this.peer == null)
       this.initialize()
   }
 

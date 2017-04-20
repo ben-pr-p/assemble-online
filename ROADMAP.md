@@ -1,6 +1,4 @@
 # Immediate
-* Feedback on connection state
-  * Popovers on change
 * Fix bugs
 * Mute button working
 * Audio / RTC working for any number of participants

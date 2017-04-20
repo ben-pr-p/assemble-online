@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Updates from '../../../lib/updates'
 import { MAX_VOLUME, BORDER_THICKNESS } from './vol-consts'
-import { Badge } from 'antd'
+import { Badge, Tooltip } from 'antd'
 
 export default class Circle extends Component {
   state = {
@@ -29,7 +29,7 @@ export default class Circle extends Component {
     return (
       <div className='volume-circle'>
         <div className='badge-container'>
-          {this.renderStatusBadge()}
+          {status && this.renderStatusBadge()}
         </div>
 
         <div className='spinner circle'
@@ -84,8 +84,18 @@ export default class Circle extends Component {
       disconnected: 'default',
       connecting: 'processing',
       connected: 'success'
-    }[this.state.status]
+    }[this.props.status]
 
-    return <Badge status={status} />
+    const text = {
+      disconnected: 'Disconnected',
+      connecting: 'Connecting',
+      connected: ''
+    }[this.props.status]
+
+    return (
+      <Tooltip placement='bottomLeft' title='Status'>
+        <Badge className='status-badge' status={status} text={text} />
+      </Tooltip>
+    )
   }
 }

@@ -42,9 +42,9 @@ export default class MainMenu extends Component {
     selected: null
   }
 
-  close = ({ save }) => this.setState(
-    save
-      ? { selected: null, me: save }
+  close = (params) => this.setState(
+    params && params.save
+      ? { selected: null, me: params.save }
       : { selected: null }
   )
 

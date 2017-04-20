@@ -25,7 +25,7 @@ export default class Controls extends Component {
   }
 
   render () {
-    const {me, audio, video, away} = this.props
+    const { me, audio, video, away } = this.props
 
     return (
       <div className='controls'>
