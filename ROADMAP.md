@@ -1,11 +1,4 @@
 # Immediate
-* Antd everything
-  * Antd each modal
-    * Bug report working (saving and mongo)
-    * New checkpoint working
-    * Browse checkpoints working and antd
-    * Edit me working and antd
-    * Browse users working and antd
 * Feedback on connection state
   * Popovers on change
 * Fix bugs

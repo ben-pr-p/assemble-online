@@ -42,7 +42,12 @@ export default class MainMenu extends Component {
     selected: null
   }
 
-  close = () => this.setState({ selected: null })
+  close = ({ save }) => this.setState(
+    save
+      ? { selected: null, me: save }
+      : { selected: null }
+  )
+
   allClicks = e => this.setState({ selected: e.key })
 
   render () {
@@ -68,7 +73,8 @@ export default class MainMenu extends Component {
           ))}
         </Menu>
 
-        {selected && this.renderComponent(this.config[selected].Component, attrs)}
+        {!me && <EditUser {...attrs} />}
+        {me && selected && this.renderComponent(this.config[selected].Component, attrs)}
       </div>
     )
   }

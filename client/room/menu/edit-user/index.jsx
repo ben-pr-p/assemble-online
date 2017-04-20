@@ -45,20 +45,10 @@ export default class EditUserModal extends Component {
   }
 
   submit = () => {
-    let user = {}
-    for (let attr in labelMap) {
-      user[attr] = this.state[attr]
-    }
-
-    let plaza = document.querySelector('svg#plaza')
-    if (plaza && !this.state.name) {
-      user.x = plaza.width.baseVal.value / 2,
-      user.y = plaza.height.baseVal.value / 2
-    }
-
+    const user = Object.assign({ id: Sock.id }, this.state)
     store.set('me', user)
-    Bus.emit('me', Object.assign(user, { id: Sock.id }))
-    this.props.close()
+    Sock.emit('me', user)
+    this.props.close({ save: user })
   }
 
   cancel = () => this.props.close()

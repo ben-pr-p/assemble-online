@@ -36,7 +36,7 @@ export default class ListBrowser extends Component {
                 <Search onSearch={this.onSearchChange} key='search' />
                 <div key='list' className='list-container'>
                   {found.map(i => (
-                    <div key={i} className='list-item'>
+                    <div key={i.id || i.name} className='list-item'>
                       <ItemDisplay item={i} />
                     </div>
                   ))}
