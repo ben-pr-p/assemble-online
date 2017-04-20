@@ -5,11 +5,13 @@ import Updates from '../../../lib/updates'
 class UserItem extends Component {
   goTo = () => Updates.emit('move-to-user', this.props.item.id)
 
-  render ({item}) {
+  render () {
+    const { item } = this.props
+
     return (
       <div className='user-item' onClick={this.goTo}>
         <div className='user-avatar'
-          style={{'background-image': `url(${item.avatar})`}}
+          style={{ backgroundImage: `url(${item.avatar})` }}
         />
         <div className='user-name'> {item.name} </div>
         <div className='user-bio'> {item.bio} </div>
@@ -19,7 +21,8 @@ class UserItem extends Component {
 }
 
 export default class UserBrowser extends Component {
-  render ({users}) {
+  render () {
+    const { users } = this.props
     return (
       <ListBrowser
         title='Users'

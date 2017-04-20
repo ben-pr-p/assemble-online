@@ -3,7 +3,6 @@ import { Create, Mail, Github } from '../common/icons'
 import IconButton from '../common/icon-button'
 import randomString from 'random-string'
 import { Button, Input } from 'antd'
-import TextInput from '../common/text-input'
 import Blog from '../common/blog'
 
 const hinttextoptions = [
@@ -33,11 +32,10 @@ export default class Portal extends Component {
       newRoom: encodeName(ev.target.value)
     })
 
-  createAndEnterRoom = () => this.enterRoom(this.state.newRoom ? this.state.newRoom : randomString({numeric: false}))()
+  createAndEnterRoom = () => this.enterRoom(this.state.newRoom ? this.state.newRoom : randomString({ numeric: false }))()
 
   render () {
-		const props = this.props
-		const {rooms, hintidx, newRoomUrl} = this.state
+    const { rooms, hintidx, newRoomUrl } = this.state
 
     return (
       <div className='page'>
@@ -91,7 +89,7 @@ export default class Portal extends Component {
           <br/>
           <br/>
           <span>{'Questions? This thing works but is not near production level. '}
-            <a style={{color: '#80d4ff'}} href='mailto:ben.paul.ryan.packer@gmail.com'>Email me</a>
+            <a style={{ color: '#80d4ff' }} href='mailto:ben.paul.ryan.packer@gmail.com'>Email me</a>
           </span>
           <br/>
         </div>

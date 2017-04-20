@@ -54,7 +54,7 @@ export default class MainMenu extends Component {
 
     return (
       <div>
-        <Menu className='menu' mode='horizontal' onClick={this.allClicks}
+        <Menu className='menu' theme='dark' mode='horizontal' onClick={this.allClicks}
           selectedKeys={[selected]}
         >
           {Object.keys(this.config).map(key => (

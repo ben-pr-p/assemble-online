@@ -47,8 +47,7 @@ export default class Main extends Component {
   }
 
   render () {
-		const props = this.props
-		const { me, users, checkpoints} = this.state
+    const { me, users, checkpoints } = this.state
 
     const { clearLocal } = this
     const cp = checkpoints.filter(c => c.members.includes(Sock.id))[0]
@@ -60,8 +59,8 @@ export default class Main extends Component {
       <div id='main-app' style={{
         width: cp ? '60%' : '100%'
       }}>
-        {me && <Room {...{me, users, checkpoints}} />}
-        <Menu {...{me, users, checkpoints, clearLocal}} />
+        {me && <Room {...{ me, users, checkpoints }} />}
+        <Menu {...{ me, users, checkpoints, clearLocal }} />
         {cp && <CheckpointDrawer me={me} checkpoint={cp} />}
       </div>
     )

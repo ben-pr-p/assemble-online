@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { Modal } from 'antd'
-import IconButton from '../icon-button'
-import { Close } from '../icons'
+import { Input, Modal } from 'antd'
+
+const { Search } = Input
 
 const matches = search => item =>
   Object.keys(item).filter(field =>
@@ -16,39 +16,26 @@ export default class ListBrowser extends Component {
     search: null
   }
 
-  onSearchChange = ev => this.setState({searching: ev.target.value})
+  onSearchChange = searching => this.setState({ searching })
 
   render () {
-		const {title, ItemDisplay, items} = this.props
-		const {searching, search} = this.state
+    const { title, ItemDisplay, items } = this.props
+    const { searching, search } = this.state
 
     const found = items.filter(matches(search))
 
     return (
-      <Modal visible={true} >
-        <div className='list-browser'>
-          <div className='title'>
-            {title}
-            <IconButton onClick={this.props.close}>
-              <Close />
-            </IconButton>
-          </div>
+      <Modal visible={true} title={title} onCancel={this.props.close} >
+        <Search onSearch={this.onSearchChange} />
 
-          {searching && (
-            <div className='search'>
-              <input type='text' onChange={this.onSearchChange} />
+        <div className='list-container'>
+          {found.map(i => (
+            <div key={i} className='list-item'>
+              <ItemDisplay item={i} />
             </div>
-          )}
-
-          <div className='list-container'>
-            {found.map(i => (
-              <div className='list-item'>
-                <ItemDisplay item={i} />
-              </div>
-            ))}
-          </div>
-
+          ))}
         </div>
+
       </Modal>
     )
   }

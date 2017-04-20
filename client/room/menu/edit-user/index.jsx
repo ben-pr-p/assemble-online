@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import Webcam from 'webcamjs'
 import Avatar from '../../../common/avatar'
-import { Button, Modal } from 'antd'
-import TextInput from '../../../common/text-input'
+import { Button, Input, Modal } from 'antd'
 import store from 'store'
 import randomString from 'random-string'
 import { Bus } from '../../../lib/emitters'
@@ -19,7 +18,8 @@ Webcam.set({
   crop_width: 100,
   crop_height: 100,
   image_format: 'jpeg',
-  jpeg_quality: 70
+  jpeg_quality: 70,
+  flip_horiz: true
 })
 
 const labelMap = {
@@ -27,13 +27,13 @@ const labelMap = {
   name: 'What\'s your name?'
 }
 
-export default class NewUserModal extends Component {
+export default class EditUserModal extends Component {
   state = {
     avatar: '',
     name: ''
   }
 
-  onChange = (ev) => this.setState({[ev.target.id]: ev.target.value})
+  onChange = ev => this.setState({ [ev.target.id]: ev.target.value })
 
   componentWillMount () {
     if (this.props.me) {
@@ -57,12 +57,11 @@ export default class NewUserModal extends Component {
     }
 
     store.set('me', user)
-    Bus.emit('me', Object.assign(user, {id: Sock.id}))
-    this.props.closeModal({shouldSave: 'user'})
+    Bus.emit('me', Object.assign(user, { id: Sock.id }))
+    this.props.close()
   }
 
-  cancel = () =>
-    this.props.closeModal({shouldSave: false})
+  cancel = () => this.props.close()
 
   render () {
     const fields = Object.keys(this.state).map(this.renderField)
@@ -71,16 +70,16 @@ export default class NewUserModal extends Component {
 
     if (this.state.name != null) {
       actions.push((
-        <Button key='cancel' text='Cancel'
-          onClick={this.cancel}
-        />
+        <Button key='cancel' onClick={this.cancel}>
+          Cancel
+        </Button>
       ))
     }
 
     actions.push((
-      <Button className='submit' key='ok' text='Get Started'
-        onClick={this.submit}
-      />
+      <Button type='primary' key='ok' onClick={this.submit}>
+        Get Started
+      </Button>
     ))
 
     return (
@@ -99,7 +98,6 @@ export default class NewUserModal extends Component {
 
     setTimeout(() => {
       Webcam.attach('#preview')
-      console.log('Attached preview')
     }, 10)
   }
 
@@ -121,21 +119,25 @@ export default class NewUserModal extends Component {
               />)
             : <div id='preview' onClick={this.snapPic} />
           }
-          <TextInput id={attr}
-            name={attr}
-            value={this.state[attr]}
-            onInput={this.onChange}
-            label={labelMap[attr]}
-          />
+          <div style={{ marginLeft: 20 }}>
+            {labelMap[attr]}
+            <Input id={attr}
+              name={attr}
+              value={this.state[attr]}
+              onChange={this.onChange}
+            />
+          </div>
         </div>
       )
     } else {
       return (
-        <TextInput id={attr} key={attr}
-          value={this.state[attr]}
-          onInput={this.onChange}
-          label={labelMap[attr]}
-        />
+        <div style={{ margin: 10 }}>
+          {labelMap[attr]}
+          <Input id={attr} key={attr}
+            value={this.state[attr]}
+            onChange={this.onChange}
+          />
+        </div>
       )
     }
   }

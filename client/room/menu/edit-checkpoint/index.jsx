@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Modal } from 'antd'
-import TextInput from '../../../common/text-input'
+import { Button, Input, Modal } from 'antd'
 import store from 'store'
 import { Bus } from '../../../lib/emitters'
 import Updates from '../../../lib/updates'
@@ -14,7 +13,7 @@ export default class NewCheckpointModal extends Component {
     name: ''
   }
 
-  onChange = (ev) => this.setState({[ev.target.id]: ev.target.value})
+  onChange = ev => this.setState({ [ev.target.id]: ev.target.value })
 
   componentWillMount () {
     if (this.props.checkpoint) {
@@ -44,11 +43,11 @@ export default class NewCheckpointModal extends Component {
   }
 
   renderField = (attr) => (
-    <div>
+    <div key={attr} style={{ margin: 10 }}>
       {labelMap[attr]}
-      <TextInput id={attr} key={attr}
+      <Input id={attr} key={attr}
         value={this.state[attr]}
-        onInput={this.onChange}
+        onChange={this.onChange}
       />
     </div>
   )

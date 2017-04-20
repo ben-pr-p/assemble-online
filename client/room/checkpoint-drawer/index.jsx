@@ -15,12 +15,12 @@ export default class CheckpointDrawer extends Component {
     collapsed: false
   }
 
-  editName = () => this.setState({tempName: this.props.checkpoint.name})
-  handleNameInput = ev => this.setState({tempName: ev.target.value})
+  editName = () => this.setState({ tempName: this.props.checkpoint.name })
+  handleNameInput = ev => this.setState({ tempName: ev.target.value })
   onNameInputPress = ev => ev.which == 13
-    ? Sock.emit('checkpoint-edit', {id: this.props.checkpoint.id, name: this.state.tempName})
+    ? Sock.emit('checkpoint-edit', { id: this.props.checkpoint.id, name: this.state.tempName })
     : ev.which == 27
-      ? this.setState({tempName: false})
+      ? this.setState({ tempName: false })
       : null
 
   addWidget = widget => this.setState({
@@ -110,7 +110,7 @@ export default class CheckpointDrawer extends Component {
             {!tempName
               ? name
               : <input value={tempName}
-                  onInput={this.handleNameInput}
+                  onChange={this.handleNameInput}
                   onKeyPress={this.onNameInputPress}
                 />
             }

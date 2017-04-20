@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Button, Input, Modal } from 'antd'
-import TextInput from '../../../common/text-input'
 
 const labelMap = {
   user: 'Who are you, and what do you want with assemble.live?',
@@ -15,11 +14,11 @@ export default class BugReport extends Component {
     context: '',
   }
 
-  onChange = (ev) => this.setState({[ev.target.id]: ev.target.value})
+  onChange = (ev) => this.setState({ [ev.target.id]: ev.target.value })
 
   submit = () => {
     const bug = Object.assign(
-      {'user-agent': navigator.userAgent},
+      { 'user-agent': navigator.userAgent },
       this.state
     )
 
@@ -55,7 +54,7 @@ export default class BugReport extends Component {
 
   renderField (attr) {
     return (
-      <div>
+      <div key={attr} style={{ margin: 10 }}>
         {labelMap[attr]}
         <Input id={attr} key={attr}
           value={this.state[attr]}
