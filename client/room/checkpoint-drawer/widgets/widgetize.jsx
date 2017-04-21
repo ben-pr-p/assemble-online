@@ -3,7 +3,7 @@ import { ToPeers, FromPeers } from '../../../lib/emitters'
 import Sock from '../../../lib/sock'
 import IconButton from '../../../common/icon-button'
 import { Close } from '../../../common/icons'
-import { Card } from 'antd'
+import { Card, Popconfirm } from 'antd'
 
 export default WrappedComponent =>
   class extends Component {
@@ -139,9 +139,20 @@ export default WrappedComponent =>
         <Card className='widget-border'
           title={this.kind}
           extra={(
-            <IconButton onClick={this.suicide}>
-              <Close />
-            </IconButton>
+            <Popconfirm title={(
+                <div>
+                  Are you sure you want to delete this widget?
+                  <br/>
+                  Your data cannot be recovered
+                </div>
+              )}
+              onConfirm={this.suicide}
+              okText='Delete' cancelText='No'
+            >
+              <IconButton>
+                <Close />
+              </IconButton>
+            </Popconfirm>
           )}
         >
           <WrappedComponent {...toPass} />

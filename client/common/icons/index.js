@@ -1,3 +1,4 @@
+import Agenda from './agenda'
 import Back from './back'
 import BrowseCheckpoints from './browse-checkpoints'
 import Bug from './bug'
@@ -6,6 +7,7 @@ import Camera from './camera'
 import Checkpoint from './checkpoint'
 import Close from './close'
 import Create from './close'
+import Done from './done'
 import Enter from './enter'
 import Github from './github'
 import Left from './left'
@@ -27,6 +29,7 @@ import VideoOff from './video-off'
 import Widgets from './widgets'
 
 export {
+  Agenda,
   Back,
   BrowseCheckpoints,
   Bug,
@@ -35,6 +38,7 @@ export {
   Checkpoint,
   Close,
   Create,
+  Done,
   Enter,
   Github,
   Left,

@@ -4,6 +4,8 @@ import { Button } from 'antd'
 import Sock from '../../../../../lib/sock'
 import { Queue } from '../../../../../common/icons'
 
+/* emoji */
+
 export default class QueueWidget extends Component {
   static icon = (<Queue style={{ transform: 'scale(2)' }} />)
   static kind = 'Queue'

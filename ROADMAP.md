@@ -1,4 +1,13 @@
+# For Dali
+  * Agenda notes
+  * Video
+  * Export to markdown
+  * Queue emojis
+
 # Immediate
+* Queue mute
+* Queue emoji reactions
+* Agenda widget
 * Fix bugs
 * Mute button working
 * Audio / RTC working for any number of participants
