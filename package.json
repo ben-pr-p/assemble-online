@@ -26,7 +26,6 @@
     "antd": "^2.9.1",
     "body-parser": "^1.15.2",
     "component-dom": "^1.0.8",
-    "dragula": "^3.7.1",
     "express": "^4.14.0",
     "github": "^2.4.1",
     "kue": "^0.11.5",

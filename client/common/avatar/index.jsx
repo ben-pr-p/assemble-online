@@ -11,9 +11,10 @@ export default class Avatar extends Component {
   componentDidMount () { this.checkFailedImg() }
   componentDidUpdate () { this.checkFailedImg() }
 
-  checkFailedImg = () => this.img && !this.img.complete
+  checkFailedImg = () => setTimeout(() => this.img && !this.img.complete
     ? this.setState({ failedImg: true })
     : null
+  , 500)
 
   render () {
     const { form, src, letters, className, questionMark, ...others } = this.props

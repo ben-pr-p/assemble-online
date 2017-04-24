@@ -1,8 +1,17 @@
 # For Dali
+* Bugs
+  * Audio isn't working
+  * Widget state not syncing on join
+
+* Features
+  * Bug report going to Mongo
+  * Analytics
+  * Queue emojis
   * Agenda notes
   * Video
   * Export to markdown
-  * Queue emojis
+
+* Agenda reorder
 
 # Immediate
 * Queue mute

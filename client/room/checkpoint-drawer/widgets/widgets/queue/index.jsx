@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import Avatar from '../../../../../common/avatar'
-import { Button } from 'antd'
+import { Button, Card } from 'antd'
 import Sock from '../../../../../lib/sock'
 import { Queue } from '../../../../../common/icons'
 
@@ -51,8 +51,31 @@ export default class QueueWidget extends Component {
         <div className='speaking-box'>
           <div className='avatar-container'>
             <Avatar form={true} src={speaking ? speaking.avatar : null}
-              questionMark={true}
+              questionMark={!speaking}
             />
+
+
+          <div className='buttons-layer'>
+            {!this.alreadyInQueue() && (
+              <Button
+                className='queue-button add-me'
+                onClick={this.addMeToQueue}
+                type='primary'
+              >
+                Add Me
+              </Button>
+            )}
+            {(speaking && speaking.id == me.id) && (
+              <Button
+                type='primary'
+                className='queue-button done-speaking'
+                onClick={this.endTurn}
+              >
+                Done
+              </Button>
+            )}
+          </div>
+
           </div>
           <div className='name-volume-container'>
             <div className='name'>
@@ -61,38 +84,18 @@ export default class QueueWidget extends Component {
                 : 'No one is speaking!'
               }
             </div>
-            <div className='volume'>
-              {/* TODO */}
+            <div className='emojis'>
             </div>
           </div>
         </div>
 
-        <div className='buttons-layer'>
-          {!this.alreadyInQueue() && (
-            <Button
-              className='queue-button add-me'
-              onClick={this.addMeToQueue}
-              type='primary'
-            >
-              Add Me
-            </Button>
-          )}
-          {(speaking && speaking.id == me.id) && (
-            <Button
-              type='primary'
-              className='queue-button done-speaking'
-              onClick={this.endTurn}
-            >
-              Done
-            </Button>
-          )}
-        </div>
-
         <div className='queue-container'>
-          {queue.map(u => (
-            <div className='queue-item'>
+          {queue.map((u, idx) => (
+            <Card key={u.id} className='queue-item'>
+              {idx + 1})
+              {'\t\t'}
               {u.name}
-            </div>
+            </Card>
           ))}
         </div>
       </div>

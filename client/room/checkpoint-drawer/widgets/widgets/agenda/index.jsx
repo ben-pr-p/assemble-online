@@ -40,9 +40,17 @@ export default class AgendaWidget extends Component {
     const toCreate = Object.assign({}, this.state.tempItem)
     this.state.tempItem = {}
 
-    this.props.update({
-      items: this.props.items.concat([toCreate])
-    })
+    if (this.state.editing > -1) {
+      const copy = this.props.items.slice()
+      copy[this.state.editing] = toCreate
+      this.props.update({ items: copy })
+
+      this.state.editing = -1
+    } else {
+      this.props.update({
+        items: this.props.items.concat([toCreate])
+      })
+    }
   }
 
   editItem = idx => ev => {
@@ -76,7 +84,9 @@ export default class AgendaWidget extends Component {
             <Panel key={this.keyify(idx, i)}
               header={(
                 <div className='panel-header'>
-                  {i.name}
+                  <div className='panel-header-text-container'>
+                    {i.name}
+                  </div>
 
                   <div style={{ display: 'flex' }}>
                     <Tooltip placement='bottom' title={(
@@ -143,10 +153,10 @@ export default class AgendaWidget extends Component {
   renderButtons = () => (
     <div className='buttons'>
       <Button onClick={this.cancelTempItem}>
-        Cancel
+        Reset
       </Button>
       <Button type='primary' onClick={this.addItem}>
-        Create
+        {this.state.editing > -1 ? 'Create' : 'Save'}
       </Button>
     </div>
   )

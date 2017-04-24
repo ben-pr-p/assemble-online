@@ -1,41 +1,49 @@
 .queue
   color rgba(0,0,0,.85)
 
+  .emoji-row
+    img
+      height 150%
+
   .speaking-box
+    height 100%
     width 100%
-    height 100px
     display flex
     justify-content space-around
-    align-items center
+    align-items stretch
 
     .name-volume-container
       width 70%
+      height 100%
+      padding-top 10px
 
-      .name
-        margin-left 10px
-
-  .buttons-layer
+  .avatar-container
+    min-height 150px
+    height 100%
     display flex
+    flex-direction column
     justify-content space-between
-    flex-direction row-reverse
+    padding-top 5px
+    padding-bottom 5px
 
-    .queue-button
-      width 80px
+    .buttons-layer
+      display flex
+      justify-content center
+      flex-direction row-reverse
 
-    .done-speaking
-      background-color rgb(4, 184, 34)
+      .queue-button
+        width 80px
+
+      .done-speaking
+        background-color rgb(4, 184, 34)
 
   .queue-container
     margin-top 10px
     display flex
     flex-wrap wrap
     justify-content space-around
-    max-height 250px
+    max-height 120px
+    overflow-y scroll
 
     .queue-item
-      display flex
-      align-items flex-end
-      width 140px
-      padding-left 5px
-      padding-right 5px
-      height 25px
+      width 100%

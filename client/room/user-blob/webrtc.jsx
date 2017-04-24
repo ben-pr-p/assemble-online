@@ -30,8 +30,6 @@ export default class Connection extends Component {
       }
 
       Updates.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
-      ToPeers.on(`to-${partnerId}`, this.sendData)
-      ToPeers.on('to-all', this.sendData)
     } else {
       if (localStream) {
         this.vidEl.srcObject = localStream
@@ -101,7 +99,12 @@ export default class Connection extends Component {
 
     this.peer.on('connect', () => {
       if (DEBUG) console.log(`connected to ${partnerId}`)
+
+      ToPeers.on(`to-${partnerId}`, this.sendData)
+      ToPeers.on('to-all', this.sendData)
+
       setStatus('connected')
+
       ToPeers.emit(`connected-to-${partnerId}`)
     })
 
