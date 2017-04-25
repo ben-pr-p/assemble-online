@@ -1,5 +1,5 @@
 web: npm run server
 worker: npm run worker
-analytics: npm run analytics
 redis: redis-server > redis.log
-mongod: mongod > mongod.log
+#analytics: npm run analytics
+#mongod: mongod > mongod.log
