@@ -11,15 +11,17 @@
     "url": "https://github.com/assemble-live/assemble.git"
   },
   "scripts": {
-    "server": "node server/app.js",
-    "worker": "node server/worker/index.js",
     "build": "gulp build",
-    "bs": "gulp build && node server/app.js",
-    "bw": "gulp bw",
+    "bs": "gulp build && node server/index.js",
+    "server": "node server/index.js",
+    "worker": "node server/worker/index.js",
+    "analytics": "node server/analytics/index.js",
+    "dev": "./node_modules/.bin/nf start --procfile Procfile.dev",
     "lint": "./node_modules/.bin/eslint . --ignore-pattern test",
+    "test": "npm run test-front && npm run test-back",
     "test-front": "./node_modules/.bin/wdio wdio.conf.js -n $NUM_BROWSERS",
     "test-back": "./node_modules/.bin/mocha server/test/index.js",
-    "test": "npm run test-front && npm run test-back"
+    "heroku-postbuild": "gulp build"
   },
   "license": "MIT",
   "dependencies": {
@@ -27,10 +29,13 @@
     "body-parser": "^1.15.2",
     "component-dom": "^1.0.8",
     "express": "^4.14.0",
+    "foreman": "^2.0.0",
     "github": "^2.4.1",
     "kue": "^0.11.5",
     "line-intersect": "^1.0.0",
+    "monk": "^4.0.0",
     "node-getopt": "^0.2.3",
+    "object-hash": "^1.1.8",
     "pug": "^2.0.0-beta5",
     "random-string": "^0.1.2",
     "react": "^15.5.4",

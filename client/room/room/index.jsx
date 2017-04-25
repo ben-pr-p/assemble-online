@@ -1,3 +1,5 @@
+/* eslint no-console: 0 */
+
 import React, { Component } from 'react'
 import Grid from '../grid'
 import UserBlob from '../user-blob'
@@ -6,6 +8,7 @@ import Sock from '../../lib/sock'
 import Updates from '../../lib/updates'
 import VolumeDetector from './volume-detector'
 
+const DEBUG = false
 const UPDATE_INTERVAL = 30
 
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
@@ -47,17 +50,17 @@ export default class Room extends Component {
     }
 
     if (Object.values(this.state.localMedia).every(val => !val)) {
-      return this.setState({localStream: null})
+      return this.setState({ localStream: null })
     }
 
     navigator.getUserMedia(this.state.localMedia,
       // on success
       stream => {
-        this.setState({localStream: stream})
+        this.setState({ localStream: stream })
         VolumeDetector.register(stream, rms => Sock.emit('volume', rms))
       },
       // on failure
-      error => console.log(error)
+      error => { if (DEBUG) console.log(error) }
     )
   }
 
@@ -81,8 +84,8 @@ export default class Room extends Component {
   moveUser = () => Updates.emit('location', this.mousePos)
 
   render () {
-		const {me, users, checkpoints} = this.props
-		const {translate, dimensions, localStream} = this.state
+    const { me, users, checkpoints } = this.props
+    const { translate, dimensions, localStream } = this.state
 
     const userBlobs = users.filter(u => u).map((u, idx) => (
       <UserBlob key={u.id}

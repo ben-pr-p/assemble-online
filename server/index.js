@@ -7,7 +7,9 @@ const express = require('express')
 const io = require('socket.io')
 const pug = require('pug')
 const http = require('http')
+const bodyParser = require('body-parser')
 const redis = require('./redis')
+const apps = require('./apps')
 
 const {
   objectify
@@ -20,6 +22,7 @@ const app = express()
 const staticDir = path.resolve(__dirname + '/../build')
 
 app.use('/', express.static(staticDir))
+app.use(bodyParser.json())
 app.set('view engine', 'pug')
 app.set('views', './server/views')
 
@@ -32,6 +35,9 @@ app.set('views', './server/views')
 const server = http.createServer(app)
 const socketServer = io.listen(server, { 'log level':1 })
 
+// Self contained rest endpoints in /server/apps
+app.use('/api', apps)
+
 /*
  * Express endpoints
  */
@@ -39,20 +45,6 @@ const socketServer = io.listen(server, { 'log level':1 })
 app.get('/', (req, res) => res.render('portal'))
 app.get('/blog', (req, res) => res.render('blog'))
 app.get('/room', (req, res) => res.redirect('/'))
-
-app.get('/room-status', (req, res) =>
-  redis.rooms.getAll()
-  .then(rooms =>
-    Promise.all(rooms.map(r => redis.room(r).users.size()))
-    .then(sizes =>
-      res.json(objectify(rooms, sizes))
-    )
-    .catch(err =>
-      res.status(500).json(err))
-  .catch(err =>
-    res.status(500).json(err))
-  )
-)
 
 const namespaces = require('./namespaces')(socketServer)
 
@@ -72,8 +64,7 @@ app.get('/room/:room', (req, res) => {
   }
 
   res.render('room', { room: req.params.room })
-}
-)
+})
 
 const PORT = process.env.PORT
   ? process.env.PORT

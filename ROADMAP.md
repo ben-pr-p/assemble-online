@@ -1,11 +1,12 @@
 # For Dali
 * Bugs
-  * Audio isn't working
+  * Mute renegotiation fails
+  * Video doesn't work
   * Widget state not syncing on join
 
 * Features
-  * Bug report going to Mongo
   * Analytics
+  * Send emails on bug reports
   * Queue emojis
   * Agenda notes
   * Video

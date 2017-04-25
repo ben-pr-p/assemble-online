@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Button, Input, Modal } from 'antd'
+import rq from 'superagent'
 
 const labelMap = {
   user: 'Who are you, and what do you want with assemble.live?',
@@ -18,17 +19,15 @@ export default class BugReport extends Component {
 
   submit = () => {
     const bug = Object.assign(
-      { 'user-agent': navigator.userAgent },
+      { userAgent: navigator.userAgent },
       this.state
     )
 
-    this.props.close()
-    // request
-    // .post('/api/bug-report')
-    // .send(bug)
-    // .end((err, res) => {
-    //   this.props.endBugReport()
-    // })
+    rq.post('/api/bugs')
+      .send(bug)
+      .end((err, res) => {
+        this.props.close()
+      })
   }
 
   cancel = () => this.props.close()

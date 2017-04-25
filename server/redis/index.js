@@ -40,7 +40,7 @@ module.exports = {
 
       add: (uid, user) => new Promise((resolve, reject) => {
         const key = keyify('users')(uid)
-        
+
         client
           .hgetall(key, (err, existing) => err
             ? reject(err)
@@ -118,6 +118,14 @@ module.exports = {
                   : resolve(objectify(uids, vols))
               )
             : {}
+        )
+      ),
+
+      get: (uids) => new Promise((resolve, reject) =>
+        client.mget(uids.map(keyify('vol')), (err, vols) =>
+          err
+            ? reject(err)
+            : resolve(objectify(uids, vols))
         )
       )
     },

@@ -6,8 +6,12 @@ import Updates from '../../lib/updates'
 import { ToPeers, FromPeers } from '../../lib/emitters'
 import Peer from 'simple-peer'
 import VolumeDetector from '../room/volume-detector'
+import objHash from 'object-hash'
 
-const DEBUG = false
+const DEBUG = true
+const HASH = true
+
+const format = HASH ? objHash : JSON.stringify
 
 export default class Connection extends Component {
   peer = null
@@ -23,8 +27,14 @@ export default class Connection extends Component {
 
     if (!this.isMe) {
       if (localStream) {
-        if (DEBUG) console.log(`Initializing with localStream ${localStream}`)
-        this.initialize()
+        if (DEBUG) {
+          console.log(`Initializing with localStream ${localStream}`)
+          console.log(`I am ${Sock.id}`)
+          console.log(`Connecting to partner ${partnerId}`)
+
+          this.initialize()
+        }
+
       } else {
         if (DEBUG) console.log('Waiting for stream')
       }
@@ -49,6 +59,8 @@ export default class Connection extends Component {
         if (DEBUG) console.log('Setting local stream for self video')
         this.vidEl.srcObject = localStream
         this.vidEl.volume = 0
+      } else {
+        this.initialize()
       }
     }
   }
@@ -85,7 +97,9 @@ export default class Connection extends Component {
     const { partnerId, localStream, setStatus } = this.props
     setStatus('connecting')
 
-    if (DEBUG) console.log(`sending stream ${localStream}`)
+    if (DEBUG) {
+      console.log(`sending stream ${localStream}`)
+    }
 
     this.peer = new Peer({
       initiator: Sock.id < partnerId,
@@ -93,6 +107,7 @@ export default class Connection extends Component {
     })
 
     this.peer.on('error', err => {
+      console.log('Got error')
       console.error(err)
       setStatus('connecting')
     })
@@ -103,13 +118,11 @@ export default class Connection extends Component {
       ToPeers.on(`to-${partnerId}`, this.sendData)
       ToPeers.on('to-all', this.sendData)
 
-      setStatus('connected')
-
       ToPeers.emit(`connected-to-${partnerId}`)
     })
 
     this.peer.on('signal', config => {
-      if (DEBUG) console.log(`sending signal ${JSON.stringify(config)}`)
+      if (DEBUG) console.log(`sending signal ${format(config)}`)
 
       Sock.emit('signal', {
         to: partnerId,
@@ -117,6 +130,7 @@ export default class Connection extends Component {
       })
     })
 
+    if (DEBUG) console.log('setting signal handlers')
     Sock.on(`signal-from-${partnerId}`, this.handleSignal)
 
     this.peer.on('stream', remoteStream => {
@@ -134,7 +148,7 @@ export default class Connection extends Component {
   }
 
   handleSignal = config => {
-    if (DEBUG) console.log(`got signal ${JSON.stringify(config)}`)
+    if (DEBUG) console.log(`got signal ${format(config)}`)
     this.peer.signal(config)
   }
 
@@ -150,7 +164,7 @@ export default class Connection extends Component {
     const showVideo = this.isMe && localStream && localStream.getVideoTracks().length > 0
 
     return (
-      <video autoPlay=''
+      <video autoPlay
         style={{
           position: 'absolute',
           left: showVideo ? -18.75 : 0,
