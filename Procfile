@@ -1,3 +1,3 @@
-web: gulp build && npm run server
+web: ./start.sh
 worker: npm run worker
 analytics: npm run analytics
