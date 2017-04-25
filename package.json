@@ -20,8 +20,7 @@
     "lint": "./node_modules/.bin/eslint . --ignore-pattern test",
     "test": "npm run test-front && npm run test-back",
     "test-front": "./node_modules/.bin/wdio wdio.conf.js -n $NUM_BROWSERS",
-    "test-back": "./node_modules/.bin/mocha server/test/index.js",
-    "heroku-postbuild": "gulp build"
+    "test-back": "./node_modules/.bin/mocha server/test/index.js"
   },
   "license": "MIT",
   "dependencies": {
