@@ -1,6 +1,5 @@
 # For Dali
 * Bugs
-  * Widget state not syncing on join
   * Mute renegotiation fails
   * Video doesn't work
 
