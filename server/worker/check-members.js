@@ -12,6 +12,8 @@ module.exports = ({ room, cid }, queue) => new Promise((resolve, reject) => {
     redisRoom.locations.getAll()
   ])
   .then(([check, locs]) => {
+    log('Checking members of %s in %s with locs %j', cid, room, locs)
+
     const oldMembers = check.members
     const newMembers = Object.keys(locs)
       .filter(uid => distance(check.loc, locs[uid]) < CHECKPOINT_JOIN_DISTANCE)
@@ -24,7 +26,7 @@ module.exports = ({ room, cid }, queue) => new Promise((resolve, reject) => {
     .then(_ => {
       redisRoom.checkpoints.getAll()
       .then(data => {
-        queue.create('update', { event: 'checkpoints', data }).save()
+        queue.create(`update-${room}`, { event: 'checkpoints', data }).save()
         resolve(null)
       })
       .catch(reject)

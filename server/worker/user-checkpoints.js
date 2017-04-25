@@ -50,7 +50,7 @@ module.exports = ({ room, uid }, queue) => new Promise((resolve, reject) => {
 
       redisRoom.checkpoints.getAll()
       .then(data => {
-        queue.create('update', { event, data }).save()
+        queue.create(`update-${room}`, { event, data }).save()
         resolve(null)
       })
       .catch(reject)

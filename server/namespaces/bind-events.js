@@ -143,7 +143,7 @@ module.exports = (io, nsp, name) => {
       room.checkpoints
         .remove(id)
         .then(() => {
-          log('check is gone')
+          log('Check %s is gone', id)
 
           room.checkpoints
             .getAll()
@@ -229,7 +229,7 @@ module.exports = (io, nsp, name) => {
     }
   }
 
-  queue.process('update', (job, done) => {
+  queue.process(`update-${name}`, (job, done) => {
     const { event, data } = job.data
     log('Emitting %s: %j', event, data)
     nsp.emit(event, data)
