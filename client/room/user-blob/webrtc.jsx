@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 import Sock from '../../lib/sock'
 import Updates from '../../lib/updates'
-import { ToPeers, FromPeers } from '../../lib/emitters'
+import { ToPeers, FromPeers, Connections } from '../../lib/emitters'
 import Peer from 'simple-peer'
 import VolumeDetector from '../room/volume-detector'
 import objHash from 'object-hash'
@@ -79,6 +79,8 @@ export default class Connection extends Component {
     ToPeers.off('to-all', this.sendData)
     Sock.off(`signal-from-${partnerId}`, this.handleSignal)
     Updates.off(`attenuation-for-${partnerId}`)
+
+    ToPeers.emit(`disconnected-from-${partnerId}`)
     this.props.setStatus('disconnected')
   }
 

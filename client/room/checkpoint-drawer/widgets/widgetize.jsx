@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { ToPeers, FromPeers } from '../../../lib/emitters'
+import { ToPeers, FromPeers, Connections } from '../../../lib/emitters'
 import Sock from '../../../lib/sock'
 import IconButton from '../../../common/icon-button'
 import { Close } from '../../../common/icons'
@@ -19,10 +19,9 @@ export default WrappedComponent =>
       }, WrappedComponent.initial)
     }
 
-    isOwner = () => this.state.owner == Sock.id
+    isOwner = () => this.state.owner == Sock.id || this.state.owner == null
     eventPrefix = () => `widget-${this.kind}`
-    ownerIsDead = mids =>
-      mids.filter(mids => mids == this.state.owner).length == 0
+    ownerIsDead = mids => mids.filter(mids => mids == this.state.owner).length > 0
 
     mids = []
     newFriends = mids => {
@@ -70,16 +69,18 @@ export default WrappedComponent =>
     }
 
     tellNewFriends = mids => {
+      const declareIfReady = () =>
+        setTimeout(() => {
+          Connections.hasAllOf(toTell) && this.declareOwnership()
+        }, 10)
+
       const toTell = new Set(this.newFriends(mids))
+
       if (toTell.size > 0) {
-        toTell.forEach(uid =>
-          ToPeers.on(`connected-to-${uid}`, () => {
-            toTell.delete(uid)
-            if (toTell.size == 0) {
-              this.declareOwnership()
-            }
-          })
-        )
+        toTell.forEach(uid => {
+          declareIfReady()
+          ToPeers.on(`connected-to-${uid}`, declareIfReady)
+        })
       }
     }
 

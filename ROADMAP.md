@@ -1,18 +1,16 @@
 # For Dali
 * Bugs
+  * Widget state not syncing on join
   * Mute renegotiation fails
   * Video doesn't work
-  * Widget state not syncing on join
 
 * Features
-  * Analytics
   * Send emails on bug reports
   * Queue emojis
   * Agenda notes
   * Video
   * Export to markdown
-
-* Agenda reorder
+  * Agenda reorder
 
 # Immediate
 * Queue mute

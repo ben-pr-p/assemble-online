@@ -1,13 +1,12 @@
 import React, { Component } from 'react'
 import Webcam from 'webcamjs'
 import Avatar from '../../../common/avatar'
-import { Button, Input, Modal } from 'antd'
+import { Button, Input, Modal, Tooltip } from 'antd'
 import store from 'store'
 import randomString from 'random-string'
 import { Bus } from '../../../lib/emitters'
 import Sock from '../../../lib/sock'
 import IconButton from '../../../common/icon-button'
-import { Camera } from '../../../common/icons'
 
 Webcam.set({
   enable_flash: false,
@@ -59,7 +58,7 @@ export default class EditUserModal extends Component {
   cancel = () => this.props.close()
 
   render () {
-    const fields = Object.keys(this.state).map(this.renderField)
+    const fields = Object.keys(this.state).filter(f => f != 'snapping').map(this.renderField)
 
     const actions = []
 
@@ -107,13 +106,27 @@ export default class EditUserModal extends Component {
     if (attr == 'avatar') {
       return (
         <div className='avatar-field-container' key={attr}>
-          {!this.state.snapping
-            ? (<Avatar form={true} letters={this.state.name}
-                src={this.state.avatar}
-                onClick={this.startSnapping}
-              />)
-            : <div id='preview' onClick={this.snapPic} />
-          }
+          <Tooltip title='Take a picture' placement='bottom' >
+            <div className='avatar-clicker' onClick={this.state.snapping
+                ? this.snapPic
+                : this.startSnapping
+              }
+            >
+              {!this.state.snapping
+                ? (
+                    <Avatar form={true} letters={this.state.name}
+                      src={this.state.avatar} questionMark={true}
+                      onClick={this.startSnapping}
+                    />
+                  )
+                : <div id='preview' onClick={this.snapPic} />
+              }
+              <Button className='button'
+                icon='camera' size='large' type='primary' shape='circle'
+              />
+            </div>
+          </Tooltip>
+
           <div style={{ marginLeft: 20 }}>
             {labelMap[attr]}
             <Input id={attr}
