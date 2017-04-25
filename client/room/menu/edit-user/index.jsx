@@ -45,7 +45,12 @@ export default class EditUserModal extends Component {
   }
 
   submit = () => {
-    const user = Object.assign({ id: Sock.id }, this.state)
+    const user = Object.assign({
+      id: Sock.id,
+      audio: true,
+      video: false
+    }, this.state)
+
     store.set('me', user)
     Sock.emit('me', user)
     this.props.close({ save: user })

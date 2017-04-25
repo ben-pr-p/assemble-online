@@ -27,14 +27,7 @@ export default class Connection extends Component {
 
     if (!this.isMe) {
       if (localStream) {
-        if (DEBUG) {
-          console.log(`Initializing with localStream ${localStream}`)
-          console.log(`I am ${Sock.id}`)
-          console.log(`Connecting to partner ${partnerId}`)
-
-          this.initialize()
-        }
-
+        this.initialize()
       } else {
         if (DEBUG) console.log('Waiting for stream')
       }
@@ -48,9 +41,10 @@ export default class Connection extends Component {
     }
   }
 
-  componentWillReceiveProps ({ localStream }) {
+  componentWillReceiveProps ({ localStream, audio, video }) {
     if (this.props.localStream !== localStream) {
       if (this.peer) {
+        if (DEBUG) console.log('Destorying peer in componentWillReceiveProps because of new self stream')
         this.peer.destroy()
         this.peer = null
       }
@@ -60,15 +54,9 @@ export default class Connection extends Component {
         this.vidEl.srcObject = localStream
         this.vidEl.volume = 0
       } else {
-        this.initialize()
+        this.initialize(localStream)
       }
     }
-  }
-
-  componentDidUpdate () {
-    const { partnerId, localStream } = this.props
-    if (!this.isMe && localStream && this.peer == null)
-      this.initialize()
   }
 
   sendData = data => this.peer
@@ -83,6 +71,7 @@ export default class Connection extends Component {
   componentWillUnmount () {
     const { partnerId } = this.props
 
+    if (DEBUG) console.log('Destorying peer in componentWillUnmount')
     this.peer.destroy()
     this.peer = null
 
@@ -93,13 +82,17 @@ export default class Connection extends Component {
     this.props.setStatus('disconnected')
   }
 
-  initialize = () => {
-    const { partnerId, localStream, setStatus } = this.props
-    setStatus('connecting')
+  initialize = (optionalLocalStream) => {
+    const { partnerId, setStatus } = this.props
+    const localStream = optionalLocalStream || this.props.localStream
 
     if (DEBUG) {
-      console.log(`sending stream ${localStream}`)
+      console.log(`Initializing with localStream ${localStream}`)
+      console.log(`I am ${Sock.id}`)
+      console.log(`Connecting to partner ${partnerId}`)
     }
+
+    setStatus('connecting')
 
     this.peer = new Peer({
       initiator: Sock.id < partnerId,

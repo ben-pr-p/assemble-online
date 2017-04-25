@@ -101,7 +101,10 @@ export default class UserBlob extends Component {
         <VolumeIndicator {...{ d: specificD, user, status }} />
 
         <div className='video-clip'>
-          <WebRTC partnerId={user.id}
+          <WebRTC
+            audio={audio}
+            video={video}
+            partnerId={user.id}
             localStream={localStream}
             setStatus={this.setStatus}
             status={status}
