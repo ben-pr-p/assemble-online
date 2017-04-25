@@ -5,7 +5,7 @@ const queue = kue.createQueue({
   redis: process.env.REDIS_URL
 })
 
-const clusterWorkerSize = require('os').cpus().length
+const clusterWorkerSize = process.env.NUM_WORKERS || require('os').cpus().length
 
 const action = {
   setAttenuations: require('./set-attenuations'),
