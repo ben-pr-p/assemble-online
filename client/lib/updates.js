@@ -9,7 +9,7 @@ let translate = [0, 0]
 let needTranslate = true
 let dimensions = [window.innerWidth, window.innerHeight]
 let transitioning = false
-let mac = .1
+let mac = .5
 
 let width = window.innerWidth
 let height = window.innerHeight

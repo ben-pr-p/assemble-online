@@ -1,5 +1,6 @@
 # For Dali
 * Bugs
+  * Current movement feels bad at higher latency connections
   * Mute renegotiation fails
   * Video doesn't work
 

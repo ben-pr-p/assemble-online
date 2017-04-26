@@ -72,6 +72,9 @@ export default class Room extends Component {
   handleDimensions = (data) => this.setState({ dimensions: data })
   handleTranslate = (data) => this.setState({ translate: data })
 
+  /*
+   * agar.io style movement
+   */
   onMouseDown = (ev) => {
     if (['plaza', 'grid-main'].includes(ev.target.id)) {
       if (this.intervalId) clearInterval(this.intervalId)
@@ -81,7 +84,7 @@ export default class Room extends Component {
 
   onMouseUp = () => clearInterval(this.intervalId)
   onMouseMove = ev => this.mousePos = [ev.clientX, ev.clientY]
-  moveUser = () => Updates.emit('location', this.mousePos)
+  // moveUser = () => Updates.emit('location', this.mousePos)
 
   render () {
     const { me, users, checkpoints } = this.props

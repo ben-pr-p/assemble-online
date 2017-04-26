@@ -5,6 +5,8 @@ const colors = require('./colors')
 const calcDimensions = require('./calc-dimensions')
 const { print } = require('../utils')
 
+const UPDATE_FREQUENCY = 200
+
 const kue = require('kue')
 const queue = kue.createQueue({
   redis: process.env.REDIS_URL
@@ -53,7 +55,7 @@ module.exports = (io, nsp, name) => {
         .then(allUsers => {
           log('Have users %j', allUsers.map(u => u.id))
           if (allUsers.length > 0 && !updateIntervalId)
-            updateIntervalId = setInterval(nsp.update, 50)
+            updateIntervalId = setInterval(nsp.update, UPDATE_FREQUENCY)
 
           nsp.emit('users', allUsers)
           nsp.emit('dimensions', calcDimensions(allUsers.length))

@@ -44,7 +44,9 @@ const initialize = name => {
 
 export default class UserBlob extends Component {
   state = {
-    location: [0,0],
+    loc: [0,0],
+    tempLoc: [0,0],
+    dragging: false,
     status: 'disconnected',
     controlsShown: false
   }
@@ -58,15 +60,48 @@ export default class UserBlob extends Component {
     Updates.off(`location-${this.props.user.id}`, this.handleLocation)
   }
 
+  handleLocation = data => this.setState({
+    loc: data
+  })
+
   setStatus = status => this.setState({ status })
-  handleLocation = data => this.setState({ location: data })
-  toggleControls = () => this.setState({ controlsShown: !this.state.controlsShown })
+  toggleControls = () =>
+    (this.state.tempLoc[1] - this.state.loc[1] < 10 ||
+      this.state.tempLoc[0] - this.state.loc[0] < 10) &&
+        this.setState({ controlsShown: !this.state.controlsShown })
+
+  /*
+   * desktop application style movement
+   */
+
+  move = ev => this.setState({
+    tempLoc: [this.state.tempLoc[0] + ev.movementX, this.state.tempLoc[1] + ev.movementY]
+  })
+
+  startTracking = () => {
+    this.state.tempLoc = this.state.loc.slice()
+    this.state.dragging = true
+    document.addEventListener('mousemove', this.move)
+    setTimeout(() => document.addEventListener('mouseup', this.stopTracking), 1)
+  }
+
+  stopTracking = () => {
+    document.removeEventListener('mousemove', this.move)
+    Updates.emit('move-to', this.state.tempLoc)
+    setTimeout(() => this.state.dragging = false, 100)
+  }
 
   render () {
     const { user, translate, isMe, localStream } = this.props
-    const { location, status, controlsShown } = this.state
+    const { loc, tempLoc, dragging, status, controlsShown } = this.state
 
-    let [ x, y ] = location
+    let x, y
+    if (dragging) {
+      [ x, y ] = tempLoc
+    } else {
+      [ x, y ] = loc
+    }
+
     if (!x || isNaN(x)) x = 0
     if (!x || isNaN(y)) y = 0
 
@@ -83,6 +118,8 @@ export default class UserBlob extends Component {
     return (
       <div className={`user-blob ${isMe && 'me'}`}
         id={user.id} onClick={this.toggleControls}
+        onMouseDown={this.startTracking}
+        onMouseUp={this.stopTracking}
         style={Object.assign(
           this.computeWidthHeight(isFar),
           this.computeTransform(isFar, { x, y, translate })
