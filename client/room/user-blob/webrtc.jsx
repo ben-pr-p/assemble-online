@@ -128,6 +128,7 @@ export default class Connection extends Component {
     if (DEBUG) console.log('setting signal handlers')
     Sock.on(`signal-from-${partnerId}`, this.handleSignal)
 
+
     this.peer.on('stream', remoteStream => {
       if (DEBUG) console.log(`received stream from ${partnerId}`)
 

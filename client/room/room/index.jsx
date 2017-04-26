@@ -7,6 +7,7 @@ import CheckpointBlob from '../checkpoint-blob'
 import Sock from '../../lib/sock'
 import Updates from '../../lib/updates'
 import VolumeDetector from './volume-detector'
+import store from 'store'
 
 const DEBUG = false
 const UPDATE_INTERVAL = 30
@@ -25,8 +26,8 @@ export default class Room extends Component {
 
   componentWillMount () {
     this.state.localMedia = {
-      audio: this.props.me.audio === undefined || this.props.me.audio,
-      video: this.props.me.video === undefined || this.props.me.video
+      audio: this.props.me.audio == true || this.props.me.audio == 'true',
+      video: this.props.me.video == true || this.props.me.video == 'true'
     }
 
     Sock.on('dimensions', this.handleDimensions)
@@ -42,12 +43,12 @@ export default class Room extends Component {
   }
 
   setStream = () => {
-    if (this.state.localStream) {
-      // kill localStream
-      this.state.localStream.getAudioTracks().forEach(mt => mt.stop())
-      this.state.localStream.getVideoTracks().forEach(mt => mt.stop())
-      VolumeDetector.detach()
-    }
+    // if (this.state.localStream) {
+    //   // kill localStream
+    //   this.state.localStream.getAudioTracks().forEach(mt => mt.stop())
+    //   this.state.localStream.getVideoTracks().forEach(mt => mt.stop())
+    //   VolumeDetector.detach()
+    // }
 
     if (Object.values(this.state.localMedia).every(val => !val)) {
       return this.setState({ localStream: null })
@@ -57,6 +58,10 @@ export default class Room extends Component {
       // on success
       stream => {
         this.setState({ localStream: stream })
+
+        // Announce that I'm ready to receive signals
+        Sock.emit('me', Object.assign({ signalReady: true }, store.get('me')))
+
         VolumeDetector.register(stream, rms => Sock.emit('volume', rms))
       },
       // on failure
@@ -66,24 +71,36 @@ export default class Room extends Component {
 
   toggleStream = type => {
     this.state.localMedia[type] = !this.state.localMedia[type]
-    this.setStream()
+
+    if (type == 'audio') {
+      const track = this.state.localStream.getAudioTracks()[0]
+      if (track)
+        track.enabled = this.state.localMedia.audio
+    }
+
+    if (type == 'video') {
+      const track = this.state.localStream.getVideoTracks()[0]
+      if (track)
+        track.enabled = this.state.localMedia.audio
+    }
+    // this.setStream()
   }
 
   handleDimensions = (data) => this.setState({ dimensions: data })
   handleTranslate = (data) => this.setState({ translate: data })
 
   /*
-   * agar.io style movement
+   * agar.io style movement - disabled
    */
-  onMouseDown = (ev) => {
-    if (['plaza', 'grid-main'].includes(ev.target.id)) {
-      if (this.intervalId) clearInterval(this.intervalId)
-      this.intervalId = setInterval(this.moveUser, UPDATE_INTERVAL)
-    }
-  }
-
-  onMouseUp = () => clearInterval(this.intervalId)
-  onMouseMove = ev => this.mousePos = [ev.clientX, ev.clientY]
+  // onMouseDown = (ev) => {
+  //   if (['plaza', 'grid-main'].includes(ev.target.id)) {
+  //     if (this.intervalId) clearInterval(this.intervalId)
+  //     this.intervalId = setInterval(this.moveUser, UPDATE_INTERVAL)
+  //   }
+  // }
+  //
+  // onMouseUp = () => clearInterval(this.intervalId)
+  // onMouseMove = ev => this.mousePos = [ev.clientX, ev.clientY]
   // moveUser = () => Updates.emit('location', this.mousePos)
 
   render () {
