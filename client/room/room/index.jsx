@@ -97,6 +97,7 @@ export default class Room extends Component {
         translate={translate}
         isMe={me && u.id == Sock.id}
         toggleStream={this.toggleStream}
+        dimensions={dimensions}
       />
     ))
 

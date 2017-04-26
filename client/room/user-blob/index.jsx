@@ -66,7 +66,7 @@ export default class UserBlob extends Component {
 
   setStatus = status => this.setState({ status })
   toggleControls = () =>
-    (this.state.tempLoc[1] - this.state.loc[1] < 10 ||
+    (this.state.tempLoc[1] - this.state.loc[1] < 10 &&
       this.state.tempLoc[0] - this.state.loc[0] < 10) &&
         this.setState({ controlsShown: !this.state.controlsShown })
 
@@ -75,7 +75,10 @@ export default class UserBlob extends Component {
    */
 
   move = ev => this.setState({
-    tempLoc: [this.state.tempLoc[0] + ev.movementX, this.state.tempLoc[1] + ev.movementY]
+    tempLoc: [
+      Math.max(Math.min(this.state.tempLoc[0] + ev.movementX, this.props.dimensions[0] - 100), 0),
+      Math.max(Math.min(this.state.tempLoc[1] + ev.movementY, this.props.dimensions[1] - 100), 0)
+    ]
   })
 
   startTracking = () => {
@@ -118,8 +121,8 @@ export default class UserBlob extends Component {
     return (
       <div className={`user-blob ${isMe && 'me'}`}
         id={user.id} onClick={this.toggleControls}
-        onMouseDown={this.startTracking}
-        onMouseUp={this.stopTracking}
+        onMouseDown={isMe && this.startTracking}
+        onMouseUp={isMe && this.stopTracking}
         style={Object.assign(
           this.computeWidthHeight(isFar),
           this.computeTransform(isFar, { x, y, translate })
@@ -135,7 +138,7 @@ export default class UserBlob extends Component {
           <Avatar src={user.avatar} letters={initialize(user.name)} style={{ position: 'absolute' }} />
         )}
 
-        <VolumeIndicator {...{ d: specificD, user, status }} />
+        <VolumeIndicator {...{ d: specificD, user, status, audio, video }} />
 
         <div className='video-clip'>
           <WebRTC

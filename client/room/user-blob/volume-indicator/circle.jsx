@@ -23,8 +23,10 @@ export default class Circle extends Component {
   }
 
   render () {
-    const { x, y, d, user, status } = this.props
+    const { x, y, d, user, status, audio, video } = this.props
     const { vol, filler } = this.state
+
+    const displayVol = audio ? vol : 0
 
     return (
       <div className='volume-circle'>
@@ -42,7 +44,7 @@ export default class Circle extends Component {
             borderBottom: `${BORDER_THICKNESS}px solid black`,
             borderRadius: '50%',
             zIndex: 100,
-            transform: `rotate(${this.calcRotate(vol)}deg)`
+            transform: `rotate(${this.calcRotate(displayVol)}deg)`
           }}
         />
 
@@ -54,7 +56,7 @@ export default class Circle extends Component {
             borderRight: 0,
             borderRadius: `${d + BORDER_THICKNESS}px 0px 0px ${d + BORDER_THICKNESS}px`,
             zIndex: 110,
-            opacity: vol > .5
+            opacity: displayVol > .5
               ? 0
               : 1
           }}
@@ -69,7 +71,7 @@ export default class Circle extends Component {
             left: `${d/2}px`,
             borderRadius: `0px ${d + BORDER_THICKNESS}px ${d + BORDER_THICKNESS}px 0px`,
             zIndex: 110,
-            opacity: vol > .5
+            opacity: displayVol > .5
               ? 1
               : 0
           }}
