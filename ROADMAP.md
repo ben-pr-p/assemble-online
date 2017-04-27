@@ -1,6 +1,5 @@
 # For Dali
 * Bugs
-  * Mute renegotiation fails
   * Video doesn't work
 
 * Features

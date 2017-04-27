@@ -119,7 +119,7 @@ export default class UserBlob extends Component {
     const [away, audio, video] = ['away', 'audio', 'video'].map(attr => user[attr] == 'true')
 
     return (
-      <div className={`user-blob ${isMe && 'me'}`}
+      <div className={`user-blob ${isMe ? 'me' : ''}`}
         id={user.id} onClick={this.toggleControls}
         onMouseDown={isMe && this.startTracking}
         onMouseUp={isMe && this.stopTracking}

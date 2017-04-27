@@ -8,8 +8,8 @@ import Peer from 'simple-peer'
 import VolumeDetector from '../room/volume-detector'
 import objHash from 'object-hash'
 
-const DEBUG = true
-const HASH = true
+const DEBUG = false
+const HASH = false
 
 const format = HASH ? objHash : JSON.stringify
 
