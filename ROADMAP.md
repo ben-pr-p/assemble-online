@@ -1,14 +1,10 @@
 # For Dali
-* Bugs
-  * Video doesn't work
-
 * Features
-  * Send emails on bug reports
-  * Queue emojis
   * Agenda notes
-  * Video
   * Export to markdown
   * Agenda reorder
+  * Queue emojis
+  * Send emails on bug reports
 
 # Immediate
 * Queue mute

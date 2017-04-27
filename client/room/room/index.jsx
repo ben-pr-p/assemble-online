@@ -18,7 +18,8 @@ export default class Room extends Component {
   state = {
     dimensions: [],
     translate: [0, 0],
-    localStream: null
+    localStream: null,
+    localMedia: { audio: true, video: false }
   }
 
   mousePos = {}
@@ -43,21 +44,12 @@ export default class Room extends Component {
   }
 
   setStream = () => {
-    // if (this.state.localStream) {
-    //   // kill localStream
-    //   this.state.localStream.getAudioTracks().forEach(mt => mt.stop())
-    //   this.state.localStream.getVideoTracks().forEach(mt => mt.stop())
-    //   VolumeDetector.detach()
-    // }
-
-    if (Object.values(this.state.localMedia).every(val => !val)) {
-      return this.setState({ localStream: null })
-    }
-
-    navigator.getUserMedia(this.state.localMedia,
+    navigator.getUserMedia({ audio: true, video: true },
       // on success
       stream => {
-        this.setState({ localStream: stream })
+        this.state.localStream = stream
+        this.syncTrackEnabled()
+        this.forceUpdate()
 
         // Announce that I'm ready to receive signals
         Sock.emit('me', Object.assign({ signalReady: true }, store.get('me')))
@@ -71,19 +63,19 @@ export default class Room extends Component {
 
   toggleStream = type => {
     this.state.localMedia[type] = !this.state.localMedia[type]
+    this.syncTrackEnabled()
+    this.forceUpdate()
+  }
 
-    if (type == 'audio') {
-      const track = this.state.localStream.getAudioTracks()[0]
-      if (track)
-        track.enabled = this.state.localMedia.audio
-    }
+  syncTrackEnabled = () => {
+    if (this.state.localStream) {
+      const audioTrack = this.state.localStream.getAudioTracks()[0]
+      const videoTrack = this.state.localStream.getVideoTracks()[0]
 
-    if (type == 'video') {
-      const track = this.state.localStream.getVideoTracks()[0]
-      if (track)
-        track.enabled = this.state.localMedia.audio
+      const { audio, video } = this.state.localMedia
+      audioTrack.enabled = audio == 'true' || audio == true
+      videoTrack.enabled = video == 'true' || video == true
     }
-    // this.setStream()
   }
 
   handleDimensions = (data) => this.setState({ dimensions: data })

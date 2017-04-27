@@ -157,7 +157,7 @@ export default class Connection extends Component {
   render () {
     const { partnerId, localStream } = this.props
 
-    const showVideo = this.isMe && localStream && localStream.getVideoTracks().length > 0
+    const showVideo = this.props.video
 
     return (
       <video autoPlay
