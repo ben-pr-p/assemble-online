@@ -1,5 +1,7 @@
 # For Dali
 * Features
+  * Draggable widget order
+  * Browser widget
   * Agenda notes
   * Export to markdown
   * Agenda reorder

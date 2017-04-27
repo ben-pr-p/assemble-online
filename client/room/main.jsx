@@ -39,9 +39,11 @@ export default class Main extends Component {
     }
   }
 
-  handleCheckpoints = checkpoints => checkpoints
-    ? this.setState({ checkpoints })
-    : null
+  handleCheckpoints = checkpoints => {
+    if (checkpoints) {
+      this.setState({ checkpoints })
+    }
+  }
 
   announceMe = data => Sock.emit('me', data)
 
