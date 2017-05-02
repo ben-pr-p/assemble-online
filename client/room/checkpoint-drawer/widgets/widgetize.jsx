@@ -125,12 +125,13 @@ export default WrappedComponent => class extends Component {
   suicide = () => this.props.delete(this.kind)
 
   render() {
-    const { me } = this.props
+    const { me, checkpointName } = this.props
     const { owner, ...state } = this.state
 
     const toPass = Object.assign(
       {
-        me: me,
+        me,
+        checkpointName,
         update: this.update,
       },
       state

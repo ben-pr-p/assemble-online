@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import Avatar from '../../../../../common/avatar'
 import { Button, Collapse, Input, Tooltip } from 'antd'
-import { Agenda, Done, Settings } from '../../../../../common/icons'
+import Avatar from '../../../../../common/avatar'
+import { Agenda, Done, Download, Settings } from '../../../../../common/icons'
+import Save from './save'
 
 const { Panel } = Collapse
 
@@ -18,6 +19,8 @@ export default class AgendaWidget extends Component {
     tempItem: {},
     editing: -1,
   }
+
+  save = () => Save(this.props.checkpointName, this.props.items)
 
   toggleDone = idx => ev => {
     ev.stopPropagation()
@@ -38,7 +41,12 @@ export default class AgendaWidget extends Component {
       tempItem: {},
     })
 
-  clearEditing = () => this.setState({ editing: -1 })
+  onPanelChange = nextActivePanel => {
+    this.setState({
+      editing: -1,
+      activePanel: nextActivePanel,
+    })
+  }
 
   addItem = () => {
     const toCreate = Object.assign({}, this.state.tempItem)
@@ -72,9 +80,17 @@ export default class AgendaWidget extends Component {
     this.props.update({ items: copy })
   }
 
+  onNoteChange = idx => ev => {
+    const copy = this.props.items.slice()
+    copy[idx] = Object.assign({}, this.props.items[idx], {
+      notes: ev.target.value,
+    })
+    this.props.update({ items: copy })
+  }
+
   render() {
     const { items } = this.props
-    const { tempItem, editing } = this.state
+    const { tempItem, editing, activePanel } = this.state
 
     const collapseProps = {}
     if (editing > -1) {
@@ -85,7 +101,11 @@ export default class AgendaWidget extends Component {
 
     return (
       <div className="agenda">
-        <Collapse {...collapseProps} onChange={this.clearEditing}>
+        <Collapse
+          {...collapseProps}
+          onChange={this.onPanelChange}
+          activeKey={activePanel}
+        >
           {items.map((i, idx) => (
             <Panel
               key={this.keyify(idx, i)}
@@ -153,6 +173,14 @@ export default class AgendaWidget extends Component {
                 : <p> {i.description} </p>}
 
               {editing == idx && this.renderButtons()}
+
+              <h3> Notes </h3>
+              <Input
+                type="textarea"
+                value={i.notes}
+                onChange={this.onNoteChange(idx)}
+                rows={4}
+              />
             </Panel>
           ))}
 
@@ -174,6 +202,13 @@ export default class AgendaWidget extends Component {
             {this.renderButtons()}
           </Panel>
         </Collapse>
+        <Button
+          size="small"
+          onClick={this.save}
+          className="save-button"
+        >
+          <Download /> Download
+        </Button>
       </div>
     )
   }
@@ -189,5 +224,5 @@ export default class AgendaWidget extends Component {
     </div>
   )
 
-  keyify = (idx, obj) => JSON.stringify(Object.assign({ idx }, obj))
+  keyify = (idx, obj) => idx
 }

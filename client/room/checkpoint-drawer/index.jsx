@@ -191,6 +191,7 @@ export default class CheckpointDrawer extends Component {
       me={this.props.me}
       initialState={initialState}
       members={this.props.checkpoint.members}
+      checkpointName={this.props.checkpoint.name}
       delete={this.deleteWidget}
     />
   )

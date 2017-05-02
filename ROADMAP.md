@@ -1,8 +1,7 @@
 # For Dali
 * Features
-  * Draggable widget order
-  * Browser widget
   * Agenda notes
+  * Draggable widget order
   * Export to markdown
   * Agenda reorder
   * Queue emojis

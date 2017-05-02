@@ -8,6 +8,7 @@ import Checkpoint from './checkpoint'
 import Close from './close'
 import Create from './close'
 import Done from './done'
+import Download from './download'
 import Enter from './enter'
 import Github from './github'
 import Left from './left'
@@ -39,6 +40,7 @@ export {
   Close,
   Create,
   Done,
+  Download,
   Enter,
   Github,
   Left,
