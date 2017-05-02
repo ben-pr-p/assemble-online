@@ -44,4 +44,5 @@ const snapAll = () =>
       .catch(reject)
   })
 
+log('Analytics booted up')
 setInterval(snapAll, RESOLUTION)
