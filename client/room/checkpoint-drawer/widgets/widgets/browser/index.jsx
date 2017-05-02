@@ -1,10 +1,20 @@
 import React, { Component } from 'react'
 import { Button, Icon, Input, Tooltip } from 'antd'
+import { Browser } from '../../../../../common/icons'
 
 /* Notes on agenda items as you're doing them */
 
 export default class BrowserWidget extends Component {
-  static icon = <Icon type="chrome" />
+  static icon = (
+    <Browser
+      style={{
+        transform: 'scale(1.5)',
+        height: '32px',
+        width: '32px',
+      }}
+    />
+  )
+
   static kind = 'Browser'
   static initial = {
     url: '',

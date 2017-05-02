@@ -3,6 +3,7 @@ import Back from './back'
 import BrowseCheckpoints from './browse-checkpoints'
 import Bug from './bug'
 import Build from './build'
+import Browser from './browser'
 import Camera from './camera'
 import Checkpoint from './checkpoint'
 import Close from './close'
@@ -11,6 +12,7 @@ import Done from './done'
 import Download from './download'
 import Enter from './enter'
 import Github from './github'
+import Grain from './grain'
 import Left from './left'
 import Mail from './mail'
 import MicOn from './mic-on'
@@ -35,6 +37,7 @@ export {
   BrowseCheckpoints,
   Bug,
   Build,
+  Browser,
   Camera,
   Checkpoint,
   Close,
@@ -43,6 +46,7 @@ export {
   Download,
   Enter,
   Github,
+  Grain,
   Left,
   Mail,
   MicOn,

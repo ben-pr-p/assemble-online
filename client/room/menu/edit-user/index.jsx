@@ -112,38 +112,42 @@ export default class EditUserModal extends Component {
     if (attr == 'avatar') {
       return (
         <div className="avatar-field-container" key={attr}>
-          <Tooltip title="Take a picture" placement="bottom">
-            <div
-              className="avatar-clicker"
-              onClick={this.state.snapping ? this.snapPic : this.startSnapping}
-            >
-              {!this.state.snapping
-                ? <Avatar
-                    form={true}
-                    letters={this.state.name}
-                    src={this.state.avatar}
-                    questionMark={true}
-                    onClick={this.startSnapping}
-                  />
-                : <div id="preview" onClick={this.snapPic} />}
-              <Button
-                className="button"
-                icon="camera"
-                size="large"
-                type="primary"
-                shape="circle"
-              />
-            </div>
-          </Tooltip>
+          <div
+            className="avatar-clicker"
+            onClick={this.state.snapping ? this.snapPic : this.startSnapping}
+          >
+            {!this.state.snapping
+              ? <Avatar
+                  form={true}
+                  letters={this.state.name}
+                  src={this.state.avatar}
+                  questionMark={true}
+                  onClick={this.startSnapping}
+                />
+              : <div id="preview" onClick={this.snapPic} />}
+          </div>
 
           <div style={{ marginLeft: 20 }}>
-            {labelMap[attr]}
-            <Input
-              id={attr}
-              name={attr}
-              value={this.state[attr]}
-              onChange={this.onChange}
-            />
+            <Button
+              icon="camera"
+              size="small"
+              type="primary"
+              onClick={this.state.snapping ? this.snapPic : this.startSnapping}
+            >
+              Take a picture
+            </Button>
+
+            <h3 style={{ marginTop: 5, marginBottom: 5 }}> OR </h3>
+
+            <div>
+              {labelMap[attr]}
+              <Input
+                id={attr}
+                name={attr}
+                value={this.state[attr]}
+                onChange={this.onChange}
+              />
+            </div>
           </div>
         </div>
       )

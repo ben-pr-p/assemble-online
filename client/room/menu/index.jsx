@@ -27,11 +27,11 @@ export default class MainMenu extends Component {
       icon: Bug,
       Component: BugReport,
     },
-    'New Checkpoint': {
+    'New Group': {
       icon: NewCheckpoint,
       Component: EditCheckpoint,
     },
-    'Browse Checkpoints': {
+    'Browse Groups': {
       icon: BrowseCheckpoints,
       Component: CheckpointBrowse,
     },

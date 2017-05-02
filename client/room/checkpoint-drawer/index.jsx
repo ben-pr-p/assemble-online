@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import WidgetComponents from './widgets'
-import { Build, Close, Left, Right } from '../../common/icons'
+import { Close, Left, Grain, Right } from '../../common/icons'
 import { Button, Input, Layout, Modal, Tooltip } from 'antd'
 import IconButton from '../../common/icon-button'
 import wildcardify from 'wildcards'
@@ -125,18 +125,7 @@ export default class CheckpointDrawer extends Component {
               <Right />
             </IconButton>
           </Tooltip>
-          <Tooltip placement="bottom" title="Add Widget">
-            <IconButton
-              className="cp-header-icon"
-              onClick={
-                widgetsSelector
-                  ? this.collapseWidgetDrawer
-                  : this.openWidgetDrawer
-              }
-            >
-              <Build />
-            </IconButton>
-          </Tooltip>
+  
           {!tempName
             ? <Tooltip placement="bottomLeft" title="Edit Name">
                 <h3 onClick={this.editName}> {name} </h3>
@@ -147,6 +136,20 @@ export default class CheckpointDrawer extends Component {
                 onChange={this.handleNameInput}
                 onPressEnter={this.onPressEnter}
               />}
+
+          <Tooltip placement="bottom" title="Widgets">
+            <IconButton
+              className="cp-header-icon"
+              onClick={
+                widgetsSelector
+                  ? this.collapseWidgetDrawer
+                  : this.openWidgetDrawer
+              }
+            >
+              <Grain />
+            </IconButton>
+          </Tooltip>
+
           <Tooltip placement="bottom" title="Delete Checkpoint">
             <IconButton className="cp-header-icon" onClick={this.deleteModal}>
               <Close />

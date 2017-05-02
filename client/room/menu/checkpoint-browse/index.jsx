@@ -25,7 +25,7 @@ export default class CheckpointBrowser extends Component {
     const { checkpoints } = this.props
     return (
       <ListBrowser
-        title="Checkpoints"
+        title="Groups"
         items={checkpoints}
         ItemDisplay={CheckpointItem}
         close={this.props.close}
