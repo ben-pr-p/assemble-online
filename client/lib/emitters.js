@@ -18,9 +18,10 @@ wildcardify(ToPeers, 'disconnected-from-*', (ev, data) => {
 const Connections = {
   _connections,
 
-  hasAllOf: setOrArray => (members =>
-      members.filter(m => !_connections.has(m)).length == 0
-    )([...setOrArray])
+  hasAllOf: setOrArray =>
+    (members => members.filter(m => !_connections.has(m)).length == 0)([
+      ...setOrArray,
+    ]),
 }
 
 export { ToPeers, FromPeers, Bus, Connections }

@@ -1,6 +1,2 @@
-module.exports =
-  (resolve, reject) =>
-    (err, result) =>
-      err
-        ? reject(err)
-        : resolve(result)
+module.exports = (resolve, reject) => (err, result) =>
+  (err ? reject(err) : resolve(result))

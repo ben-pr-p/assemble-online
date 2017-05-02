@@ -6,14 +6,14 @@ import { Badge, Tooltip } from 'antd'
 export default class Circle extends Component {
   state = {
     vol: 0,
-    filler: false
+    filler: false,
   }
 
-  componentWillMount () {
+  componentWillMount() {
     Updates.on(`volume-${this.props.user.id}`, this.handleVolume)
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     Updates.off(`volume-${this.props.user.id}`, this.handleVolume)
   }
 
@@ -22,19 +22,20 @@ export default class Circle extends Component {
     this.setState({ vol })
   }
 
-  render () {
+  render() {
     const { x, y, d, user, status, audio, video } = this.props
     const { vol, filler } = this.state
 
     const displayVol = audio ? vol : 0
 
     return (
-      <div className='volume-circle'>
-        <div className='badge-container'>
+      <div className="volume-circle">
+        <div className="badge-container">
           {status && this.renderStatusBadge()}
         </div>
 
-        <div className='spinner circle'
+        <div
+          className="spinner circle"
           style={{
             width: `${d}px`,
             height: `${d}px`,
@@ -44,59 +45,57 @@ export default class Circle extends Component {
             borderBottom: `${BORDER_THICKNESS}px solid black`,
             borderRadius: '50%',
             zIndex: 100,
-            transform: `rotate(${this.calcRotate(displayVol)}deg)`
+            transform: `rotate(${this.calcRotate(displayVol)}deg)`,
           }}
         />
 
-        <div className='circle'
+        <div
+          className="circle"
           style={{
-            width: `${d/2}px`,
+            width: `${d / 2}px`,
             height: `${d}px`,
             border: `${BORDER_THICKNESS}px solid black`,
             borderRight: 0,
             borderRadius: `${d + BORDER_THICKNESS}px 0px 0px ${d + BORDER_THICKNESS}px`,
             zIndex: 110,
-            opacity: displayVol > .5
-              ? 0
-              : 1
+            opacity: displayVol > 0.5 ? 0 : 1,
           }}
         />
 
-        <div className='circle'
+        <div
+          className="circle"
           style={{
-            width: `${d/2}px`,
+            width: `${d / 2}px`,
             height: `${d}px`,
             border: `${BORDER_THICKNESS}px solid ${user.color}`,
             borderLeft: 0,
-            left: `${d/2}px`,
+            left: `${d / 2}px`,
             borderRadius: `0px ${d + BORDER_THICKNESS}px ${d + BORDER_THICKNESS}px 0px`,
             zIndex: 110,
-            opacity: displayVol > .5
-              ? 1
-              : 0
+            opacity: displayVol > 0.5 ? 1 : 0,
           }}
         />
       </div>
     )
   }
 
-  calcRotate = vol => -45 + (vol * 360)
+  calcRotate = vol => -45 + vol * 360
   renderStatusBadge = () => {
     const status = {
       disconnected: 'default',
       connecting: 'processing',
-      connected: 'success'
+      connected: 'success',
     }[this.props.status]
 
     const text = {
       disconnected: 'Disconnected',
       connecting: 'Connecting',
-      connected: ''
+      connected: '',
     }[this.props.status]
 
     return (
-      <Tooltip placement='bottomLeft' title='Status'>
-        <Badge className='status-badge' status={status} text={text} />
+      <Tooltip placement="bottomLeft" title="Status">
+        <Badge className="status-badge" status={status} text={text} />
       </Tooltip>
     )
   }

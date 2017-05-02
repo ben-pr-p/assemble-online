@@ -6,25 +6,26 @@ import { Card } from 'antd'
 class CheckpointItem extends Component {
   goTo = () => Updates.emit('move-to', this.props.item.loc)
 
-  render () {
+  render() {
     const { item } = this.props
     return (
-      <Card className='checkpoint-item' onClick={this.goTo} >
-        <div className='checkpoint-color'
+      <Card className="checkpoint-item" onClick={this.goTo}>
+        <div
+          className="checkpoint-color"
           style={{ backgroundColor: item.color }}
         />
-        <div className='checkpoint-label'> {item.name} </div>
+        <div className="checkpoint-label"> {item.name} </div>
       </Card>
     )
   }
 }
 
 export default class CheckpointBrowser extends Component {
-  render () {
+  render() {
     const { checkpoints } = this.props
     return (
       <ListBrowser
-        title='Checkpoints'
+        title="Checkpoints"
         items={checkpoints}
         ItemDisplay={CheckpointItem}
         close={this.props.close}

@@ -11,16 +11,17 @@ const sd = sr * 2
 
 export default class CheckpointBlob extends Component {
   state = {
-    loc: []
+    loc: [],
   }
 
-  componentWillMount () {
+  componentWillMount() {
     this.state.loc = this.props.checkpoint.loc
   }
 
-  move = ev => this.setState({
-    loc: [this.state.loc[0] + ev.movementX, this.state.loc[1] + ev.movementY]
-  })
+  move = ev =>
+    this.setState({
+      loc: [this.state.loc[0] + ev.movementX, this.state.loc[1] + ev.movementY],
+    })
 
   startTracking = () => {
     document.addEventListener('mousemove', this.move)
@@ -29,46 +30,52 @@ export default class CheckpointBlob extends Component {
 
   stopTracking = () => {
     document.removeEventListener('mousemove', this.move)
-    Sock.emit('checkpoint-move', Object.assign({ id: this.props.checkpoint.id }, { loc: this.state.loc }))
+    Sock.emit(
+      'checkpoint-move',
+      Object.assign({ id: this.props.checkpoint.id }, { loc: this.state.loc })
+    )
   }
 
   delete = () => Sock.emit('checkpoint-destroy', this.props.checkpoint)
 
-  render () {
+  render() {
     const { checkpoint, translate } = this.props
     const { loc } = this.state
 
     const { id, members, color, name } = checkpoint
 
-    let [ x, y ] = loc
+    let [x, y] = loc
     if (!x || isNaN(x)) x = 0
     if (!x || isNaN(y)) y = 0
 
     const adj = loc.map((num, idx) => num + translate[idx])
 
     const isFar = this.isFar({ adj, x, y, translate })
-    const specificD = (isFar ? sd: d)
+    const specificD = isFar ? sd : d
 
     const blobStyle = {
-      border: `5px solid ${color}`
+      border: `5px solid ${color}`,
     }
 
     Object.assign(blobStyle, this.computeWidthHeight(isFar))
     Object.assign(blobStyle, this.computeTransform(isFar, { x, y, translate }))
 
-    if (checkpoint.avatar) Object.assign(blobStyle, {
-      backgroundUrl: `url(${checkpoint.avatar})`
-    })
+    if (checkpoint.avatar)
+      Object.assign(blobStyle, {
+        backgroundUrl: `url(${checkpoint.avatar})`,
+      })
 
     return (
-      <div className='checkpoint-blob' id={id}
+      <div
+        className="checkpoint-blob"
+        id={id}
         style={blobStyle}
         onMouseDown={this.startTracking}
         onMouseUp={this.stopTracking}
       >
         {!checkpoint.avatar && <Checkpoint color={color} />}
 
-        <div className='checkpoint-label' style={{ backgroundColor: color }} >
+        <div className="checkpoint-label" style={{ backgroundColor: color }}>
           {name}
         </div>
       </div>
@@ -76,13 +83,18 @@ export default class CheckpointBlob extends Component {
   }
 
   isFar = ({ adj, x, y, translate }) =>
-    (adj.x < 0 || adj.x > window.innerWidth || adj.y < 0 || adj.y > window.innerHeight)
+    adj.x < 0 ||
+    adj.x > window.innerWidth ||
+    adj.y < 0 ||
+    adj.y > window.innerHeight
 
-  computeWidthHeight = (isFar) => !isFar
-    ? { width: `${d}px`, height: `${d}px` }
-    : { width: `${sd}px`, height: `${sd}px` }
+  computeWidthHeight = isFar =>
+    (!isFar
+      ? { width: `${d}px`, height: `${d}px` }
+      : { width: `${sd}px`, height: `${sd}px` })
 
-  computeTransform = (isFar, { x, y, translate }) => !isFar
-    ? { transform: `translate(${x}px,${y}px)` }
-    : this.computeFarTransform({ x, y, translate })
+  computeTransform = (isFar, { x, y, translate }) =>
+    (!isFar
+      ? { transform: `translate(${x}px,${y}px)` }
+      : this.computeFarTransform({ x, y, translate }))
 }

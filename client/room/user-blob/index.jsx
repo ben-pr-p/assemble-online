@@ -44,42 +44,56 @@ const initialize = name => {
 
 export default class UserBlob extends Component {
   state = {
-    loc: [0,0],
-    tempLoc: [0,0],
+    loc: [0, 0],
+    tempLoc: [0, 0],
     dragging: false,
     status: 'disconnected',
-    controlsShown: false
+    controlsShown: false,
   }
 
-  componentWillMount () {
+  componentWillMount() {
     Updates.on(`location-${this.props.user.id}`, this.handleLocation)
     if (this.props.isMe) this.state.status = 'connected'
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     Updates.off(`location-${this.props.user.id}`, this.handleLocation)
   }
 
-  handleLocation = data => this.setState({
-    loc: data
-  })
+  handleLocation = data =>
+    this.setState({
+      loc: data,
+    })
 
   setStatus = status => this.setState({ status })
   toggleControls = () =>
-    (this.state.tempLoc[1] - this.state.loc[1] < 10 &&
-      this.state.tempLoc[0] - this.state.loc[0] < 10) &&
-        this.setState({ controlsShown: !this.state.controlsShown })
+    this.state.tempLoc[1] - this.state.loc[1] < 10 &&
+    this.state.tempLoc[0] - this.state.loc[0] < 10 &&
+    this.setState({ controlsShown: !this.state.controlsShown })
 
   /*
    * desktop application style movement
    */
 
-  move = ev => this.setState({
-    tempLoc: [
-      Math.max(Math.min(this.state.tempLoc[0] + ev.movementX, this.props.dimensions[0] - 100), 0),
-      Math.max(Math.min(this.state.tempLoc[1] + ev.movementY, this.props.dimensions[1] - 100), 0)
-    ]
-  })
+  move = ev =>
+    this.setState({
+      tempLoc: [
+        Math.max(
+          Math.min(
+            this.state.tempLoc[0] + ev.movementX,
+            this.props.dimensions[0] - 100
+          ),
+          0
+        ),
+        Math.max(
+          Math.min(
+            this.state.tempLoc[1] + ev.movementY,
+            this.props.dimensions[1] - 100
+          ),
+          0
+        ),
+      ],
+    })
 
   startTracking = () => {
     this.state.tempLoc = this.state.loc.slice()
@@ -91,18 +105,18 @@ export default class UserBlob extends Component {
   stopTracking = () => {
     document.removeEventListener('mousemove', this.move)
     Updates.emit('move-to', this.state.tempLoc)
-    setTimeout(() => this.state.dragging = false, 100)
+    setTimeout(() => (this.state.dragging = false), 100)
   }
 
-  render () {
+  render() {
     const { user, translate, isMe, localStream } = this.props
     const { loc, tempLoc, dragging, status, controlsShown } = this.state
 
     let x, y
     if (dragging) {
-      [ x, y ] = tempLoc
+      [x, y] = tempLoc
     } else {
-      [ x, y ] = loc
+      [x, y] = loc
     }
 
     if (!x || isNaN(x)) x = 0
@@ -110,17 +124,21 @@ export default class UserBlob extends Component {
 
     const adj = {
       x: x + translate.x,
-      y: y + translate.y
+      y: y + translate.y,
     }
 
     const isFar = false
-    const specificD = (isFar ? sd: d)
+    const specificD = isFar ? sd : d
 
-    const [away, audio, video] = ['away', 'audio', 'video'].map(attr => user[attr] == 'true')
+    const [away, audio, video] = ['away', 'audio', 'video'].map(
+      attr => user[attr] == 'true'
+    )
 
     return (
-      <div className={`user-blob ${isMe ? 'me' : 'other'}`}
-        id={user.id} onClick={this.toggleControls}
+      <div
+        className={`user-blob ${isMe ? 'me' : 'other'}`}
+        id={user.id}
+        onClick={this.toggleControls}
         onMouseDown={isMe && this.startTracking}
         onMouseUp={isMe && this.stopTracking}
         style={Object.assign(
@@ -128,20 +146,25 @@ export default class UserBlob extends Component {
           this.computeTransform(isFar, { x, y, translate })
         )}
       >
-        {away && (
-          <div style={this.computeWidthHeight(isFar)} className='user-blob-away-overlay'>
-            <Run color='white' />
-          </div>
-        )}
+        {away &&
+          <div
+            style={this.computeWidthHeight(isFar)}
+            className="user-blob-away-overlay"
+          >
+            <Run color="white" />
+          </div>}
 
-        {!video && (
-          <Avatar src={user.avatar} letters={initialize(user.name)} style={{ position: 'absolute' }} />
-        )}
+        {!video &&
+          <Avatar
+            src={user.avatar}
+            letters={initialize(user.name)}
+            style={{ position: 'absolute' }}
+          />}
 
         <VolumeIndicator {...{ d: specificD, user, status, audio, video }} />
 
-        <div className='video-clip'>
-          {(isMe || user.signalReady) && (
+        <div className="video-clip">
+          {(isMe || user.signalReady) &&
             <WebRTC
               audio={audio}
               video={video}
@@ -149,26 +172,35 @@ export default class UserBlob extends Component {
               localStream={localStream}
               setStatus={this.setStatus}
               status={status}
-            />
-          )}
+            />}
         </div>
 
-        {isMe && controlsShown &&
-          <Controls {...{ away, audio, video, toggleStream: this.props.toggleStream }} />
-        }
+        {isMe &&
+          controlsShown &&
+          <Controls
+            {...{ away, audio, video, toggleStream: this.props.toggleStream }}
+          />}
       </div>
     )
   }
 
-  isFar ({ adj, isMe, x, y, translate }) {
-    return (!(isMe) && (adj.x < 0 || adj.x > window.innerWidth || adj.y < 0 || adj.y > window.innerHeight))
+  isFar({ adj, isMe, x, y, translate }) {
+    return (
+      !isMe &&
+      (adj.x < 0 ||
+        adj.x > window.innerWidth ||
+        adj.y < 0 ||
+        adj.y > window.innerHeight)
+    )
   }
 
-  computeWidthHeight = (isFar) => !isFar
-    ? { width: `${d}px`, height: `${d}px` }
-    : { width: `${sd}px`, height: `${sd}px` }
+  computeWidthHeight = isFar =>
+    (!isFar
+      ? { width: `${d}px`, height: `${d}px` }
+      : { width: `${sd}px`, height: `${sd}px` })
 
-  computeTransform = (isFar, { x, y, translate }) => !isFar
-    ? { transform: `translate(${x}px,${y}px)` }
-    : this.computeFarTransform({ x, y, translate })
+  computeTransform = (isFar, { x, y, translate }) =>
+    (!isFar
+      ? { transform: `translate(${x}px,${y}px)` }
+      : this.computeFarTransform({ x, y, translate }))
 }

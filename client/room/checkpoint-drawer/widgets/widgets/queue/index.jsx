@@ -7,16 +7,15 @@ import { Queue } from '../../../../../common/icons'
 /* emoji */
 
 export default class QueueWidget extends Component {
-  static icon = (<Queue style={{ transform: 'scale(2)' }} />)
+  static icon = <Queue style={{ transform: 'scale(2)' }} />
   static kind = 'Queue'
   static initial = {
     speaking: null,
-    queue: []
+    queue: [],
   }
 
   alreadyInQueue = () =>
-    (this.props.queue.filter(u => u.id == Sock.id).length > 0)
-    ||
+    this.props.queue.filter(u => u.id == Sock.id).length > 0 ||
     (this.props.speaking && this.props.speaking.id == Sock.id)
 
   endTurn = () => {
@@ -24,7 +23,7 @@ export default class QueueWidget extends Component {
     const popped = copy.shift() || null
     this.props.update({
       speaking: popped,
-      queue: copy
+      queue: copy,
     })
   }
 
@@ -36,62 +35,56 @@ export default class QueueWidget extends Component {
       copy.push(fullme)
       const update = { queue: copy }
 
-      if (this.props.speaking == null)
-        this.props.update({ speaking: fullme })
-      else
-        this.props.update({ queue: copy })
+      if (this.props.speaking == null) this.props.update({ speaking: fullme })
+      else this.props.update({ queue: copy })
     }
   }
 
-  render () {
+  render() {
     const { speaking, queue, me } = this.props
 
     return (
-      <div className='queue'>
-        <div className='speaking-box'>
-          <div className='avatar-container'>
-            <Avatar form={true} src={speaking ? speaking.avatar : null}
+      <div className="queue">
+        <div className="speaking-box">
+          <div className="avatar-container">
+            <Avatar
+              form={true}
+              src={speaking ? speaking.avatar : null}
               questionMark={!speaking}
             />
 
-
-          <div className='buttons-layer'>
-            {!this.alreadyInQueue() && (
-              <Button
-                className='queue-button add-me'
-                onClick={this.addMeToQueue}
-                type='primary'
-              >
-                Add Me
-              </Button>
-            )}
-            {(speaking && speaking.id == me.id) && (
-              <Button
-                type='primary'
-                className='queue-button done-speaking'
-                onClick={this.endTurn}
-              >
-                Done
-              </Button>
-            )}
-          </div>
+            <div className="buttons-layer">
+              {!this.alreadyInQueue() &&
+                <Button
+                  className="queue-button add-me"
+                  onClick={this.addMeToQueue}
+                  type="primary"
+                >
+                  Add Me
+                </Button>}
+              {speaking &&
+                speaking.id == me.id &&
+                <Button
+                  type="primary"
+                  className="queue-button done-speaking"
+                  onClick={this.endTurn}
+                >
+                  Done
+                </Button>}
+            </div>
 
           </div>
-          <div className='name-volume-container'>
-            <div className='name'>
-              {speaking
-                ? `${speaking.name}'s turn!`
-                : 'No one is speaking!'
-              }
+          <div className="name-volume-container">
+            <div className="name">
+              {speaking ? `${speaking.name}'s turn!` : 'No one is speaking!'}
             </div>
-            <div className='emojis'>
-            </div>
+            <div className="emojis" />
           </div>
         </div>
 
-        <div className='queue-container'>
+        <div className="queue-container">
           {queue.map((u, idx) => (
-            <Card key={u.id} className='queue-item'>
+            <Card key={u.id} className="queue-item">
               {idx + 1})
               {'\t\t'}
               {u.name}

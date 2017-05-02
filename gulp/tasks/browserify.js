@@ -12,11 +12,14 @@ const dest = './build'
 const shouldUglify = process.env.NODE_ENV == 'production'
 
 const generate = jsname => () =>
-  vfs.src(`./client/${jsname}`)
-    .pipe(bro({
-      transform: [babelify],
-      extensions: ['.js','.jsx']
-    }))
+  vfs
+    .src(`./client/${jsname}`)
+    .pipe(
+      bro({
+        transform: [babelify],
+        extensions: ['.js', '.jsx'],
+      })
+    )
     .pipe((shouldUglify ? uglify : empty)())
     .pipe(gulp.dest(dest))
 

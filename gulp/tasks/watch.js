@@ -2,7 +2,6 @@ var gulp = require('gulp')
 var gutil = require('gulp-util')
 var clientapps = require('./client-apps')
 
-
 gulp.task('watch', function() {
   gulp.watch('./client/workers/**/*.js', ['workers'])
   gulp.watch('./client/lib/**/*.js', ['browserify'])

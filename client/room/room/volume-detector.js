@@ -10,9 +10,11 @@ let ac = new AC()
  * worker is larger
  */
 
-let processor = ac.createScriptProcessor(4096,2,2)
-processor.onaudioprocess = (e) => {
-  rms = Math.sqrt(e.inputBuffer.getChannelData(0).reduce((a,b) => a + Math.pow(b,2), 0))
+let processor = ac.createScriptProcessor(4096, 2, 2)
+processor.onaudioprocess = e => {
+  rms = Math.sqrt(
+    e.inputBuffer.getChannelData(0).reduce((a, b) => a + Math.pow(b, 2), 0)
+  )
 }
 
 let inputNode

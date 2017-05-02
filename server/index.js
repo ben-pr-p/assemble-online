@@ -11,9 +11,7 @@ const bodyParser = require('body-parser')
 const redis = require('./redis')
 const apps = require('./apps')
 
-const {
-  objectify
-} = require('./utils')
+const { objectify } = require('./utils')
 
 /*
  * ------------------------- Begin config -------------------------
@@ -33,7 +31,7 @@ app.set('views', './server/views')
  * -- redis client
  */
 const server = http.createServer(app)
-const socketServer = io.listen(server, { 'log level':1 })
+const socketServer = io.listen(server, { 'log level': 1 })
 
 // Self contained rest endpoints in /server/apps
 app.use('/api', apps)
@@ -51,11 +49,11 @@ const namespaces = require('./namespaces')(socketServer)
 app.get('/room/:room', (req, res) => {
   log('Request GET /%s', req.params.room)
 
-    /* Reject bad room names */
+  /* Reject bad room names */
   if (encodeURIComponent(req.params.room) != req.params.room)
     return res.status(400).json(print({ error: 'invalid room name' }))
 
-    /* Ensure room exists in redis */
+  /* Ensure room exists in redis */
   if (namespaces.has(req.params.room)) {
     log('Room %s exists', req.params.room)
   } else {

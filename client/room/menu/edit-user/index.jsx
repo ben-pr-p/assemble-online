@@ -18,37 +18,39 @@ Webcam.set({
   crop_height: 100,
   image_format: 'jpeg',
   jpeg_quality: 70,
-  flip_horiz: true
+  flip_horiz: true,
 })
 
 const labelMap = {
   avatar: 'Paste a Image Address to be your Avatar',
-  name: 'What\'s your name?'
+  name: 'What\'s your name?',
 }
 
 export default class EditUserModal extends Component {
   state = {
     avatar: '',
-    name: ''
+    name: '',
   }
 
   onChange = ev => this.setState({ [ev.target.id]: ev.target.value })
 
-  componentWillMount () {
+  componentWillMount() {
     if (this.props.me) {
       for (let attr in this.state) {
-        if (this.props.me[attr])
-          this.state[attr] = this.props.me[attr]
+        if (this.props.me[attr]) this.state[attr] = this.props.me[attr]
       }
     }
   }
 
   submit = () => {
-    const user = Object.assign({
-      id: Sock.id,
-      audio: true,
-      video: false
-    }, this.state)
+    const user = Object.assign(
+      {
+        id: Sock.id,
+        audio: true,
+        video: false,
+      },
+      this.state
+    )
 
     store.set('me', user)
     Sock.emit('me', user)
@@ -57,28 +59,30 @@ export default class EditUserModal extends Component {
 
   cancel = () => this.props.close()
 
-  render () {
-    const fields = Object.keys(this.state).filter(f => f != 'snapping').map(this.renderField)
+  render() {
+    const fields = Object.keys(this.state)
+      .filter(f => f != 'snapping')
+      .map(this.renderField)
 
     const actions = []
 
     if (this.state.name != null) {
-      actions.push((
-        <Button key='cancel' onClick={this.cancel}>
+      actions.push(
+        <Button key="cancel" onClick={this.cancel}>
           Cancel
         </Button>
-      ))
+      )
     }
 
-    actions.push((
-      <Button type='primary' key='ok' onClick={this.submit}>
+    actions.push(
+      <Button type="primary" key="ok" onClick={this.submit}>
         Get Started
       </Button>
-    ))
+    )
 
     return (
-      <Modal title='Create a New Profile' footer={actions} visible={true} >
-        <div className='fields-container'>
+      <Modal title="Create a New Profile" footer={actions} visible={true}>
+        <div className="fields-container">
           {fields}
         </div>
       </Modal>
@@ -87,7 +91,7 @@ export default class EditUserModal extends Component {
 
   startSnapping = () => {
     this.setState({
-      snapping: true
+      snapping: true,
     })
 
     setTimeout(() => {
@@ -96,40 +100,46 @@ export default class EditUserModal extends Component {
   }
 
   snapPic = () => {
-    Webcam.snap(data => this.setState({
-      avatar: data,
-      snapping: false
-    }))
+    Webcam.snap(data =>
+      this.setState({
+        avatar: data,
+        snapping: false,
+      })
+    )
   }
 
-  renderField = (attr) => {
+  renderField = attr => {
     if (attr == 'avatar') {
       return (
-        <div className='avatar-field-container' key={attr}>
-          <Tooltip title='Take a picture' placement='bottom' >
-            <div className='avatar-clicker' onClick={this.state.snapping
-                ? this.snapPic
-                : this.startSnapping
-              }
+        <div className="avatar-field-container" key={attr}>
+          <Tooltip title="Take a picture" placement="bottom">
+            <div
+              className="avatar-clicker"
+              onClick={this.state.snapping ? this.snapPic : this.startSnapping}
             >
               {!this.state.snapping
-                ? (
-                    <Avatar form={true} letters={this.state.name}
-                      src={this.state.avatar} questionMark={true}
-                      onClick={this.startSnapping}
-                    />
-                  )
-                : <div id='preview' onClick={this.snapPic} />
-              }
-              <Button className='button'
-                icon='camera' size='large' type='primary' shape='circle'
+                ? <Avatar
+                    form={true}
+                    letters={this.state.name}
+                    src={this.state.avatar}
+                    questionMark={true}
+                    onClick={this.startSnapping}
+                  />
+                : <div id="preview" onClick={this.snapPic} />}
+              <Button
+                className="button"
+                icon="camera"
+                size="large"
+                type="primary"
+                shape="circle"
               />
             </div>
           </Tooltip>
 
           <div style={{ marginLeft: 20 }}>
             {labelMap[attr]}
-            <Input id={attr}
+            <Input
+              id={attr}
               name={attr}
               value={this.state[attr]}
               onChange={this.onChange}
@@ -139,9 +149,11 @@ export default class EditUserModal extends Component {
       )
     } else {
       return (
-        <div style={{ margin: 10 }} key={attr} >
+        <div style={{ margin: 10 }} key={attr}>
           {labelMap[attr]}
-          <Input id={attr} key={attr}
+          <Input
+            id={attr}
+            key={attr}
             value={this.state[attr]}
             onChange={this.onChange}
           />

@@ -14,45 +14,35 @@ export default class Controls extends Component {
     store.set('me', me)
     Sock.emit('me', me)
 
-    if (toToggle != 'away')
-      this.props.toggleStream(toToggle)
+    if (toToggle != 'away') this.props.toggleStream(toToggle)
   }
 
   toggle = {
     audio: ev => this.toggleCore(ev, 'audio'),
     video: ev => this.toggleCore(ev, 'video'),
-    away: ev => this.toggleCore(ev, 'away')
+    away: ev => this.toggleCore(ev, 'away'),
   }
 
-  render () {
+  render() {
     const { me, audio, video, away } = this.props
 
     return (
-      <div className='controls'>
-        <div className='audio'>
-          <IconButton onClick={this.toggle.audio} id='mute' >
-            {audio
-              ? <MicOn />
-              : <MicOff />
-            }
+      <div className="controls">
+        <div className="audio">
+          <IconButton onClick={this.toggle.audio} id="mute">
+            {audio ? <MicOn /> : <MicOff />}
           </IconButton>
         </div>
 
-        <div className='video'>
-          <IconButton onClick={this.toggle.video} id='toggle-video' >
-            {video
-              ? <VideoOn />
-              : <VideoOff />
-            }
+        <div className="video">
+          <IconButton onClick={this.toggle.video} id="toggle-video">
+            {video ? <VideoOn /> : <VideoOff />}
           </IconButton>
         </div>
 
-        <div className='away'>
-          <IconButton onClick={this.toggle.away} id='toggle-away' >
-            {away
-              ? <Run />
-              : <Run />
-            }
+        <div className="away">
+          <IconButton onClick={this.toggle.away} id="toggle-away">
+            {away ? <Run /> : <Run />}
           </IconButton>
         </div>
       </div>

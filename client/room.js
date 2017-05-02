@@ -5,9 +5,10 @@ import enUS from 'antd/lib/locale-provider/en_US'
 import Main from './room/main'
 
 window.onload = () => {
-  render((
+  render(
     <LocaleProvider locale={enUS}>
-      <Main/>
-    </LocaleProvider>
-  ), document.querySelector('#reactAppContainer'))
+      <Main />
+    </LocaleProvider>,
+    document.querySelector('#reactAppContainer')
+  )
 }

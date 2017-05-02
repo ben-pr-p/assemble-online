@@ -5,9 +5,10 @@ import enUS from 'antd/lib/locale-provider/en_US'
 import Portal from './portal/main'
 
 window.onload = () => {
-  render((
+  render(
     <LocaleProvider locale={enUS}>
       <Portal />
-    </LocaleProvider>
-  ), document.querySelector('#reactAppContainer'))
+    </LocaleProvider>,
+    document.querySelector('#reactAppContainer')
+  )
 }

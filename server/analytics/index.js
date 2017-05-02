@@ -10,35 +10,38 @@ const RESOLUTION = 500 // ms
 const snap = async roomName => {
   const room = redis.room(roomName)
 
-  const [ users, checkpoints ] = await Promise.all([
+  const [users, checkpoints] = await Promise.all([
     room.users.getAll(),
-    room.checkpoints.getAll()
+    room.checkpoints.getAll(),
   ])
 
   const uids = users.map(u => u.id)
 
-  const [ volumes, locations ] = await Promise.all([
+  const [volumes, locations] = await Promise.all([
     room.volumes.get(uids),
-    room.locations.get(uids)
+    room.locations.get(uids),
   ])
 
   const data = {
-    checkpoints, volumes, locations,
+    checkpoints,
+    volumes,
+    locations,
     room: roomName,
-    time: Date.now()
+    time: Date.now(),
   }
 
   if (DEBUG) log('Got snapshot %j', data)
   return data
 }
 
-const snapAll = () => new Promise((resolve, reject) => {
-  redis.rooms
-    .getAll()
-    .then(rooms => Promise.all(rooms.map(snap)))
-    .then(snapshots.insert)
-    .then(resolve)
-    .catch(reject)
-})
+const snapAll = () =>
+  new Promise((resolve, reject) => {
+    redis.rooms
+      .getAll()
+      .then(rooms => Promise.all(rooms.map(snap)))
+      .then(snapshots.insert)
+      .then(resolve)
+      .catch(reject)
+  })
 
 setInterval(snapAll, RESOLUTION)

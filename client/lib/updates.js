@@ -9,7 +9,7 @@ let translate = [0, 0]
 let needTranslate = true
 let dimensions = [window.innerWidth, window.innerHeight]
 let transitioning = false
-let mac = .5
+let mac = 0.5
 
 let width = window.innerWidth
 let height = window.innerHeight
@@ -43,43 +43,50 @@ Sock.on('update', update => {
   }
 })
 
-Sock.on('dimensions', dims => dimensions = dims)
+Sock.on('dimensions', dims => (dimensions = dims))
 
 /*
  * Gooey translate stuff
  */
 
 const third = {
-  on: () => width = .6 * window.innerWidth,
-  off: () => width = window.innerWidth
+  on: () => (width = 0.6 * window.innerWidth),
+  off: () => (width = window.innerWidth),
 }
 
-const getMac = () =>
-  transitioning ? mac * .01 : mac
+const getMac = () => (transitioning ? mac * 0.01 : mac)
 
 const setTranslate = loc => {
   const to = loc || myLoc
 
-  translate = [
-    (-1) * to[0] + (width / 2) - 50,
-    (-1) * to[1] + (height / 2) - 50
-  ]
+  translate = [-1 * to[0] + width / 2 - 50, -1 * to[1] + height / 2 - 50]
 
   transitioning = true
   Updates.emit('translate', translate)
-  setTimeout(() => transitioning = false, 2000)
+  setTimeout(() => (transitioning = false), 2000)
 }
 
 Updates.on('location', ([clientX, clientY]) => {
   Sock.emit('location', [
-    Math.min(Math.max(myLoc[0] + ((clientX - translate[0] - 50 - myLoc[0]) * getMac()), 0), dimensions[0] - 100),
-    Math.min(Math.max(myLoc[1] + ((clientY - translate[1] - 50 - myLoc[1]) * getMac()), 0), dimensions[1] - 100)
+    Math.min(
+      Math.max(
+        myLoc[0] + (clientX - translate[0] - 50 - myLoc[0]) * getMac(),
+        0
+      ),
+      dimensions[0] - 100
+    ),
+    Math.min(
+      Math.max(
+        myLoc[1] + (clientY - translate[1] - 50 - myLoc[1]) * getMac(),
+        0
+      ),
+      dimensions[1] - 100
+    ),
   ])
 
   setTimeout(() => {
     if (
-      isNearEdge(myLoc[0] + 50, translate[0], width)
-      ||
+      isNearEdge(myLoc[0] + 50, translate[0], width) ||
       isNearEdge(myLoc[1] + 50, translate[1], height)
     )
       setTranslate()

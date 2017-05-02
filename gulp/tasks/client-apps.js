@@ -1,1 +1,1 @@
-module.exports = ['room', 'portal', ]//'blog']
+module.exports = ['room', 'portal'] //'blog']

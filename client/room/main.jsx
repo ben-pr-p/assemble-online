@@ -11,10 +11,10 @@ export default class Main extends Component {
   state = {
     users: [],
     checkpoints: [],
-    me: null
+    me: null,
   }
 
-  componentWillMount () {
+  componentWillMount() {
     Sock.on('users', this.handleUsers)
     Sock.on('checkpoints', this.handleCheckpoints)
 
@@ -27,7 +27,7 @@ export default class Main extends Component {
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     Sock.off('users', this.handleUsers)
     Sock.off('checkpoints', this.handleCheckpoints)
   }
@@ -53,7 +53,7 @@ export default class Main extends Component {
     this.forceUpdate()
   }
 
-  render () {
+  render() {
     const { me, users, checkpoints } = this.state
 
     const { clearLocal } = this
@@ -63,9 +63,12 @@ export default class Main extends Component {
     if (!cp) Updates.emit('cp-off')
 
     return (
-      <div id='main-app' style={{
-        width: cp ? '60%' : '100%'
-      }}>
+      <div
+        id="main-app"
+        style={{
+          width: cp ? '60%' : '100%',
+        }}
+      >
         {me && <Room {...{ me, users, checkpoints }} />}
         {cp && <CheckpointDrawer me={me} checkpoint={cp} />}
         <Menu {...{ me, users, checkpoints, clearLocal }} />

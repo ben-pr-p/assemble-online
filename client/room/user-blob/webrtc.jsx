@@ -17,12 +17,11 @@ export default class Connection extends Component {
   peer = null
   isMe = false
 
-  componentWillMount () {
-    if (Sock.id == this.props.partnerId)
-      this.isMe = true
+  componentWillMount() {
+    if (Sock.id == this.props.partnerId) this.isMe = true
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const { partnerId, localStream } = this.props
 
     if (!this.isMe) {
@@ -41,10 +40,13 @@ export default class Connection extends Component {
     }
   }
 
-  componentWillReceiveProps ({ localStream, audio, video }) {
+  componentWillReceiveProps({ localStream, audio, video }) {
     if (this.props.localStream !== localStream) {
       if (this.peer) {
-        if (DEBUG) console.log('Destorying peer in componentWillReceiveProps because of new self stream')
+        if (DEBUG)
+          console.log(
+            'Destorying peer in componentWillReceiveProps because of new self stream'
+          )
         this.peer.destroy()
         this.peer = null
       }
@@ -59,16 +61,13 @@ export default class Connection extends Component {
     }
   }
 
-  sendData = data => this.peer
-    ? this.peer.send(JSON.stringify(data))
-    : null
+  sendData = data => (this.peer ? this.peer.send(JSON.stringify(data)) : null)
 
   handleData = raw => this._handleData(JSON.parse(raw.toString()))
-  _handleData = data => data.event
-    ? FromPeers.emit(data.event, data.data)
-    : null
+  _handleData = data =>
+    (data.event ? FromPeers.emit(data.event, data.data) : null)
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     const { partnerId } = this.props
 
     if (DEBUG) console.log('Destorying peer in componentWillUnmount')
@@ -84,7 +83,7 @@ export default class Connection extends Component {
     this.props.setStatus('disconnected')
   }
 
-  initialize = (optionalLocalStream) => {
+  initialize = optionalLocalStream => {
     const { partnerId, setStatus } = this.props
     const localStream = optionalLocalStream || this.props.localStream
 
@@ -98,7 +97,7 @@ export default class Connection extends Component {
 
     this.peer = new Peer({
       initiator: Sock.id < partnerId,
-      stream: localStream
+      stream: localStream,
     })
 
     this.peer.on('error', err => {
@@ -121,13 +120,12 @@ export default class Connection extends Component {
 
       Sock.emit('signal', {
         to: partnerId,
-        data: config
+        data: config,
       })
     })
 
     if (DEBUG) console.log('setting signal handlers')
     Sock.on(`signal-from-${partnerId}`, this.handleSignal)
-
 
     this.peer.on('stream', remoteStream => {
       if (DEBUG) console.log(`received stream from ${partnerId}`)
@@ -152,19 +150,20 @@ export default class Connection extends Component {
     if (this.vidEl) this.vidEl.volume = vol
   }
 
-  setRef = ref => this.vidEl = ref
+  setRef = ref => (this.vidEl = ref)
 
-  render () {
+  render() {
     const { partnerId, localStream } = this.props
 
     const showVideo = this.props.video
 
     return (
-      <video autoPlay
+      <video
+        autoPlay
         style={{
           position: 'absolute',
           left: showVideo ? -18.75 : 0,
-          transform: 'rotateY(180deg)'
+          transform: 'rotateY(180deg)',
         }}
         width={showVideo ? '150' : '0'}
         height={showVideo ? '100' : '0'}

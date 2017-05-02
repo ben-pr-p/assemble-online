@@ -8,7 +8,8 @@ const imagemin = require('gulp-imagemin')
 gulp.task('images', () => {
   const dest = './build/img'
 
-  return gulp.src('./client/img/**')
+  return gulp
+    .src('./client/img/**')
     .pipe(changed(dest))
     .pipe(imagemin())
     .pipe(gulp.dest(dest))

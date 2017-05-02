@@ -12,23 +12,26 @@ import store from 'store'
 const DEBUG = false
 const UPDATE_INTERVAL = 30
 
-navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
+navigator.getUserMedia =
+  navigator.getUserMedia ||
+  navigator.webkitGetUserMedia ||
+  navigator.mozGetUserMedia
 
 export default class Room extends Component {
   state = {
     dimensions: [],
     translate: [0, 0],
     localStream: null,
-    localMedia: { audio: true, video: false }
+    localMedia: { audio: true, video: false },
   }
 
   mousePos = {}
   intervalId = null
 
-  componentWillMount () {
+  componentWillMount() {
     this.state.localMedia = {
       audio: this.props.me.audio == true || this.props.me.audio == 'true',
-      video: this.props.me.video == true || this.props.me.video == 'true'
+      video: this.props.me.video == true || this.props.me.video == 'true',
     }
 
     Sock.on('dimensions', this.handleDimensions)
@@ -37,14 +40,15 @@ export default class Room extends Component {
     this.setStream()
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     Sock.off('dimensions', this.handleDimensions)
     Updates.off('translate', this.handleTranslate)
     VolumeDetector.detach()
   }
 
   setStream = () => {
-    navigator.getUserMedia({ audio: true, video: true },
+    navigator.getUserMedia(
+      { audio: true, video: true },
       // on success
       stream => {
         this.state.localStream = stream
@@ -57,7 +61,9 @@ export default class Room extends Component {
         VolumeDetector.register(stream, rms => Sock.emit('volume', rms))
       },
       // on failure
-      error => { if (DEBUG) console.log(error) }
+      error => {
+        if (DEBUG) console.log(error)
+      }
     )
   }
 
@@ -78,8 +84,8 @@ export default class Room extends Component {
     }
   }
 
-  handleDimensions = (data) => this.setState({ dimensions: data })
-  handleTranslate = (data) => this.setState({ translate: data })
+  handleDimensions = data => this.setState({ dimensions: data })
+  handleTranslate = data => this.setState({ translate: data })
 
   /*
    * agar.io style movement - disabled
@@ -95,37 +101,44 @@ export default class Room extends Component {
   // onMouseMove = ev => this.mousePos = [ev.clientX, ev.clientY]
   // moveUser = () => Updates.emit('location', this.mousePos)
 
-  render () {
+  render() {
     const { me, users, checkpoints } = this.props
     const { translate, dimensions, localStream } = this.state
 
-    const userBlobs = users.filter(u => u).map((u, idx) => (
-      <UserBlob key={u.id}
-        user={u}
-        localStream={localStream}
-        translate={translate}
-        isMe={me && u.id == Sock.id}
-        toggleStream={this.toggleStream}
-        dimensions={dimensions}
-      />
-    ))
+    const userBlobs = users
+      .filter(u => u)
+      .map((u, idx) => (
+        <UserBlob
+          key={u.id}
+          user={u}
+          localStream={localStream}
+          translate={translate}
+          isMe={me && u.id == Sock.id}
+          toggleStream={this.toggleStream}
+          dimensions={dimensions}
+        />
+      ))
 
     const checkpointBlobs = checkpoints.map((c, idx) => (
-      <CheckpointBlob key={c.id}
-        checkpoint={c}
-        translate={translate}
-      />
+      <CheckpointBlob key={c.id} checkpoint={c} translate={translate} />
     ))
 
     return (
-      <div id='plaza' tabIndex='1'
-        onMouseDown={this.onMouseDown} onMouseUp={this.onMouseUp}
-        onMouseMove={this.onMouseMove} onKeyDown={this.onKeyDown}
+      <div
+        id="plaza"
+        tabIndex="1"
+        onMouseDown={this.onMouseDown}
+        onMouseUp={this.onMouseUp}
+        onMouseMove={this.onMouseMove}
+        onKeyDown={this.onKeyDown}
         onKeyUp={this.onKeyUp}
       >
-        <div id='viewport' style={{
-          transform: `translate(${translate[0]}px, ${translate[1]}px)`
-        }} >
+        <div
+          id="viewport"
+          style={{
+            transform: `translate(${translate[0]}px, ${translate[1]}px)`,
+          }}
+        >
           <Grid dimensions={dimensions} />
           {userBlobs}
           {checkpointBlobs}

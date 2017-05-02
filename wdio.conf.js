@@ -9,13 +9,10 @@ const conf = {
   // from which `wdio` was called. Notice that, if you are calling `wdio` from an
   // NPM script (see https://docs.npmjs.com/cli/run-script) then the current working
   // directory is where your package.json resides, so `wdio` will be called from there.
-  specs: [
-    './client/test/index.js'
-  ],
+  specs: ['./client/test/index.js'],
 
   // Patterns to exclude.
-  exclude: [
-  ],
+  exclude: [],
 
   //
   // ============
@@ -39,8 +36,7 @@ const conf = {
   // Sauce Labs platform configurator - a great tool to configure your capabilities:
   // https://docs.saucelabs.com/reference/platforms-configurator
 
-  capabilities: {
-  },
+  capabilities: {},
 
   // ===================
   // Test Configurations
@@ -88,16 +84,16 @@ const conf = {
   // WebdriverRTC: https://github.com/webdriverio/webdriverrtc
   // Browserevent: https://github.com/webdriverio/browserevent
   plugins: {
-  //     webdrivercss: {
-  //         screenshotRoot: 'my-shots',
-  //         failedComparisonsRoot: 'diffs',
-  //         misMatchTolerance: 0.05,
-  //         screenWidth: [320,480,640,1024]
-  //     },
+    //     webdrivercss: {
+    //         screenshotRoot: 'my-shots',
+    //         failedComparisonsRoot: 'diffs',
+    //         misMatchTolerance: 0.05,
+    //         screenWidth: [320,480,640,1024]
+    //     },
     webdriverrtc: {
-      browser: 'chromeA'
+      browser: 'chromeA',
     },
-  //     browserevent: {}
+    //     browserevent: {}
   },
   //
   // Test runner services
@@ -121,7 +117,7 @@ const conf = {
   // Options to be passed to Mocha.
   // See the full list at http://mochajs.org/
   mochaOpts: {
-    ui: 'bdd'
+    ui: 'bdd',
   },
 
   // =====
@@ -143,7 +139,7 @@ const conf = {
 
   // Gets executed before test execution begins. At this point you can access all global
   // variables, such as `browser`. It is the perfect place to define custom commands.
-  before: function (capabilities, specs) {
+  before: function(capabilities, specs) {
     global.expect = require('chai').expect
     browser.url('/room/test')
   },
@@ -197,29 +193,29 @@ const conf = {
   // }
 }
 
-const opt = require('node-getopt').create([
-  ['n', 'numBrowsers=ARG', 'num-browsers']
-])
-.bindHelp()
-.parseSystem()
+const opt = require('node-getopt')
+  .create([['n', 'numBrowsers=ARG', 'num-browsers']])
+  .bindHelp()
+  .parseSystem()
 
 const createChrome = n => ({
   [`chrome${String.fromCharCode(n + 65)}`]: {
     desiredCapabilities: {
       browserName: 'chrome',
-      chromeOptions: { args: [
-        'use-fake-device-for-media-stream',
-        'use-fake-ui-for-media-stream',
-        'use-file-for-fake-video-capture=./fixtures/sign_irene_qcif.y4m'
-      ] }
-    }
-  }
+      chromeOptions: {
+        args: [
+          'use-fake-device-for-media-stream',
+          'use-fake-ui-for-media-stream',
+          'use-file-for-fake-video-capture=./fixtures/sign_irene_qcif.y4m',
+        ],
+      },
+    },
+  },
 })
 
 global.numBrowsers = parseInt(opt.options.numBrowsers) || 3
-const chromes = new Array(numBrowsers).fill(null)
-  .forEach((_, idx) => {
-    Object.assign(conf.capabilities, createChrome(idx))
-  })
+const chromes = new Array(global.numBrowsers).fill(null).forEach((_, idx) => {
+  Object.assign(conf.capabilities, createChrome(idx))
+})
 
 exports.config = conf

@@ -5,12 +5,15 @@ const clientapps = require('./client-apps')
 
 const dest = './build'
 
-function generate (stylname) {
-  return function () {
-    return gulp.src([`./client/${stylname}`])
-      .pipe(stylus({
-        'include css': true
-      }))
+function generate(stylname) {
+  return function() {
+    return gulp
+      .src([`./client/${stylname}`])
+      .pipe(
+        stylus({
+          'include css': true,
+        })
+      )
       .on('error', handleErrors)
       .pipe(gulp.dest(dest))
   }

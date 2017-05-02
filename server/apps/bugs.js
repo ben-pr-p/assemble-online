@@ -16,9 +16,7 @@ app.post('/', (req, res) => {
 
   log('Dumping bug %j', bug)
 
-  bugs.insert(bug)
-  .then(ok => res.sendStatus(200))
-  .catch(res.status(400).json)
+  bugs.insert(bug).then(ok => res.sendStatus(200)).catch(res.status(400).json)
 })
 
 module.exports = app

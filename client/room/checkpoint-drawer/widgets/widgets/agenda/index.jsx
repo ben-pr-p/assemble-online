@@ -8,7 +8,7 @@ const { Panel } = Collapse
 /* Notes on agenda items as you're doing them */
 
 export default class AgendaWidget extends Component {
-  static icon = (<Agenda style={{ transform: 'scale(2)' }} />)
+  static icon = <Agenda style={{ transform: 'scale(2)' }} />
   static kind = 'Agenda'
   static initial = {
     items: [],
@@ -16,7 +16,7 @@ export default class AgendaWidget extends Component {
 
   state = {
     tempItem: {},
-    editing: -1
+    editing: -1,
   }
 
   toggleDone = idx => ev => {
@@ -26,13 +26,17 @@ export default class AgendaWidget extends Component {
     this.props.update({ items: copy })
   }
 
-  editTempItem = field => ev => this.setState({
-    tempItem: Object.assign({}, this.state.tempItem, { [field]: ev.target.value })
-  })
+  editTempItem = field => ev =>
+    this.setState({
+      tempItem: Object.assign({}, this.state.tempItem, {
+        [field]: ev.target.value,
+      }),
+    })
 
-  cancelTempItem = () => this.setState({
-    tempItem: {}
-  })
+  cancelTempItem = () =>
+    this.setState({
+      tempItem: {},
+    })
 
   clearEditing = () => this.setState({ editing: -1 })
 
@@ -48,7 +52,7 @@ export default class AgendaWidget extends Component {
       this.state.editing = -1
     } else {
       this.props.update({
-        items: this.props.items.concat([toCreate])
+        items: this.props.items.concat([toCreate]),
       })
     }
   }
@@ -57,7 +61,7 @@ export default class AgendaWidget extends Component {
     ev.stopPropagation()
     this.setState({
       editing: idx,
-      tempItem: Object.assign({}, this.props.items[idx])
+      tempItem: Object.assign({}, this.props.items[idx]),
     })
   }
 
@@ -68,77 +72,101 @@ export default class AgendaWidget extends Component {
     this.props.update({ items: copy })
   }
 
-  render () {
+  render() {
     const { items } = this.props
     const { tempItem, editing } = this.state
 
     const collapseProps = {}
     if (editing > -1) {
-      Object.assign(collapseProps, { activeKey: [this.keyify(editing, items[editing])] })
+      Object.assign(collapseProps, {
+        activeKey: [this.keyify(editing, items[editing])],
+      })
     }
 
     return (
-      <div className='agenda'>
-        <Collapse {...collapseProps} onChange={this.clearEditing} >
+      <div className="agenda">
+        <Collapse {...collapseProps} onChange={this.clearEditing}>
           {items.map((i, idx) => (
-            <Panel key={this.keyify(idx, i)}
-              header={(
-                <div className='panel-header'>
-                  <div className='panel-header-text-container'>
+            <Panel
+              key={this.keyify(idx, i)}
+              header={
+                <div className="panel-header">
+                  <div className="panel-header-text-container">
                     {i.name}
                   </div>
 
                   <div style={{ display: 'flex' }}>
-                    <Tooltip placement='bottom' title={(
-                        <div className='item-options'>
-                          <Button className='opt' size='small' onClick={this.editItem(idx)}>
+                    <Tooltip
+                      placement="bottom"
+                      title={
+                        <div className="item-options">
+                          <Button
+                            className="opt"
+                            size="small"
+                            onClick={this.editItem(idx)}
+                          >
                             Edit
                           </Button>
-                          <Button className='opt' size='small' onClick={this.deleteItem(idx)}>
+                          <Button
+                            className="opt"
+                            size="small"
+                            onClick={this.deleteItem(idx)}
+                          >
                             Delete
                           </Button>
                         </div>
-                      )}
+                      }
                     >
-                      <a className='settings' onClick={ev => ev.stopPropagation()}>
+                      <a
+                        className="settings"
+                        onClick={ev => ev.stopPropagation()}
+                      >
                         <Settings />
                       </a>
                     </Tooltip>
-                    <a className={`done-btn ${i.done ? 'done' : ''}`} onClick={this.toggleDone(idx)} >
+                    <a
+                      className={`done-btn ${i.done ? 'done' : ''}`}
+                      onClick={this.toggleDone(idx)}
+                    >
                       <Done />
                     </a>
                   </div>
                 </div>
-              )}
+              }
             >
 
               {editing == idx
-                ? (
-                    <div>
-                      <Input placeholder='Name' type='text'
-                        onChange={this.editTempItem('name')}
-                        value={tempItem.name}
-                      />
-                      <Input placeholder='Description' type='textarea'
-                        onChange={this.editTempItem('description')}
-                        value={tempItem.description}
-                      />
-                    </div>
-                  )
-                : (<p> {i.description} </p>)
-              }
+                ? <div>
+                    <Input
+                      placeholder="Name"
+                      type="text"
+                      onChange={this.editTempItem('name')}
+                      value={tempItem.name}
+                    />
+                    <Input
+                      placeholder="Description"
+                      type="textarea"
+                      onChange={this.editTempItem('description')}
+                      value={tempItem.description}
+                    />
+                  </div>
+                : <p> {i.description} </p>}
 
               {editing == idx && this.renderButtons()}
             </Panel>
           ))}
 
-          <Panel header='New Item' className='new-agenda-item'>
-            <Input placeholder='Name' type='text'
+          <Panel header="New Item" className="new-agenda-item">
+            <Input
+              placeholder="Name"
+              type="text"
               onChange={this.editTempItem('name')}
               value={tempItem.name}
             />
 
-            <Input placeholder='Description' type='textarea'
+            <Input
+              placeholder="Description"
+              type="textarea"
               onChange={this.editTempItem('description')}
               value={tempItem.description}
             />
@@ -151,15 +179,15 @@ export default class AgendaWidget extends Component {
   }
 
   renderButtons = () => (
-    <div className='buttons'>
+    <div className="buttons">
       <Button onClick={this.cancelTempItem}>
         Reset
       </Button>
-      <Button type='primary' onClick={this.addItem}>
+      <Button type="primary" onClick={this.addItem}>
         {this.state.editing > -1 ? 'Create' : 'Save'}
       </Button>
     </div>
   )
 
-  keyify = (idx, obj) => JSON.stringify(Object.assign( { idx }, obj))
+  keyify = (idx, obj) => JSON.stringify(Object.assign({ idx }, obj))
 }

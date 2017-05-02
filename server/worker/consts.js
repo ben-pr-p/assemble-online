@@ -1,5 +1,3 @@
 const CHECKPOINT_JOIN_DISTANCE = 500
 
-module.exports = {
-  CHECKPOINT_JOIN_DISTANCE
-}
+module.exports = { CHECKPOINT_JOIN_DISTANCE }

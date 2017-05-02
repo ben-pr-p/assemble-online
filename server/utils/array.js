@@ -8,5 +8,5 @@ module.exports = {
     const set = new Set(arr)
     set.delete(el)
     return [...set]
-  }
+  },
 }
