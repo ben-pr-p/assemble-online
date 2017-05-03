@@ -79,8 +79,8 @@ export default class Room extends Component {
       const videoTrack = this.state.localStream.getVideoTracks()[0]
 
       const { audio, video } = this.state.localMedia
-      audioTrack.enabled = audio == 'true' || audio == true
-      videoTrack.enabled = video == 'true' || video == true
+      if (audioTrack) audioTrack.enabled = audio == 'true' || audio == true
+      if (videoTrack) videoTrack.enabled = video == 'true' || video == true
     }
   }
 
@@ -90,7 +90,7 @@ export default class Room extends Component {
   /*
    * agar.io style movement - disabled
    */
- 
+
   // onMouseDown = (ev) => {
   //   if (['plaza', 'grid-main'].includes(ev.target.id)) {
   //     if (this.intervalId) clearInterval(this.intervalId)
