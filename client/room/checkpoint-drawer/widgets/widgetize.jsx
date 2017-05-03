@@ -38,7 +38,12 @@ export default WrappedComponent => class extends Component {
        */
     FromPeers.on(this.eventPrefix(), stateChange => {
       if (this.isOwner()) this.sendToAll(stateChange)
-      this.setState(stateChange)
+
+      if (typeof stateChange == 'string' || stateChange == 'delete') {
+        this.props.delete(this.kind)
+      } else {
+        this.setState(stateChange)
+      }
     })
   }
 
@@ -122,7 +127,9 @@ export default WrappedComponent => class extends Component {
       ? `translate(${pos.x + translate.x}px, ${pos.y + translate.y}px)`
       : `translate(${pos.x}px, ${pos.y}px)`)
 
-  suicide = () => this.props.delete(this.kind)
+  suicide = () => {
+    this.props.delete(this.kind)
+  }
 
   render() {
     const { me, checkpointName } = this.props

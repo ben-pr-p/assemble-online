@@ -1,0 +1,15 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    link(rel='stylesheet', type='text/css', href='/room.css')
+    title='Unsupported Browser'
+
+  body(style='padding: 20%;text-align: center;')
+    h1
+      span!= browser
+      span!= " does not support WebRTC, the technology powering Assemble.live."
+      br
+      br
+      br
+      span!= "For best results, open this page in the most recent version of Chrome, Firefox, or Microsoft Edge."

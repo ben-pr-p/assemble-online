@@ -10,6 +10,7 @@ const http = require('http')
 const bodyParser = require('body-parser')
 const redis = require('./redis')
 const apps = require('./apps')
+const checkBrowser = require('./check-browser')
 
 const { objectify } = require('./utils')
 
@@ -46,7 +47,7 @@ app.get('/room', (req, res) => res.redirect('/'))
 
 const namespaces = require('./namespaces')(socketServer)
 
-app.get('/room/:room', (req, res) => {
+app.get('/room/:room', checkBrowser, (req, res) => {
   log('Request GET /%s', req.params.room)
 
   /* Reject bad room names */

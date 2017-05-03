@@ -1,8 +1,8 @@
 # For Dali
 * Features
-  * Agenda notes
+  * Other person can't delete widget
+  * New checkpoint creation after some had been deleted not showing up
   * Draggable widget order
-  * Export to markdown
   * Agenda reorder
   * Queue emojis
   * Send emails on bug reports
@@ -23,8 +23,6 @@
 # Questions
 
 * Arrow key movement
-* Should deleting widgets delete them for everybody?
-* Who should be able to delete checkpoints?
 
 # Polishing
 * Style menu
