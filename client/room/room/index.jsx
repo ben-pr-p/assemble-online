@@ -48,7 +48,7 @@ export default class Room extends Component {
 
   setStream = () => {
     navigator.getUserMedia(
-      { audio: true, video: true },
+      { audio: true, video: false },
       // on success
       stream => {
         this.state.localStream = stream
@@ -90,6 +90,7 @@ export default class Room extends Component {
   /*
    * agar.io style movement - disabled
    */
+ 
   // onMouseDown = (ev) => {
   //   if (['plaza', 'grid-main'].includes(ev.target.id)) {
   //     if (this.intervalId) clearInterval(this.intervalId)
