@@ -13,6 +13,7 @@ const goodBrowsers = [
   'Vivaldi',
   'Yandex',
   'Mozilla',
+  'Firefox',
   'Blazer',
   'Chrome',
   'Chimera',
