@@ -12,22 +12,21 @@ const snap = async roomName => {
 
   const [users, checkpoints] = await Promise.all([
     room.users.getAll(),
-    room.checkpoints.getAll(),
+    room.checkpoints.getAll()
   ])
 
   const uids = users.map(u => u.id)
 
-  const [volumes, locations] = await Promise.all([
-    room.volumes.get(uids),
-    room.locations.get(uids),
-  ])
+  const [volumes, locations] = uids.length > 0
+    ? await Promise.all([room.volumes.get(uids), room.locations.get(uids)])
+    : [[], []]
 
   const data = {
     checkpoints,
     volumes,
     locations,
     room: roomName,
-    time: Date.now(),
+    time: Date.now()
   }
 
   if (DEBUG) log('Got snapshot %j', data)

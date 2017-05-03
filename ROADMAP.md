@@ -1,5 +1,6 @@
 # For Dali
 * Features
+  * Make sure it says checkpoint everywhere
   * Other person can't delete widget
   * New checkpoint creation after some had been deleted not showing up
   * Draggable widget order
