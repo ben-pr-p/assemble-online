@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import shallowCompare from 'shallow-compare'
+import media from '../../lib/media'
 import Grid from '../grid'
 import UserBlob from '../user-blob'
 import CheckpointBlob from '../checkpoint-blob'
@@ -53,7 +54,7 @@ export default class Room extends Component {
 
   setStream = () => {
     navigator.getUserMedia(
-      { audio: true, video: false },
+      { audio:  media.constraints.audio, video: media.constraints.video },
       // on success
       stream => {
         this.state.localStream = stream

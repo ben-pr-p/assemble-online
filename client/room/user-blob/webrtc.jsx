@@ -4,6 +4,7 @@ import React, { Component } from 'react'
 import shallowCompare from 'shallow-compare'
 import Sock from '../../lib/sock'
 import Updates from '../../lib/updates'
+import media from '../../lib/media'
 import { ToPeers, FromPeers, Connections } from '../../lib/emitters'
 import Peer from 'simple-peer'
 import VolumeDetector from '../room/volume-detector'
@@ -103,6 +104,7 @@ export default class Connection extends Component {
     this.peer = new Peer({
       initiator: Sock.id < partnerId,
       stream: localStream,
+      sdpTransform: media.transformSdp
     })
 
     this.peer.on('error', err => {

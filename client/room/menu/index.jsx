@@ -64,7 +64,6 @@ export default class MainMenu extends Component {
   allClicks = e => this.setState({ selected: e.key })
 
   render() {
-    console.log('rerendering')
     const { me, users, checkpoints } = this.props
     const { selected } = this.state
 
