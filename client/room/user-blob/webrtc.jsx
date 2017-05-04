@@ -103,8 +103,7 @@ export default class Connection extends Component {
 
     this.peer = new Peer({
       initiator: Sock.id < partnerId,
-      stream: localStream,
-      sdpTransform: media.transformSdp
+      stream: localStream
     })
 
     this.peer.on('error', err => {
