@@ -1,11 +1,13 @@
 const bandwidth = require('./bandwidth')
 const audio = true
 
-const video = {
-  width: { exact: 320 },
-  height: { exact: 200 },
-  frameRate: { ideal: 10, max: 15 }
-}
+// const video = {
+//   width: { exact: 320 },
+//   height: { exact: 200 },
+//   frameRate: { ideal: 10, max: 15 }
+// }
+
+const video = true
 
 const constraints = { audio, video }
 
