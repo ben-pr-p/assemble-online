@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import store from 'store'
+import shallowCompare from 'shallow-compare'
 import Menu from './menu'
 import Room from './room'
 import CheckpointDrawer from './checkpoint-drawer'
@@ -30,6 +31,10 @@ export default class Main extends Component {
   componentWillUnmount() {
     Sock.off('users', this.handleUsers)
     Sock.off('checkpoints', this.handleCheckpoints)
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
   }
 
   handleUsers = users => {

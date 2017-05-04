@@ -1,6 +1,5 @@
-/* eslint no-console: 0 */
-
 import React, { Component } from 'react'
+import shallowCompare from 'shallow-compare'
 import Grid from '../grid'
 import UserBlob from '../user-blob'
 import CheckpointBlob from '../checkpoint-blob'
@@ -16,6 +15,8 @@ navigator.getUserMedia =
   navigator.getUserMedia ||
   navigator.webkitGetUserMedia ||
   navigator.mozGetUserMedia
+
+/* eslint no-console: 0 */
 
 export default class Room extends Component {
   state = {
@@ -44,6 +45,10 @@ export default class Room extends Component {
     Sock.off('dimensions', this.handleDimensions)
     Updates.off('translate', this.handleTranslate)
     VolumeDetector.detach()
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
   }
 
   setStream = () => {

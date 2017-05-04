@@ -45,6 +45,7 @@
     "react-dom": "^15.5.4",
     "redis": "^2.6.3",
     "rollupify": "^0.3.8",
+    "shallow-compare": "^1.2.1",
     "simple-peer": "^6.0.7",
     "socket.io": "^1.4.8",
     "socket.io-client": "^1.4.8",
@@ -85,6 +86,7 @@
     "mocha": "^3.2.0",
     "wdio": "^0.3.3",
     "wdio-mocha-framework": "^0.5.7",
-    "wdio-spec-reporter": "0.0.4"
+    "wdio-spec-reporter": "0.0.4",
+    "why-did-you-update": "0.0.8"
   }
 }

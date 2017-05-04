@@ -1,6 +1,7 @@
 /* eslint no-console: 0 */
 
 import React, { Component } from 'react'
+import shallowCompare from 'shallow-compare'
 import Sock from '../../lib/sock'
 import Updates from '../../lib/updates'
 import { ToPeers, FromPeers, Connections } from '../../lib/emitters'
@@ -59,6 +60,10 @@ export default class Connection extends Component {
         this.initialize(localStream)
       }
     }
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
   }
 
   sendData = data => (this.peer ? this.peer.send(JSON.stringify(data)) : null)

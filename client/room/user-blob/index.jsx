@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import lineIntersect from 'line-intersect'
+import shallowCompare from 'shallow-compare'
 import Avatar from '../../common/avatar'
 import Updates from '../../lib/updates'
 import VolumeIndicator from './volume-indicator'
@@ -108,6 +109,20 @@ export default class UserBlob extends Component {
     setTimeout(() => (this.state.dragging = false), 100)
   }
 
+  shouldComponentUpdate (nextProps, nextState) {
+    if (sum(nextState.loc) != sum(this.state.loc)) return true
+
+    for (let attr of ['user', 'translate', 'isMe', 'localStream']) {
+      if (this.props[attr] != nextProps[attr]) return true
+    }
+
+    for (let attr of ['tempLoc', 'dragging', 'status', 'controlsShown']) {
+      if (this.state[attr] != nextState[attr]) return true
+    }
+
+    return false
+  }
+
   render() {
     const { user, translate, isMe, localStream } = this.props
     const { loc, tempLoc, dragging, status, controlsShown } = this.state
@@ -203,4 +218,8 @@ export default class UserBlob extends Component {
     (!isFar
       ? { transform: `translate(${x}px,${y}px)` }
       : this.computeFarTransform({ x, y, translate }))
+}
+
+function sum ([a,b]) {
+  return a + b
 }

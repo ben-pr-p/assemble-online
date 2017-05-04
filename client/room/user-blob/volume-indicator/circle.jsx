@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import shallowCompare from 'shallow-compare'
 import Updates from '../../../lib/updates'
 import { MAX_VOLUME, BORDER_THICKNESS } from './vol-consts'
 import { Badge, Tooltip } from 'antd'
@@ -6,7 +7,7 @@ import { Badge, Tooltip } from 'antd'
 export default class Circle extends Component {
   state = {
     vol: 0,
-    filler: false,
+    filler: false
   }
 
   componentWillMount() {
@@ -22,6 +23,10 @@ export default class Circle extends Component {
     this.setState({ vol })
   }
 
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
+  }
+
   render() {
     const { x, y, d, user, status, audio, video } = this.props
     const { vol, filler } = this.state
@@ -31,7 +36,7 @@ export default class Circle extends Component {
     return (
       <div className="volume-circle">
         <div className="badge-container">
-          {status && this.renderStatusBadge()}
+          {status && <StatusBadge status={status} /> }
         </div>
 
         <div
@@ -45,7 +50,7 @@ export default class Circle extends Component {
             borderBottom: `${BORDER_THICKNESS}px solid black`,
             borderRadius: '50%',
             zIndex: 100,
-            transform: `rotate(${this.calcRotate(displayVol)}deg)`,
+            transform: `rotate(${this.calcRotate(displayVol)}deg)`
           }}
         />
 
@@ -58,7 +63,7 @@ export default class Circle extends Component {
             borderRight: 0,
             borderRadius: `${d + BORDER_THICKNESS}px 0px 0px ${d + BORDER_THICKNESS}px`,
             zIndex: 110,
-            opacity: displayVol > 0.5 ? 0 : 1,
+            opacity: displayVol > 0.5 ? 0 : 1
           }}
         />
 
@@ -72,7 +77,7 @@ export default class Circle extends Component {
             left: `${d / 2}px`,
             borderRadius: `0px ${d + BORDER_THICKNESS}px ${d + BORDER_THICKNESS}px 0px`,
             zIndex: 110,
-            opacity: displayVol > 0.5 ? 1 : 0,
+            opacity: displayVol > 0.5 ? 1 : 0
           }}
         />
       </div>
@@ -80,17 +85,24 @@ export default class Circle extends Component {
   }
 
   calcRotate = vol => -45 + vol * 360
-  renderStatusBadge = () => {
+}
+
+class StatusBadge extends Component {
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
+  }
+
+  render() {
     const status = {
       disconnected: 'default',
       connecting: 'processing',
-      connected: 'success',
+      connected: 'success'
     }[this.props.status]
 
     const text = {
       disconnected: 'Disconnected',
       connecting: 'Connecting',
-      connected: '',
+      connected: ''
     }[this.props.status]
 
     return (

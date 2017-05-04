@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Menu, Button, Tooltip } from 'antd'
+import shallowCompare from 'shallow-compare'
 import Sock from '../../lib/sock'
 import BugReport from './bug-report'
 import EditUser from './edit-user'
@@ -49,6 +50,10 @@ export default class MainMenu extends Component {
     selected: null,
   }
 
+  shouldComponentUpdate (nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
+  }
+
   close = params =>
     this.setState(
       params && params.save
@@ -59,6 +64,7 @@ export default class MainMenu extends Component {
   allClicks = e => this.setState({ selected: e.key })
 
   render() {
+    console.log('rerendering')
     const { me, users, checkpoints } = this.props
     const { selected } = this.state
 

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import shallowCompare from 'shallow-compare'
 
 /*
  * TODO
@@ -9,6 +10,10 @@ import React, { Component } from 'react'
  */
 
 export default class Grid extends Component {
+  shouldComponentUpdate (nextProps, nextState) {
+    return this.props.dimensions.x != nextProps.dimensions.x
+  }
+
   render() {
     const { dimensions } = this.props
 
