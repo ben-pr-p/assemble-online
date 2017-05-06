@@ -1,5 +1,13 @@
 # For Dali
 * Features
+  * Delete in checkpoint - should be an options menu
+  * Connectivity check - maybe refactor simple peer to become React component
+  * On collision, things float away
+  * Pan, dblclick move to place
+  * Administration – and checkpoint administration – only that person can move them
+  * Checkpoints should not be able to be too close together
+  * Checkpoints should look different that groups – thicker outline, a little bit larger - no, they should be the radius
+  * Chat direct message
   * Make sure it says checkpoint everywhere
   * Other person can't delete widget
   * New checkpoint creation after some had been deleted not showing up
@@ -7,6 +15,7 @@
   * Agenda reorder
   * Queue emojis
   * Send emails on bug reports
+  * Whisper
 
 # Immediate
 * Queue mute
