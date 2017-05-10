@@ -83,7 +83,7 @@ export default class Connection extends Component {
     this.props.setStatus('connected')
   }
 
-  handleSignal = config => this.peer.signal(config)
+  handleSignal = config => this.peer && this.peer.signal(config)
 
   handleAttenuation = vol => {
     if (this.vidEl) this.vidEl.volume = vol
