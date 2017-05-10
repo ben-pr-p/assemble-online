@@ -1,7 +1,6 @@
 # For Dali
 * Features
   * Delete in checkpoint - should be an options menu
-  * Connectivity check - maybe refactor simple peer to become React component
   * On collision, things float away
   * Pan, dblclick move to place
   * Administration – and checkpoint administration – only that person can move them

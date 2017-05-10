@@ -1,19 +1,17 @@
 /* eslint no-console: 0 */
 
 import React, { Component } from 'react'
-import SimplePeer from 'react-simple-peer'
+import SimplePeer from './react-simple-peer'
 import shallowCompare from 'shallow-compare'
-import Sock from '../../lib/sock'
-import Updates from '../../lib/updates'
-import media from '../../lib/media'
-import { ToPeers, FromPeers, Connections } from '../../lib/emitters'
-import VolumeDetector from '../room/volume-detector'
+import Sock from '../../../lib/sock'
+import Updates from '../../../lib/updates'
+import media from '../../../lib/media'
+import { ToPeers, FromPeers, Connections } from '../../../lib/emitters'
+import VolumeDetector from '../../room/volume-detector'
 import objHash from 'object-hash'
 
-const DEBUG = false
-const HASH = false
-
-const format = HASH ? objHash : JSON.stringify
+const printStream = stream => (stream ? stream.id : null)
+const printSignalHash = s => console.log(`Sending ${objHash(s)}`)
 
 export default class Connection extends Component {
   peer = null
@@ -35,10 +33,14 @@ export default class Connection extends Component {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (this.props.localStream != nextProps.localStream) {
       this.vidEl.srcObject = nextProps.localStream
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState)
   }
 
   sendData = data => this.peer && this.peer.send(data)
@@ -63,17 +65,35 @@ export default class Connection extends Component {
     ToPeers.on('to-all', this.sendData)
 
     ToPeers.emit(`connected-to-${this.props.partnerId}`)
+
+    if (!this.props.audio && !this.props.video) {
+      console.log('data channel only connection')
+      this.props.setStatus('connected')
+    } else {
+      console.log('awaiting stream')
+    }
   }
 
-  onSignal = data =>
+  onDisconnect = () => {
+    this.props.setStatus('connecting')
+  }
+
+  onSignal = data => {
+    printSignalHash(data)
+
     Sock.emit('signal', {
       to: this.props.partnerId,
       data
     })
+  }
 
   onStream = remoteStream => {
-    this.vidEl && this.vidEl.srcObject
-    this.vidEl.srcObject = remoteStream
+    if (this.vidEl) this.vidEl.srcObject = remoteStream
+    console.log(`stream from ${this.props.partnerId}: ${printStream(remoteStream)}`)
+    if (remoteStream) {
+      console.log(`audio: ${remoteStream.getAudioTracks().length}`)
+      console.log(`video: ${remoteStream.getVideoTracks().length}`)
+    }
     this.props.setStatus('connected')
   }
 
@@ -86,10 +106,38 @@ export default class Connection extends Component {
   setVidRef = ref => (this.vidEl = ref)
   setPeerRef = ref => (this.peer = ref)
 
-  render() {
-    const { partnerId, localStream } = this.props
+  determineInitiator = () => {
+    const { myEnabled, partnerEnabled, partnerId } = this.props
 
-    const showVideo = this.props.video
+    if (partnerEnabled.video && !myEnabled.video)
+      return false
+
+    if (myEnabled.video && !partnerEnabled.video)
+      return true
+
+    if (partnerEnabled.audio && !myEnabled.audio)
+      return false
+
+    if (myEnabled.audio && !partnerEnabled.audio)
+      return true
+
+    return Sock.id < partnerId
+  }
+
+  render() {
+    const { partnerId, localStream, me } = this.props
+
+    const showVideo = this.props.partnerEnabled.video
+
+    /*
+     * I found through experimentation that the initiator sets the capabilities of the stream
+     * If the initiator doesn't have audio or video, the responder can't either
+     * Therefore, the user with the most capabilities enabled should be the initiator
+     * And if you have video, you should have audio as well
+     */
+    const initiator = !this.isMe && this.determineInitiator()
+    if (initiator) console.log('I am initiator')
+    else if (!this.isMe) console.log('Other is initiator')
 
     return (
       <div>
@@ -109,11 +157,12 @@ export default class Connection extends Component {
           <SimplePeer
             key="peer"
             ref={this.setPeerRef}
-            initiator={Sock.id < partnerId}
+            initiator={initiator}
             stream={localStream}
             onSignal={this.onSignal}
             onData={this.handleData}
             onConnect={this.onConnect}
+            onDisconnect={this.onDisconnect}
             onStream={this.onStream}
             onError={this.onError}
           />}
