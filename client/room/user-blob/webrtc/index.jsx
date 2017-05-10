@@ -10,9 +10,6 @@ import { ToPeers, FromPeers, Connections } from '../../../lib/emitters'
 import VolumeDetector from '../../room/volume-detector'
 import objHash from 'object-hash'
 
-const printStream = stream => (stream ? stream.id : null)
-const printSignalHash = s => console.log(`Sending ${objHash(s)}`)
-
 export default class Connection extends Component {
   peer = null
   isMe = false
@@ -65,13 +62,6 @@ export default class Connection extends Component {
     ToPeers.on('to-all', this.sendData)
 
     ToPeers.emit(`connected-to-${this.props.partnerId}`)
-
-    if (!this.props.audio && !this.props.video) {
-      console.log('data channel only connection')
-      this.props.setStatus('connected')
-    } else {
-      console.log('awaiting stream')
-    }
   }
 
   onDisconnect = () => {
@@ -89,11 +79,6 @@ export default class Connection extends Component {
 
   onStream = remoteStream => {
     if (this.vidEl) this.vidEl.srcObject = remoteStream
-    console.log(`stream from ${this.props.partnerId}: ${printStream(remoteStream)}`)
-    if (remoteStream) {
-      console.log(`audio: ${remoteStream.getAudioTracks().length}`)
-      console.log(`video: ${remoteStream.getVideoTracks().length}`)
-    }
     this.props.setStatus('connected')
   }
 
@@ -136,8 +121,6 @@ export default class Connection extends Component {
      * And if you have video, you should have audio as well
      */
     const initiator = !this.isMe && this.determineInitiator()
-    if (initiator) console.log('I am initiator')
-    else if (!this.isMe) console.log('Other is initiator')
 
     return (
       <div>
