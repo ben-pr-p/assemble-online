@@ -49,7 +49,7 @@ export default class UserBlob extends Component {
     tempLoc: [0, 0],
     dragging: false,
     status: 'disconnected',
-    controlsShown: false,
+    controlsShown: false
   }
 
   componentWillMount() {
@@ -63,7 +63,7 @@ export default class UserBlob extends Component {
 
   handleLocation = data =>
     this.setState({
-      loc: data,
+      loc: data
     })
 
   setStatus = status => this.setState({ status })
@@ -92,8 +92,8 @@ export default class UserBlob extends Component {
             this.props.dimensions[1] - 100
           ),
           0
-        ),
-      ],
+        )
+      ]
     })
 
   startTracking = () => {
@@ -109,7 +109,7 @@ export default class UserBlob extends Component {
     setTimeout(() => (this.state.dragging = false), 100)
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
+  shouldComponentUpdate(nextProps, nextState) {
     if (sum(nextState.loc) != sum(this.state.loc)) return true
 
     for (let attr of ['user', 'translate', 'isMe', 'localStream']) {
@@ -124,7 +124,7 @@ export default class UserBlob extends Component {
   }
 
   render() {
-    const { user, translate, isMe, localStream } = this.props
+    const { user, translate, isMe, localStream, me } = this.props
     const { loc, tempLoc, dragging, status, controlsShown } = this.state
 
     let x, y
@@ -139,7 +139,7 @@ export default class UserBlob extends Component {
 
     const adj = {
       x: x + translate.x,
-      y: y + translate.y,
+      y: y + translate.y
     }
 
     const isFar = false
@@ -179,15 +179,14 @@ export default class UserBlob extends Component {
         <VolumeIndicator {...{ d: specificD, user, status, audio, video }} />
 
         <div className="video-clip">
-          {(isMe || user.signalReady) &&
-            <WebRTC
-              audio={audio}
-              video={video}
-              partnerId={user.id}
-              localStream={localStream}
-              setStatus={this.setStatus}
-              status={status}
-            />}
+          <WebRTC
+            partnerEnabled={{ audio, video }}
+            myEnabled={{ audio: me.audio == 'true', video: me.video == 'true' }}
+            partnerId={user.id}
+            localStream={localStream}
+            setStatus={this.setStatus}
+            status={status}
+          />
         </div>
 
         {isMe &&
@@ -210,16 +209,16 @@ export default class UserBlob extends Component {
   }
 
   computeWidthHeight = isFar =>
-    (!isFar
+    !isFar
       ? { width: `${d}px`, height: `${d}px` }
-      : { width: `${sd}px`, height: `${sd}px` })
+      : { width: `${sd}px`, height: `${sd}px` }
 
   computeTransform = (isFar, { x, y, translate }) =>
-    (!isFar
+    !isFar
       ? { transform: `translate(${x}px,${y}px)` }
-      : this.computeFarTransform({ x, y, translate }))
+      : this.computeFarTransform({ x, y, translate })
 }
 
-function sum ([a,b]) {
+function sum([a, b]) {
   return a + b
 }

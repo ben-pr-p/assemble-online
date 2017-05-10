@@ -23,8 +23,7 @@ export default class Room extends Component {
   state = {
     dimensions: [],
     translate: [0, 0],
-    localStream: null,
-    localMedia: { audio: true, video: false },
+    localStream: null
   }
 
   mousePos = {}
@@ -33,7 +32,7 @@ export default class Room extends Component {
   componentWillMount() {
     this.state.localMedia = {
       audio: this.props.me.audio == true || this.props.me.audio == 'true',
-      video: this.props.me.video == true || this.props.me.video == 'true',
+      video: this.props.me.video == true || this.props.me.video == 'true'
     }
 
     Sock.on('dimensions', this.handleDimensions)
@@ -48,46 +47,49 @@ export default class Room extends Component {
     VolumeDetector.detach()
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
+  shouldComponentUpdate(nextProps, nextState) {
     return shallowCompare(this, nextProps, nextState)
   }
 
   setStream = () => {
-    navigator.getUserMedia(
-      { audio:  media.constraints.audio, video: media.constraints.video },
-      // on success
-      stream => {
-        this.state.localStream = stream
-        this.syncTrackEnabled()
-        this.forceUpdate()
+    const { audio, video } = this.state.localMedia
 
-        // Announce that I'm ready to receive signals
-        Sock.emit('me', Object.assign({ signalReady: true }, store.get('me')))
+    if (this.state.localStream) {
+      this.state.localStream.getAudioTracks().forEach(t => t.stop())
+      this.state.localStream.getVideoTracks().forEach(t => t.stop())
+      this.state.localStream = null
+      VolumeDetector.detach()
+    }
 
-        VolumeDetector.register(stream, rms => Sock.emit('volume', rms))
-      },
-      // on failure
-      error => {
-        if (DEBUG) console.log(error)
-      }
-    )
+    if (audio || video) {
+      /* We should always get audio if we are getting video */
+      navigator.getUserMedia(
+        {
+          audio: audio || video ? media.constraints.audio : false,
+          video: video ? media.constraints.video : false
+        },
+        // on success
+        stream => {
+          this.state.localStream = stream
+          this.setAudioEnabled()
+          this.forceUpdate()
+
+          VolumeDetector.register(stream, rms => Sock.emit('volume', rms))
+        },
+        // on failure
+        error => console.log(error)
+      )
+    }
   }
 
   toggleStream = type => {
     this.state.localMedia[type] = !this.state.localMedia[type]
-    this.syncTrackEnabled()
-    this.forceUpdate()
+    this.setStream()
   }
 
-  syncTrackEnabled = () => {
-    if (this.state.localStream) {
-      const audioTrack = this.state.localStream.getAudioTracks()[0]
-      const videoTrack = this.state.localStream.getVideoTracks()[0]
-
-      const { audio, video } = this.state.localMedia
-      if (audioTrack) audioTrack.enabled = audio == 'true' || audio == true
-      if (videoTrack) videoTrack.enabled = video == 'true' || video == true
-    }
+  setAudioEnabled = () => {
+    const audioTrack = this.state.localStream.getAudioTracks()[0]
+    if (audioTrack) audioTrack.enabled = this.state.localMedia.audio
   }
 
   handleDimensions = data => this.setState({ dimensions: data })
@@ -120,6 +122,7 @@ export default class Room extends Component {
           user={u}
           localStream={localStream}
           translate={translate}
+          me={me}
           isMe={me && u.id == Sock.id}
           toggleStream={this.toggleStream}
           dimensions={dimensions}
@@ -143,7 +146,7 @@ export default class Room extends Component {
         <div
           id="viewport"
           style={{
-            transform: `translate(${translate[0]}px, ${translate[1]}px)`,
+            transform: `translate(${translate[0]}px, ${translate[1]}px)`
           }}
         >
           <Grid dimensions={dimensions} />

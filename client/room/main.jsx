@@ -12,7 +12,7 @@ export default class Main extends Component {
   state = {
     users: [],
     checkpoints: [],
-    me: null,
+    me: null
   }
 
   componentWillMount() {
@@ -22,7 +22,7 @@ export default class Main extends Component {
     this.state.me = store.get('me')
 
     if (this.state.me) {
-      Object.assign(this.state.me, { audio: true, video: false })
+      Object.assign(this.state.me, { audio: false, video: false })
       store.set('me', this.state.me)
       this.announceMe(this.state.me)
     }

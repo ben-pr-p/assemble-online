@@ -11,7 +11,7 @@ import shallowCompare from 'shallow-compare'
 
 export default class Grid extends Component {
   shouldComponentUpdate (nextProps, nextState) {
-    return this.props.dimensions.x != nextProps.dimensions.x
+    return this.props.dimensions[0] != nextProps.dimensions[0]
   }
 
   render() {
