@@ -14,6 +14,10 @@ export default class Connection extends Component {
   peer = null
   isMe = false
 
+  state = {
+    tooFar: false
+  }
+
   componentWillMount() {
     this.isMe = Sock.id == this.props.partnerId
   }
@@ -68,14 +72,11 @@ export default class Connection extends Component {
     this.props.setStatus('connecting')
   }
 
-  onSignal = data => {
-    printSignalHash(data)
-
+  onSignal = data =>
     Sock.emit('signal', {
       to: this.props.partnerId,
       data
     })
-  }
 
   onStream = remoteStream => {
     if (this.vidEl) this.vidEl.srcObject = remoteStream
@@ -86,6 +87,15 @@ export default class Connection extends Component {
 
   handleAttenuation = vol => {
     if (this.vidEl) this.vidEl.volume = vol
+
+    if (vol < 0.1 && !this.state.tooFar) {
+      this.setState({ tooFar: true })
+      this.props.setStatus('disconnected')
+    }
+
+    if (vol > 0.1 && this.state.tooFar) {
+      this.setState({ tooFar: false })
+    }
   }
 
   setVidRef = ref => (this.vidEl = ref)
@@ -94,17 +104,13 @@ export default class Connection extends Component {
   determineInitiator = () => {
     const { myEnabled, partnerEnabled, partnerId } = this.props
 
-    if (partnerEnabled.video && !myEnabled.video)
-      return false
+    if (partnerEnabled.video && !myEnabled.video) return false
 
-    if (myEnabled.video && !partnerEnabled.video)
-      return true
+    if (myEnabled.video && !partnerEnabled.video) return true
 
-    if (partnerEnabled.audio && !myEnabled.audio)
-      return false
+    if (partnerEnabled.audio && !myEnabled.audio) return false
 
-    if (myEnabled.audio && !partnerEnabled.audio)
-      return true
+    if (myEnabled.audio && !partnerEnabled.audio) return true
 
     return Sock.id < partnerId
   }
@@ -137,6 +143,7 @@ export default class Connection extends Component {
           ref={this.setVidRef}
         />
         {!this.isMe &&
+          !this.state.tooFar &&
           <SimplePeer
             key="peer"
             ref={this.setPeerRef}
