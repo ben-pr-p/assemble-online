@@ -65,6 +65,19 @@ app.get('/room/:room', checkBrowser, (req, res) => {
   res.render('room', { room: req.params.room })
 })
 
+/*
+ * For bandwidth testing
+ */
+
+const randomNumbers = new Array(1000000).fill(null).map(Math.random)
+const randomMb = Buffer.from(randomNumbers)
+app.get('/megabyte', (req, res) => res.send(randomMb))
+app.post('/megabyte', (req, res) => res.sendStatus(200))
+
+/*
+ * Go!
+ */
+
 const PORT = process.env.PORT
   ? process.env.PORT
   : (log('Missing env var PORT, using 3000'), 3000)

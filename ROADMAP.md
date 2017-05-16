@@ -1,7 +1,8 @@
 # Features
+* Broadcast - broadcast permission - threshold of 75% means the other 25% are forced
+* Checkpoint members can hear each other fully
 * Checkpoints should not be able to be too close together
 * Chat direct message
-* Broadcast - broadcast permission - threshold of 75% means the other 25% are forced
 * RTC Stat based optimizations
 * Collision detection
 * Delete in checkpoint - should be an options menu

@@ -75,7 +75,7 @@ module.exports = (io, nsp, name) => {
                     )
                   : Promise.resolve(null)
             )
-            .then(rez =>
+            .then(() =>
               queue.create('location-change', { room: name, uid: uid }).save()
             )
             .catch(panic)
@@ -229,6 +229,10 @@ module.exports = (io, nsp, name) => {
             .catch(panic)
         )
         .catch(panic)
+    })
+
+    socket.on('my-bandwidth', data => {
+      log(data)
     })
   })
 
