@@ -4,6 +4,7 @@ const React = require('react')
 const Peer = require('simple-peer')
 const { Component } = React
 const objHash = require('object-hash')
+const { transformBandwidth } = require('../../../lib/media')
 
 module.exports = class SimplePeer extends Component {
   constructor() {
@@ -55,7 +56,8 @@ module.exports = class SimplePeer extends Component {
 
     this.peer = new Peer({
       initiator: this.props.initiator,
-      stream: this.stream
+      stream: this.stream,
+      sdpTransform: transformBandwidth
     })
 
     this.bindProps()
