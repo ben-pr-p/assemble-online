@@ -5,7 +5,7 @@ import { Bus } from '../../../lib/emitters'
 import Updates from '../../../lib/updates'
 
 const labelMap = {
-  name: 'What would you like to name this checkpoint?',
+  name: 'What would you like to name this group?',
 }
 
 export default class NewCheckpointModal extends Component {
@@ -34,7 +34,7 @@ export default class NewCheckpointModal extends Component {
 
     return (
       <Modal
-        title="Create a New Checkpoint"
+        title="Create a New Group"
         visible={true}
         onCancel={this.cancel}
         onOk={this.submit}

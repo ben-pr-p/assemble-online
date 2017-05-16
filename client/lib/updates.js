@@ -90,7 +90,7 @@ Updates.on('location', ([clientX, clientY]) => {
  * Set starting checkpoint location to slight offset of user
  */
 Updates.on('checkpoint-new', checkpoint => {
-  checkpoint.loc = myLoc.map(num => num + 5)
+  checkpoint.loc = myLoc.map(num => num - 210)
   Sock.emit('checkpoint-new', checkpoint)
 })
 

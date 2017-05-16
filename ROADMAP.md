@@ -1,6 +1,5 @@
 # Features
-* Make sure it says group everywhere
-* Checkpoints should look different that groups – thicker outline, a little bit larger - no, they should be the radius
+* Checkpoint joining things
 * Checkpoints should not be able to be too close together
 * Chat direct message
 * Broadcast - broadcast permission - threshold of 75% means the other 25% are forced

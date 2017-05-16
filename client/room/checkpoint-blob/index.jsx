@@ -3,7 +3,7 @@ import { Checkpoint, Close } from '../../common/icons'
 import IconButton from '../../common/icon-button'
 import Sock from '../../lib/sock'
 
-const r = 50
+const r = 250
 const d = r * 2
 
 const sr = 25
@@ -73,8 +73,6 @@ export default class CheckpointBlob extends Component {
         onMouseDown={this.startTracking}
         onMouseUp={this.stopTracking}
       >
-        {!checkpoint.avatar && <Checkpoint color={color} />}
-
         <div className="checkpoint-label" style={{ backgroundColor: color }}>
           {name}
         </div>

@@ -1,11 +1,9 @@
 const redis = require('../redis')
 const log = require('debug')('assemble:user-checkpoints')
 const { distance, filterobj } = require('../utils')
-const panic = err => {
-  throw err
-}
+const { CHECKPOINT_JOIN_DISTANCE } = require('./consts')
+const panic = err => { throw err }
 
-const CHECKPOINT_JOIN_DISTANCE = 500
 
 const determineLeaveJoins = (uid, [checks, loc]) => {
   const toLeave = []
