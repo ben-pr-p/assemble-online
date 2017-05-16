@@ -104,9 +104,11 @@ export default class UserBlob extends Component {
   }
 
   stopTracking = () => {
-    document.removeEventListener('mousemove', this.move)
-    Updates.emit('move-to', this.state.tempLoc)
-    setTimeout(() => (this.state.dragging = false), 100)
+    if (this.state.dragging) {
+      document.removeEventListener('mousemove', this.move)
+      Updates.emit('move-to', this.state.tempLoc)
+      setTimeout(() => (this.state.dragging = false), 100)
+    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -152,7 +154,7 @@ export default class UserBlob extends Component {
     return (
       <div
         className={`user-blob ${isMe ? 'me' : 'other'}`}
-        id={user.id}
+        id={`id-${user.id}`}
         onClick={this.toggleControls}
         onMouseDown={isMe && this.startTracking}
         onMouseUp={isMe && this.stopTracking}

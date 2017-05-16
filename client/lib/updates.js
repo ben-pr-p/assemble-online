@@ -51,7 +51,7 @@ Sock.on('dimensions', dims => (dimensions = dims))
 
 const third = {
   on: () => (width = 0.6 * window.innerWidth),
-  off: () => (width = window.innerWidth),
+  off: () => (width = window.innerWidth)
 }
 
 const getMac = () => (transitioning ? mac * 0.01 : mac)
@@ -67,21 +67,14 @@ const setTranslate = loc => {
 }
 
 Updates.on('location', ([clientX, clientY]) => {
+  const target = [
+    myLoc[0] + (clientX - translate[0] - 50 - myLoc[0]) * getMac(),
+    myLoc[1] + (clientY - translate[1] - 50 - myLoc[1]) * getMac()
+  ]
+
   Sock.emit('location', [
-    Math.min(
-      Math.max(
-        myLoc[0] + (clientX - translate[0] - 50 - myLoc[0]) * getMac(),
-        0
-      ),
-      dimensions[0] - 100
-    ),
-    Math.min(
-      Math.max(
-        myLoc[1] + (clientY - translate[1] - 50 - myLoc[1]) * getMac(),
-        0
-      ),
-      dimensions[1] - 100
-    ),
+    Math.min(Math.max(target[0], 0), dimensions[0] - 100),
+    Math.min(Math.max(target[1], 0), dimensions[1] - 100)
   ])
 
   setTimeout(() => {
@@ -102,6 +95,15 @@ Updates.on('checkpoint-new', checkpoint => {
 })
 
 Updates.on('move-to', newLoc => {
+  Sock.emit('location', newLoc)
+  setTranslate(newLoc)
+})
+
+Updates.on('move-delta', delta => {
+  const newLoc = [
+    Math.min(Math.max(delta[0] + myLoc[0], 0), dimensions[0] - 100),
+    Math.min(Math.max(delta[1] + myLoc[1], 0), dimensions[1] - 100)
+  ]
   Sock.emit('location', newLoc)
   setTranslate(newLoc)
 })

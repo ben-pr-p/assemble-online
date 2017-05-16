@@ -21,10 +21,13 @@ navigator.getUserMedia =
 
 export default class Room extends Component {
   state = {
+    panning: false,
     dimensions: [],
     translate: [0, 0],
     localStream: null
   }
+
+  panning = false
 
   mousePos = {}
   intervalId = null
@@ -110,9 +113,44 @@ export default class Room extends Component {
   // onMouseMove = ev => this.mousePos = [ev.clientX, ev.clientY]
   // moveUser = () => Updates.emit('location', this.mousePos)
 
+  /*
+   * pan + dbl click style movement - enabled
+   */
+
+  onDoubleClick = ev => {
+    const { left, top } = document.querySelector(`#id-${Sock.id}`).getBoundingClientRect()
+    const delta = [ ev.clientX - left - 50, ev.clientY - top - 50]
+    Updates.emit('move-delta', delta)
+  }
+
+  onMouseDown = ev => {
+    if (ev.target.id == 'grid-main') {
+      this.state.panning = true
+      document.addEventListener('mousemove', this.pan)
+    }
+  }
+
+  onMouseUp = () => {
+    if (this.state.panning) {
+      this.state.panning = false
+      document.removeEventListener('mousemove', this.pan)
+    }
+  }
+
+  pan = ev => {
+    if (this.state.panning) {
+      this.setState({
+        translate: [
+          this.state.translate[0] + ev.movementX,
+          this.state.translate[1] + ev.movementY
+        ]
+      })
+    }
+  }
+
   render() {
     const { me, users, checkpoints } = this.props
-    const { translate, dimensions, localStream } = this.state
+    const { translate, dimensions, localStream, panning } = this.state
 
     const userBlobs = users
       .filter(u => u)
@@ -137,14 +175,14 @@ export default class Room extends Component {
       <div
         id="plaza"
         tabIndex="1"
+        onDoubleClick={this.onDoubleClick}
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
         onMouseMove={this.onMouseMove}
-        onKeyDown={this.onKeyDown}
-        onKeyUp={this.onKeyUp}
       >
         <div
           id="viewport"
+          className={panning ? 'panning' : 'not-panning'}
           style={{
             transform: `translate(${translate[0]}px, ${translate[1]}px)`
           }}
