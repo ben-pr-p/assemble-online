@@ -3,13 +3,16 @@ const crypto = require('crypto')
 const redis = require('../redis')
 const colors = require('./colors')
 const calcDimensions = require('./calc-dimensions')
+const monk = require('monk')
+const db = monk(process.env.MONGODB_URI || 'localhost:27017/assemble')
+const emails = db.get('emails')
 const { print } = require('../utils')
 
 const UPDATE_FREQUENCY = 200
 
 const kue = require('kue')
 const queue = kue.createQueue({
-  redis: process.env.REDIS_URL,
+  redis: process.env.REDIS_URL
 })
 
 const transformId = raw => raw.split('#')[1]
@@ -49,7 +52,7 @@ module.exports = (io, nsp, name) => {
           uid,
           Object.assign(user, {
             id: uid,
-            color: colors.user[randInt(0, colors.user.length)],
+            color: colors.user[randInt(0, colors.user.length)]
           })
         )
         .then(room.users.getAll)
@@ -65,12 +68,12 @@ module.exports = (io, nsp, name) => {
             .get(uid)
             .then(
               loc =>
-                (loc == null
+                loc == null
                   ? room.locations.set(
                       uid,
                       calcDimensions(allUsers.length).map(d => d / 2)
                     )
-                  : Promise.resolve(null))
+                  : Promise.resolve(null)
             )
             .then(rez =>
               queue.create('location-change', { room: name, uid: uid }).save()
@@ -80,6 +83,15 @@ module.exports = (io, nsp, name) => {
         .catch(panic)
 
       pings[uid] = 50
+      emails
+        .update({ email: user.email }, { email: user.email }, { upsert: true })
+        .then(obj => {
+          log('Saved email %s', user.email)
+        })
+        .catch(err => {
+          log('Could not save email %s – error: %j', user.email, err)
+          log(err)
+        })
     })
 
     socket.on('location', loc => {
@@ -99,7 +111,7 @@ module.exports = (io, nsp, name) => {
         .add(
           hashObj(checkpoint),
           Object.assign(checkpoint, {
-            color: colors.checkpoints[randInt(0, colors.checkpoints.length)],
+            color: colors.checkpoints[randInt(0, colors.checkpoints.length)]
           })
         )
         .then(created =>

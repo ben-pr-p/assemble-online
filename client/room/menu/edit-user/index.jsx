@@ -24,12 +24,15 @@ Webcam.set({
 const labelMap = {
   avatar: 'Paste a Image Address to be your Avatar',
   name: 'What\'s your name?',
+  email: 'What\'s your email? In a few weeks, I may send you a survey asking some\
+   questions about your use of assemble.'
 }
 
 export default class EditUserModal extends Component {
   state = {
     avatar: '',
     name: '',
+    email: ''
   }
 
   onChange = ev => this.setState({ [ev.target.id]: ev.target.value })
@@ -158,6 +161,7 @@ export default class EditUserModal extends Component {
           <Input
             id={attr}
             key={attr}
+            name={attr}
             value={this.state[attr]}
             onChange={this.onChange}
           />

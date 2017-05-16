@@ -1,5 +1,4 @@
 # Features
-* Email with user creation, save emails
 * Pan
 * Broadcast - broadcast permission - threshold of 75% means the other 25% are forced
 * Collision detection
