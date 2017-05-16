@@ -10,7 +10,9 @@ const determineLeaveJoins = (uid, [checks, loc]) => {
   const toJoin = []
 
   checks.forEach(c => {
-    if (distance(c.loc, loc) < CHECKPOINT_JOIN_DISTANCE) {
+    const cloc = c.loc.map(c => c + 250)
+
+    if (distance(cloc, loc.map(c => c + 50)) < CHECKPOINT_JOIN_DISTANCE) {
       if (!c.members.includes(uid)) {
         toJoin.push(c.id)
       }

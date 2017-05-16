@@ -1,7 +1,7 @@
 const redis = require('../redis')
 const log = require('debug')('assemble:check-members')
 const { CHECKPOINT_JOIN_DISTANCE } = require('./consts')
-const { distance, filterobj } = require('../utils')
+const { distance, filterobj, print } = require('../utils')
 const panic = err => {
   throw err
 }
@@ -14,9 +14,13 @@ module.exports = ({ room, cid }, queue) =>
       .then(([check, locs]) => {
         log('Checking members of %s in %s with locs %j', cid, room, locs)
 
+        const cloc = check.loc.map(c => c + 250)
+
         const oldMembers = check.members
         const newMembers = Object.keys(locs).filter(
-          uid => distance(check.loc, locs[uid]) < CHECKPOINT_JOIN_DISTANCE
+          uid =>
+            distance(cloc, locs[uid].map(c => c + 50)) <
+            CHECKPOINT_JOIN_DISTANCE
         )
 
         if (

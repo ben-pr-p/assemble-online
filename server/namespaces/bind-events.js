@@ -120,9 +120,11 @@ module.exports = (io, nsp, name) => {
             .then(all => {
               log('Requested add checkpoint %j', checkpoint)
               log('Have checkpoints %j', all)
+
               queue
                 .create('checkpoint-change', { room: name, cid: created.id })
                 .save()
+
               nsp.emit('checkpoints', all)
             })
             .catch(panic)
