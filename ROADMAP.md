@@ -1,86 +1,49 @@
 # Features
-* Pan
+* Make sure it says group everywhere
+* Checkpoints should look different that groups – thicker outline, a little bit larger - no, they should be the radius
+* Checkpoints should not be able to be too close together
+* Chat direct message
 * Broadcast - broadcast permission - threshold of 75% means the other 25% are forced
+* RTC Stat based optimizations
 * Collision detection
 * Delete in checkpoint - should be an options menu
-* Pan, dblclick move to place
 * Administration – and checkpoint administration – only that person can move them
-* Checkpoints should not be able to be too close together
-* Checkpoints should look different that groups – thicker outline, a little bit larger - no, they should be the radius
-* Chat direct message
-* Make sure it says group everywhere
 * Other person can't delete widget
 * New checkpoint creation after some had been deleted not showing up
 * Draggable widget order
 * Agenda reorder
 * Queue emojis
-* Send emails on bug reports
 * Whisper
-
-# Immediate
 * Queue mute
 * Queue emoji reactions
-* Agenda widget
-* Fix bugs
-* Mute button working
-* Audio / RTC working for any number of participants
-* Trigger GC on error
+
+# Immediate
 * No collisions
-* Video chat
 * Quiet shutoff
-* Safari error messages
 
 # Questions
-
 * Arrow key movement
 
 # Polishing
-* Style menu
-* Style modals
 * Placeholder for checkpoint while creating
-* Take a picture
 
 # All Ideas
-* google maps style zoom out - plus minus icon buttons - looking across the room
-* mute yourself without moving
-* kick out / mute for facillitator
-* mode where only facillitator can make announcements
+* Permissions system with facillitator
+* Send emails on bug reports
 * location reference for squares
-* Extended user profiles, view other users
-* Create tests for performance
+* Extended user profiles
 * Persist locations across refreshes
-* Agenda setting widget
-* Barriers
-* Documents
-* MS Paint
-* Full accessibility - voice, keys, and mouse exclusive navigation
+* MS Paint style drawing with ability to draw sound barriers
 * WebRTC to PSTN signaling
+* Full accessibility - voice, keys, and mouse exclusive navigation
 * Disappearing trails
-* searchable public rooms sorted by number of active users, if same number then alphabetized
-* chat
-* click on heads and go to the person
+* Chat
 * minimap like games for when lost
 * Documents, where you can select a few grids and it turns into a document
-* MS Paint style drawing with ability to draw sound barriers
-* When two people bump into each other, a video session is started - then on the
-  right there's the video chat
 * Voice art
-* Disappearing trails
 * Doodle / scheduling system
-* Chat
-* Mute yourself
-* Take a picture with camera + upload picture
-* Agenda setting widget
-* Permissions system with facillitator
-* History of announcements / digest
-* Stress testing
 * Normalize the audio
-* CLI
-* Latex build scenario
-* Logo + little name
-* Landing page / better packaging, as well as blog style thing
-* Arrow key movement
-* Someway to find lots of people at once
+* CLI for in room manipulation
 * Offscreen person should they get smaller and smaller as they go away?
 * Collage and absorption for offscreen people on overlap
   * Two people can only merge if they are a certain distance from each other
