@@ -15,37 +15,38 @@ export default class Connection extends Component {
   isMe = false
 
   state = {
-    tooFar: false
+    tooFar: false,
+    sendingStream: null
   }
 
   componentWillMount() {
     this.isMe = Sock.id == this.props.partnerId
   }
 
+  setLocalVideo = stream => {
+    this.vidEl.srcObject = stream
+    this.vidEl.volume = 0
+  }
+
   componentDidMount() {
-    const { partnerId, localStream } = this.props
+    const { partnerId, sendingStream } = this.props
 
     Sock.on(`signal-from-${partnerId}`, this.handleSignal)
     Updates.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
 
     if (this.isMe) {
-      this.vidEl.srcObject = localStream
-      this.vidEl.volume = 0
+      this.setLocalVideo(sendingStream)
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.localStream != nextProps.localStream) {
-      this.vidEl.srcObject = nextProps.localStream
-    }
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.sendingStream != this.props.sendingStream)
+      this.setLocalVideo(nextProps.sendingStream)
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     return shallowCompare(this, nextProps, nextState)
   }
-
-  sendData = data => this.peer && this.peer.send(data)
-  handleData = data => data.event && FromPeers.emit(data.event, data.data)
 
   componentWillUnmount() {
     const { partnerId } = this.props
@@ -59,6 +60,8 @@ export default class Connection extends Component {
     this.props.setStatus('disconnected')
   }
 
+  sendData = data => this.peer && this.peer.send(data)
+  handleData = data => data.event && FromPeers.emit(data.event, data.data)
   onError = err => this.props.setStatus('connecting')
 
   onConnect = () => {
@@ -103,20 +106,15 @@ export default class Connection extends Component {
 
   determineInitiator = () => {
     const { myEnabled, partnerEnabled, partnerId } = this.props
-
     if (partnerEnabled.video && !myEnabled.video) return false
-
     if (myEnabled.video && !partnerEnabled.video) return true
-
     if (partnerEnabled.audio && !myEnabled.audio) return false
-
     if (myEnabled.audio && !partnerEnabled.audio) return true
-
     return Sock.id < partnerId
   }
 
   render() {
-    const { partnerId, localStream, me } = this.props
+    const { partnerId, me, sendingStream } = this.props
 
     const showVideo = this.props.partnerEnabled.video
 
@@ -126,6 +124,7 @@ export default class Connection extends Component {
      * Therefore, the user with the most capabilities enabled should be the initiator
      * And if you have video, you should have audio as well
      */
+
     const initiator = !this.isMe && this.determineInitiator()
 
     return (
@@ -148,7 +147,7 @@ export default class Connection extends Component {
             key="peer"
             ref={this.setPeerRef}
             initiator={initiator}
-            stream={localStream}
+            stream={sendingStream}
             onSignal={this.onSignal}
             onData={this.handleData}
             onConnect={this.onConnect}

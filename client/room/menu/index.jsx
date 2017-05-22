@@ -1,23 +1,25 @@
 import React, { Component } from 'react'
 import { Menu, Button, Tooltip } from 'antd'
 import shallowCompare from 'shallow-compare'
+import store from 'store'
 import Sock from '../../lib/sock'
+import Broadcasting from './broadcasting'
 import BugReport from './bug-report'
+import CheckpointBrowse from './checkpoint-browse'
 import EditUser from './edit-user'
 import EditCheckpoint from './edit-checkpoint'
 import UserBrowse from './user-browse'
-import CheckpointBrowse from './checkpoint-browse'
-import store from 'store'
 import {
-  Settings,
-  Person,
-  Bug,
-  Widgets,
-  Close,
-  People,
-  Checkpoint,
-  NewCheckpoint,
+  Broadcast,
   BrowseCheckpoints,
+  Bug,
+  Checkpoint,
+  Close,
+  NewCheckpoint,
+  People,
+  Person,
+  Settings,
+  Widgets,
 } from '../../common/icons'
 
 const { SubMenu, MenuItemGroup } = Menu
@@ -44,6 +46,10 @@ export default class MainMenu extends Component {
       icon: People,
       Component: UserBrowse,
     },
+    'Broadcast': {
+      icon: Broadcast,
+      Component: Broadcasting.Sending
+    }
   }
 
   state = {

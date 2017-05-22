@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { MicOn, MicOff, Run, VideoOn, VideoOff } from '../../common/icons'
 import IconButton from '../../common/icon-button'
 import Sock from '../../lib/sock'
+import { Bus } from '../../lib/emitters'
 import store from 'store'
 
 export default class Controls extends Component {
@@ -9,12 +10,15 @@ export default class Controls extends Component {
 
   toggleCore = (ev, toToggle) => {
     ev.stopPropagation()
-    const me = store.get('me')
-    me[toToggle] = !me[toToggle]
-    store.set('me', me)
-    Sock.emit('me', me)
 
-    if (toToggle != 'away') this.props.toggleStream(toToggle)
+    if (toToggle != 'away') {
+      Bus.emit('toggle-stream', toToggle)
+    } else {
+      const me = store.get('me')
+      me[toToggle] = !me[toToggle]
+      store.set('me', me)
+      Sock.emit('me', me)
+    }
   }
 
   toggle = {

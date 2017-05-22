@@ -42,9 +42,8 @@ module.exports = (io, nsp, name) => {
   log('Binding events')
 
   nsp.on('connection', socket => {
-    log('New connection')
-
     const uid = transformId(socket.id)
+    log('New connection - %s', uid)
 
     socket.on('me', user => {
       room.users
@@ -94,11 +93,11 @@ module.exports = (io, nsp, name) => {
         })
     })
 
+    /*
+     * Location, volume updates
+     */
     socket.on('location', loc => {
-      // log('Got location %s %j', uid, loc)
-
       room.locations.set(uid, loc).then(ignore).catch(panic)
-
       queue.create('location-change', { room: name, uid: uid }).save()
     })
 
@@ -106,6 +105,9 @@ module.exports = (io, nsp, name) => {
       room.volumes.set(uid, vol).then(ignore).catch(panic)
     })
 
+    /*
+     * Checkpoint – new, edit, move, destroy
+     */
     socket.on('checkpoint-new', checkpoint =>
       room.checkpoints
         .add(
@@ -188,6 +190,20 @@ module.exports = (io, nsp, name) => {
       }
     })
 
+    /*
+     * Broadcasting, bandiwdth, etc
+     */
+
+    socket.on('broadcast-on', () =>
+      queue.create('broadcast-on', { broadcaster: uid, room: name }).save()
+    )
+
+    socket.on('broadcast-off', () =>
+      queue.create('broadcast-off', { room: name }).save()
+    )
+
+    socket.on('my-bandwidth', data => room.conns.set(uid, data))
+
     socket.on('disconnect', () => {
       pings[uid] = undefined
       delete pings[uid]
@@ -229,10 +245,6 @@ module.exports = (io, nsp, name) => {
             .catch(panic)
         )
         .catch(panic)
-    })
-
-    socket.on('my-bandwidth', data => {
-      log(data)
     })
   })
 

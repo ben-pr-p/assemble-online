@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import shallowCompare from 'shallow-compare'
+import Operator from '../operator'
 import media from '../../lib/media'
+import { Bus } from '../../lib/emitters'
 import Grid from '../grid'
 import UserBlob from '../user-blob'
 import CheckpointBlob from '../checkpoint-blob'
@@ -23,8 +25,7 @@ export default class Room extends Component {
   state = {
     panning: false,
     dimensions: [],
-    translate: [0, 0],
-    localStream: null
+    translate: [0, 0]
   }
 
   panning = false
@@ -40,6 +41,7 @@ export default class Room extends Component {
 
     Sock.on('dimensions', this.handleDimensions)
     Updates.on('translate', this.handleTranslate)
+    Bus.on('toggle-stream', this.toggleStream)
 
     this.setStream()
   }
@@ -57,10 +59,13 @@ export default class Room extends Component {
   setStream = () => {
     const { audio, video } = this.state.localMedia
 
-    if (this.state.localStream) {
-      this.state.localStream.getAudioTracks().forEach(t => t.stop())
-      this.state.localStream.getVideoTracks().forEach(t => t.stop())
-      this.state.localStream = null
+    const myStream = Operator.stream.getMine()
+
+    if (myStream) {
+      myStream.getAudioTracks().forEach(t => t.stop())
+      myStream.getVideoTracks().forEach(t => t.stop())
+
+      Operator.stream.setMine(null)
       VolumeDetector.detach()
     }
 
@@ -73,10 +78,9 @@ export default class Room extends Component {
         },
         // on success
         stream => {
-          this.state.localStream = stream
+          Operator.stream.setMine(stream)
           this.setAudioEnabled()
           this.forceUpdate()
-
           VolumeDetector.register(stream, rms => Sock.emit('volume', rms))
         },
         // on failure
@@ -85,13 +89,26 @@ export default class Room extends Component {
     }
   }
 
-  toggleStream = type => {
-    this.state.localMedia[type] = !this.state.localMedia[type]
+  toggleStream = opts => {
+    const me = store.get('me')
+
+    if (typeof opts == 'string') {
+      me[opts] = !me[opts]
+
+      this.state.localMedia[opts] = !this.state.localMedia[opts]
+    } else {
+      Object.assign(me, opts)
+      Object.assign(this.state.localMedia, opts)
+    }
+
+    store.set('me', me)
+    Sock.emit('me', me)
     this.setStream()
   }
 
   setAudioEnabled = () => {
-    const audioTrack = this.state.localStream.getAudioTracks()[0]
+    const myStream = Operator.stream.getMine()
+    const audioTrack = myStream.getAudioTracks()[0]
     if (audioTrack) audioTrack.enabled = this.state.localMedia.audio
   }
 
@@ -157,12 +174,11 @@ export default class Room extends Component {
       .map((u, idx) => (
         <UserBlob
           key={u.id}
+          sendingStream={Operator.getFor(u.id)}
           user={u}
-          localStream={localStream}
           translate={translate}
           me={me}
           isMe={me && u.id == Sock.id}
-          toggleStream={this.toggleStream}
           dimensions={dimensions}
         />
       ))

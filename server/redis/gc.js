@@ -24,6 +24,7 @@ e.user = (room, uid) =>
         keyify('users')(me),
         keyify('loc')(me),
         keyify('vol')(me),
+        keyify('conn')(me),
       ].concat(others.map(sortbine(me)).filter(sbnd => sbnd).map(keyify('att')))
 
       client

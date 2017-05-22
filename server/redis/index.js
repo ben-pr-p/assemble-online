@@ -153,6 +153,38 @@ module.exports = {
         ),
     },
 
+    conns: {
+      set: (uid, data) =>
+        new Promise((resolve, reject) => {
+          const key = keyify('conn')(uid)
+
+          client.multi().set(key, JSON.stringify(data)).exec(callbackify(resolve, reject))
+        }),
+
+      getAll: () =>
+        new Promise((resolve, reject) =>
+          client.smembers(
+            `${room}:users`,
+            (err, uids) =>
+              (uids.length > 0
+                ? client.mget(
+                    uids.map(keyify('conn')),
+                    (err, conns) =>
+                      (err ? reject(err) : resolve(objectify(uids, conns)))
+                  )
+                : {})
+          )
+        ),
+
+      get: uids =>
+        new Promise((resolve, reject) =>
+          client.mget(
+            uids.map(keyify('conns')),
+            (err, conns) => (err ? reject(err) : resolve(objectify(uids, conns)))
+          )
+        ),
+    },
+
     attenuations: {
       set: (uid1, uid2, val) =>
         new Promise((resolve, reject) => {

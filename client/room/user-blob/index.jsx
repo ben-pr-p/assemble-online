@@ -114,7 +114,7 @@ export default class UserBlob extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     if (sum(nextState.loc) != sum(this.state.loc)) return true
 
-    for (let attr of ['user', 'translate', 'isMe', 'localStream']) {
+    for (let attr of ['user', 'translate', 'isMe', 'sendingStream']) {
       if (this.props[attr] != nextProps[attr]) return true
     }
 
@@ -126,7 +126,7 @@ export default class UserBlob extends Component {
   }
 
   render() {
-    const { user, translate, isMe, localStream, me } = this.props
+    const { user, translate, isMe, sendingStream, me } = this.props
     const { loc, tempLoc, dragging, status, controlsShown } = this.state
 
     let x, y
@@ -185,8 +185,8 @@ export default class UserBlob extends Component {
             partnerEnabled={{ audio, video }}
             myEnabled={{ audio: me.audio == 'true', video: me.video == 'true' }}
             partnerId={user.id}
-            localStream={localStream}
             setStatus={this.setStatus}
+            sendingStream={sendingStream}
             status={status}
           />
         </div>
@@ -194,7 +194,7 @@ export default class UserBlob extends Component {
         {isMe &&
           controlsShown &&
           <Controls
-            {...{ away, audio, video, toggleStream: this.props.toggleStream }}
+            {...{ away, audio, video }}
           />}
       </div>
     )

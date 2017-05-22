@@ -1,5 +1,6 @@
 import Agenda from './agenda'
 import Back from './back'
+import Broadcast from './broadcast'
 import BrowseCheckpoints from './browse-checkpoints'
 import Bug from './bug'
 import Build from './build'
@@ -34,6 +35,7 @@ import Widgets from './widgets'
 export {
   Agenda,
   Back,
+  Broadcast,
   BrowseCheckpoints,
   Bug,
   Build,

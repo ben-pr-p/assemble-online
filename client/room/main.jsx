@@ -6,7 +6,6 @@ import Room from './room'
 import CheckpointDrawer from './checkpoint-drawer'
 import Sock from '../lib/sock'
 import Updates from '../lib/updates'
-import { Bus } from '../lib/emitters'
 
 export default class Main extends Component {
   state = {
