@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Button, Modal } from 'antd'
+import store from 'store'
 import Sock from '../../../lib/sock'
 import { Bus } from '../../../lib/emitters'
 import Operator from '../../operator'
@@ -21,11 +22,15 @@ export default class Broadcasting extends Component {
     this.setPreview()
 
     Operator.on('update', this.setPreview)
+    Sock.on('broadcasting', this.setBroadcasting)
   }
 
   componentWillUnmount() {
     Operator.off('update', this.setPreview)
+    Sock.off('broadcasting', this.setBroadcasting)
   }
+
+  setBroadcasting = broadcasting => this.setState({ broadcasting })
 
   setPreview = () => {
     const stream = Operator.stream.getMine()
@@ -36,8 +41,16 @@ export default class Broadcasting extends Component {
     this.setState({ hasVideo })
   }
 
-  startBroadcasting = () => this.setState({ broadcasting: true })
-  stopBroadcasting = () => this.setState({ broadcasting: false })
+  startBroadcasting = () => {
+    const me = store.get('me')
+
+    Sock.emit('broadcast-on', {
+      name: me.name,
+      id: Sock.id
+    })
+  }
+
+  stopBroadcasting = () => Sock.emit('broadcast-off')
 
   close = () => {
     this.stopBroadcasting()

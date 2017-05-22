@@ -23,18 +23,16 @@ const heap = (me, children, capacityFn) => {
   }
 }
 
-const calc = ({ broadcaster, name }) =>
+const calc = (data) =>
   new Promise((resolve, reject) => {
-    const room = redis.room(name)
+    const { broadcaster, room } = data
+    const client = redis.room(room)
 
-    Promise.all([room.users.getAll(), room.conns.getAll()])
+    Promise.all([client.users.getAll(), client.conns.getAll()])
       .then(([origUsers, conns]) => {
-
         // TODO – Test different capacity / bandwidth functions
         const capacityFn = uid => {
           const avg = (conns[uid].download.mean + conns[uid].upload.mean) / 2
-          log(uid)
-          log(conns[uid])
           return {
             raw: avg,
             n: Math.floor(avg / 60) // test
@@ -50,3 +48,5 @@ const calc = ({ broadcaster, name }) =>
       })
       .catch(reject)
   })
+
+module.exports = { calc }

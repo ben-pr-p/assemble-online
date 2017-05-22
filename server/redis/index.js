@@ -9,7 +9,7 @@ const {
   callbackify,
   distance,
   array,
-  print,
+  print
 } = require('../utils')
 
 module.exports = {
@@ -31,8 +31,8 @@ module.exports = {
         new Promise((resolve, reject) =>
           client.srem('rooms', room, callbackify(resolve, reject))
         ),
-        gc.room(room),
-      ]),
+        gc.room(room)
+      ])
   },
 
   room: room => ({
@@ -56,7 +56,7 @@ module.exports = {
           client.hgetall(
             key,
             (err, existing) =>
-              (err
+              err
                 ? reject(err)
                 : client
                     .multi()
@@ -67,7 +67,7 @@ module.exports = {
                         ? Object.assign(user, { color: existing.color })
                         : user
                     )
-                    .exec(callbackify(resolve, reject)))
+                    .exec(callbackify(resolve, reject))
           )
         }),
 
@@ -76,17 +76,17 @@ module.exports = {
           client.scard(`${room}:users`, callbackify(resolve, reject))
         ),
 
-      remove: uid => gc.user(room, uid),
+      remove: uid => gc.user(room, uid)
     },
 
     locations: {
       get: uids =>
-        (Array.isArray(uids)
+        Array.isArray(uids)
           ? new Promise((resolve, reject) =>
               client.mget(
                 uids.map(keyify('loc')),
                 (err, locs) =>
-                  (err ? reject(err) : resolve(objectify(uids, locs)))
+                  err ? reject(err) : resolve(objectify(uids, locs))
               )
             )
           : new Promise((resolve, reject) =>
@@ -94,19 +94,19 @@ module.exports = {
                 keyify('loc')(uids),
                 (err, loc) => (err ? reject(err) : resolve(JSON.parse(loc)))
               )
-            )),
+            ),
       getAll: () =>
         new Promise((resolve, reject) =>
           client.smembers(
             `${room}:users`,
             (err, uids) =>
-              (uids.length > 0
+              uids.length > 0
                 ? client.mget(
                     uids.map(keyify('loc')),
                     (err, locs) =>
-                      (err ? reject(err) : resolve(objectify(uids, locs)))
+                      err ? reject(err) : resolve(objectify(uids, locs))
                   )
-                : {})
+                : {}
           )
         ),
 
@@ -118,7 +118,7 @@ module.exports = {
             .multi()
             .set(key, JSON.stringify(loc))
             .exec(callbackify(resolve, reject))
-        }),
+        })
     },
 
     volumes: {
@@ -134,13 +134,13 @@ module.exports = {
           client.smembers(
             `${room}:users`,
             (err, uids) =>
-              (uids.length > 0
+              uids.length > 0
                 ? client.mget(
                     uids.map(keyify('vol')),
                     (err, vols) =>
-                      (err ? reject(err) : resolve(objectify(uids, vols)))
+                      err ? reject(err) : resolve(objectify(uids, vols))
                   )
-                : {})
+                : {}
           )
         ),
 
@@ -150,7 +150,7 @@ module.exports = {
             uids.map(keyify('vol')),
             (err, vols) => (err ? reject(err) : resolve(objectify(uids, vols)))
           )
-        ),
+        )
     },
 
     conns: {
@@ -158,7 +158,10 @@ module.exports = {
         new Promise((resolve, reject) => {
           const key = keyify('conn')(uid)
 
-          client.multi().set(key, JSON.stringify(data)).exec(callbackify(resolve, reject))
+          client
+            .multi()
+            .set(key, JSON.stringify(data))
+            .exec(callbackify(resolve, reject))
         }),
 
       getAll: () =>
@@ -166,13 +169,13 @@ module.exports = {
           client.smembers(
             `${room}:users`,
             (err, uids) =>
-              (uids.length > 0
+              uids.length > 0
                 ? client.mget(
                     uids.map(keyify('conn')),
                     (err, conns) =>
-                      (err ? reject(err) : resolve(objectify(uids, conns)))
+                      err ? reject(err) : resolve(objectify(uids, conns))
                   )
-                : {})
+                : {}
           )
         ),
 
@@ -180,9 +183,10 @@ module.exports = {
         new Promise((resolve, reject) =>
           client.mget(
             uids.map(keyify('conns')),
-            (err, conns) => (err ? reject(err) : resolve(objectify(uids, conns)))
+            (err, conns) =>
+              err ? reject(err) : resolve(objectify(uids, conns))
           )
-        ),
+        )
     },
 
     attenuations: {
@@ -191,7 +195,7 @@ module.exports = {
           const key = keyify('att')(sortbine(uid1)(uid2))
 
           client.multi().set(key, val).exec(callbackify(resolve, reject))
-        }),
+        })
     },
 
     checkpoints: {
@@ -203,7 +207,7 @@ module.exports = {
               .reduce((acc, cid) => acc.hgetall(cid), client.multi())
               .exec(
                 (err, cps) =>
-                  (err
+                  err
                     ? reject(err)
                     : resolve(
                         cps.map(cp => ({
@@ -211,9 +215,9 @@ module.exports = {
                           name: cp.name,
                           color: cp.color,
                           members: JSON.parse(cp.members),
-                          loc: JSON.parse(cp.loc),
+                          loc: JSON.parse(cp.loc)
                         }))
-                      ))
+                      )
               )
           )
         ),
@@ -225,7 +229,7 @@ module.exports = {
             name: check.name,
             color: check.color,
             loc: JSON.stringify(check.loc),
-            members: JSON.stringify([]),
+            members: JSON.stringify([])
           }
 
           client
@@ -256,7 +260,7 @@ module.exports = {
           client
             .multi()
             .hmset(keyify('checks')(cid), {
-              name: check.name,
+              name: check.name
             })
             .exec(callbackify(resolve, reject))
         ),
@@ -266,15 +270,15 @@ module.exports = {
           client.hgetall(
             keyify('checks')(cid),
             (err, cp) =>
-              (err
+              err
                 ? reject(err)
                 : resolve({
                   id: cp.id,
                   name: cp.name,
                   color: cp.color,
                   members: JSON.parse(cp.members),
-                  loc: JSON.parse(cp.loc),
-                }))
+                  loc: JSON.parse(cp.loc)
+                })
           )
         }),
 
@@ -287,14 +291,14 @@ module.exports = {
               key,
               'members',
               (err, members) =>
-                (err
+                err
                   ? reject(err)
                   : client.hset(
                       key,
                       'members',
                       JSON.stringify(array.add(JSON.parse(members), uid)),
                       callbackify(resolve, reject)
-                    ))
+                    )
             )
           }),
 
@@ -305,19 +309,19 @@ module.exports = {
               key,
               'members',
               (err, members) =>
-                (err
+                err
                   ? reject(err)
                   : client.hset(
                       key,
                       'members',
                       JSON.stringify(array.delete(JSON.parse(members), uid)),
                       callbackify(resolve, reject)
-                    ))
+                    )
             )
-          }),
+          })
       }),
 
-      remove: cid => gc.check(room, cid),
+      remove: cid => gc.check(room, cid)
     },
 
     updates: {
@@ -339,16 +343,21 @@ module.exports = {
 
             delayed.exec(
               (err, all) =>
-                (err
+                err
                   ? reject(err)
                   : resolve([
                     objectify(uids, all[0]),
                     objectify(uids, all[1]),
-                    objectify(withoutMe, all[2]),
-                  ]))
+                    objectify(withoutMe, all[2])
+                  ])
             )
           })
-        ),
-    },
+        )
+    }
   }),
+
+  clearAll: () =>
+    new Promise((resolve, reject) =>
+      client.flushall(callbackify(resolve, reject))
+    )
 }

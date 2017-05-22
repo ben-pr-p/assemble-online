@@ -1,38 +1,54 @@
 import Sock from '../../lib/sock'
 import Emitter from 'component-emitter'
 
-let _switchboard = {}
-let _myStream = null
-const streams = {}
+const state = {
+  toRelay: {
+    original: null,
+    immediate: null,
+    stream: null
+  },
+  relayingTo: [],     // array of uids
+  myStream: null,
+  userStreams: {},
+  relayMode: false
+}
 
 const operator = new Emitter()
 
-Sock.on('switchboard', switches => {
-  _switchboard = switches
+Sock.on('switchboard', data => {
+  Object.assign(state, data)
+  console.log(data)
   operator.emit('update')
 })
 
 // Should we relay or send our own local stream?
-operator.getFor = uid =>
-  _switchboard[uid] ? streams[_switchboard[uid]] : _myStream
+operator.getFor = uid => state.relayMode
+  ? state.toRelay.stream
+  : state.myStream
 
-operator.getOne = uid => streams[Object.keys(streams)[0]]
+operator.shouldConnect = uid => state.relayMode
+  ? state.relayingTo.includes(uid)
+    ? 'receive'
+    : state.toRelay.from == uid
+      ? 'receive'
+      : false
+  : false
 
 operator.stream = {
   setMine: stream => {
-    _myStream = stream
+    state.myStream = stream
     operator.emit('update')
   },
 
-  getMine: () => _myStream,
+  getMine: () => state.myStream,
 
   register: (uid, stream) => {
-    streams[uid] = stream
+    state.userStreams[uid] = stream
   },
 
   forget: uid => {
-    streams[uid] = null
-    delete streams[uid]
+    state.userStreams[uid] = null
+    delete state.userStreams[uid]
   }
 }
 

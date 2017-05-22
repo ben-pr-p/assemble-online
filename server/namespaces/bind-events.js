@@ -194,15 +194,49 @@ module.exports = (io, nsp, name) => {
      * Broadcasting, bandiwdth, etc
      */
 
-    socket.on('broadcast-on', () =>
-      queue.create('broadcast-on', { broadcaster: uid, room: name }).save()
+    socket.on('broadcast-on', user =>
+      queue
+        .create('broadcast-on', { broadcaster: uid, room: name })
+        .on('complete', heap => {
+          nsp.emit('broadcasting', user)
+
+          // Recursive function to navigate the heap and send each users
+          // position in the tree to them
+          //
+          // didn't know what to call it so i called it _
+          const _ = (parent, current, heap) => {
+            const sid = `/${name}#${current}`
+            const children = Object.keys(heap[current])
+
+            log('Emitting to %s, %j', sid, {
+              toRelay: {
+                original: user.id,
+                immediate: parent || user.id
+              },
+              relayingTo: children
+            })
+            nsp.connected[sid].emit('switchboard', {
+              toRelay: {
+                original: user.id,
+                immediate: parent
+              },
+              relayingTo: children
+            })
+
+            children.forEach(next => _(current, next, heap))
+          }
+
+          _(null, user.id, heap)
+        })
+        .save()
     )
 
-    socket.on('broadcast-off', () =>
-      queue.create('broadcast-off', { room: name }).save()
-    )
+    socket.on('broadcast-off', () => nsp.emit('broadcasting', false))
 
-    socket.on('my-bandwidth', data => room.conns.set(uid, data))
+    socket.on('my-bandwidth', data => {
+      log('Got bandwidth data %j', data)
+      room.conns.set(uid, data)
+    })
 
     socket.on('disconnect', () => {
       pings[uid] = undefined

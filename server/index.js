@@ -84,3 +84,11 @@ const PORT = process.env.PORT
 
 log('Listening on PORT %d', PORT)
 server.listen(PORT)
+
+if (process.env.NODE_ENV != 'production') {
+  log('NODE_ENV is %s', process.env.NODE_ENV || 'development')
+  redis
+    .clearAll()
+    .then(() => log('Cleared all redis keys'))
+    .catch(err => log('Could not clear redis keys – %j', err))
+}

@@ -3,11 +3,11 @@
 import React, { Component } from 'react'
 import SimplePeer from './react-simple-peer'
 import shallowCompare from 'shallow-compare'
+import Operator from '../../operator'
 import Sock from '../../../lib/sock'
 import Updates from '../../../lib/updates'
 import media from '../../../lib/media'
 import { ToPeers, FromPeers, Connections } from '../../../lib/emitters'
-import VolumeDetector from '../../room/volume-detector'
 import objHash from 'object-hash'
 
 export default class Connection extends Component {
@@ -39,7 +39,7 @@ export default class Connection extends Component {
     }
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.sendingStream != this.props.sendingStream)
       this.setLocalVideo(nextProps.sendingStream)
   }
@@ -158,4 +158,8 @@ export default class Connection extends Component {
       </div>
     )
   }
+
+  shouldConnect = () =>
+    !this.isMe &&
+    (Operator.isRelayingTo(this.props.partnerId) || !this.state.tooFar)
 }
