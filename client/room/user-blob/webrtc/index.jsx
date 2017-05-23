@@ -141,8 +141,6 @@ export default class Connection extends Component {
 
     const initiator = !this.isMe && this.determineInitiator()
 
-    // console.log(`Sending stream ${sendingStream ? sendingStream.id : null} to ${partnerId}`)
-
     return (
       <div>
         <video
