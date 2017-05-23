@@ -15,8 +15,7 @@ export default class Connection extends Component {
   isMe = false
 
   state = {
-    tooFar: false,
-    sendingStream: null
+    tooFar: false
   }
 
   componentWillMount() {
@@ -33,6 +32,7 @@ export default class Connection extends Component {
 
     Sock.on(`signal-from-${partnerId}`, this.handleSignal)
     Updates.on(`attenuation-for-${partnerId}`, this.handleAttenuation)
+    Operator.on('update', this.doForceUpdate)
 
     if (this.isMe) {
       this.setLocalVideo(sendingStream)
@@ -55,11 +55,13 @@ export default class Connection extends Component {
     ToPeers.off('to-all', this.sendData)
     Sock.off(`signal-from-${partnerId}`, this.handleSignal)
     Updates.off(`attenuation-for-${partnerId}`)
+    Operator.off('update', this.doForceUpdate)
 
     ToPeers.emit(`disconnected-from-${partnerId}`)
     this.props.setStatus('disconnected')
   }
 
+  doForceUpdate = () => this.forceUpdate()
   sendData = data => this.peer && this.peer.send(data)
   handleData = data => data.event && FromPeers.emit(data.event, data.data)
   onError = err => this.props.setStatus('connecting')
@@ -72,7 +74,10 @@ export default class Connection extends Component {
   }
 
   onDisconnect = () => {
-    this.props.setStatus('connecting')
+    if (this.shouldConnect())
+      this.props.setStatus('connecting')
+    else
+      this.props.setStatus('disconnected')
   }
 
   onSignal = data =>
@@ -84,6 +89,7 @@ export default class Connection extends Component {
   onStream = remoteStream => {
     if (this.vidEl) this.vidEl.srcObject = remoteStream
     this.props.setStatus('connected')
+    Operator.stream.register(this.props.partnerId, remoteStream)
   }
 
   handleSignal = config => this.peer && this.peer.signal(config)
@@ -141,8 +147,7 @@ export default class Connection extends Component {
           height={showVideo ? '100' : '0'}
           ref={this.setVidRef}
         />
-        {!this.isMe &&
-          !this.state.tooFar &&
+        {this.shouldConnect() &&
           <SimplePeer
             key="peer"
             ref={this.setPeerRef}
@@ -159,7 +164,15 @@ export default class Connection extends Component {
     )
   }
 
-  shouldConnect = () =>
-    !this.isMe &&
-    (Operator.isRelayingTo(this.props.partnerId) || !this.state.tooFar)
+  shouldConnect = () => {
+    if (this.isMe) return false
+
+    if (Operator.isRelayMode()) {
+      console.log('operator says it\'s relay mode')
+      console.log(Operator.shouldConnect(this.props.partnerId))
+      return Operator.shouldConnect(this.props.partnerId)
+    }
+
+    return !this.state.tooFar
+  }
 }

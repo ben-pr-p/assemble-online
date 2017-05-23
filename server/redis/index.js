@@ -353,6 +353,30 @@ module.exports = {
             )
           })
         )
+    },
+
+    broadcasting: {
+      set: data =>
+        new Promise((resolve, reject) =>
+          client.set(
+            `${room}:broadcasting`,
+            JSON.stringify(data),
+            callbackify(resolve, reject)
+          )
+        ),
+
+      get: () =>
+        new Promise((resolve, reject) =>
+          client.get(
+            `${room}:broadcasting`,
+            (err, result) => (err ? reject(err) : resolve(JSON.parse(result)))
+          )
+        ),
+
+      clear: () =>
+        new Promise((resolve, reject) =>
+          client.del(`${room}:broadcasting`, callbackify(resolve, reject))
+        )
     }
   }),
 

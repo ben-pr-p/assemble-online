@@ -1,38 +1,52 @@
 import Sock from '../../lib/sock'
 import Emitter from 'component-emitter'
 
-const state = {
+const initialState = {
   toRelay: {
     original: null,
     immediate: null,
     stream: null
   },
-  relayingTo: [],     // array of uids
-  myStream: null,
-  userStreams: {},
-  relayMode: false
+  relayingTo: [], // array of uids
+  myStream: null
 }
+
+const state = Object.assign(
+  {
+    userStreams: {}
+  },
+  initialState
+)
 
 const operator = new Emitter()
 
 Sock.on('switchboard', data => {
   Object.assign(state, data)
-  console.log(data)
+  state.toRelay.stream = state.userStreams[state.toRelay.immediate]
   operator.emit('update')
 })
 
-// Should we relay or send our own local stream?
-operator.getFor = uid => state.relayMode
-  ? state.toRelay.stream
-  : state.myStream
+Sock.on(
+  'broadcasting',
+  broadcasting =>
+    !broadcasting &&
+    (Object.assign(state, initialState), operator.emit('update'))
+)
 
-operator.shouldConnect = uid => state.relayMode
-  ? state.relayingTo.includes(uid)
-    ? 'receive'
-    : state.toRelay.from == uid
-      ? 'receive'
-      : false
-  : false
+// Should we relay or send our own local stream?
+operator.getFor = uid =>
+  state.toRelay.original
+    ? state.toRelay.relayingTo.includes(uid) ? state.toRelay.stream : null
+    : state.myStream
+
+operator.shouldConnect = uid =>
+  state.toRelay.original
+    ? state.relayingTo.includes(uid)
+        ? 'receive'
+        : state.toRelay.immediate == uid ? 'receive' : false
+    : false
+
+operator.isRelayMode = () => state.toRelay.original != null
 
 operator.stream = {
   setMine: stream => {
@@ -42,8 +56,16 @@ operator.stream = {
 
   getMine: () => state.myStream,
 
+  getToRelay: () => {
+    return state.toRelay.stream
+  },
+
   register: (uid, stream) => {
     state.userStreams[uid] = stream
+    if (state.toRelay.immediate && state.toRelay.immediate == uid) {
+      state.toRelay.stream = stream
+      operator.emit('update')
+    }
   },
 
   forget: uid => {

@@ -194,15 +194,16 @@ module.exports = (io, nsp, name) => {
      * Broadcasting, bandiwdth, etc
      */
 
-    socket.on('broadcast-on', user =>
+    const configureBroadcast = name => {
       queue
-        .create('broadcast-on', { broadcaster: uid, room: name })
-        .on('complete', heap => {
-          nsp.emit('broadcasting', user)
+        .create('broadcast-on', { room: name })
+        .on('complete', ({ heap, broadcaster }) => {
+          if (!heap || !broadcaster) return null
 
           // Recursive function to navigate the heap and send each users
           // position in the tree to them
-          //
+          log('Broadcast heap: %j', heap)
+
           // didn't know what to call it so i called it _
           const _ = (parent, current, heap) => {
             const sid = `/${name}#${current}`
@@ -210,32 +211,49 @@ module.exports = (io, nsp, name) => {
 
             log('Emitting to %s, %j', sid, {
               toRelay: {
-                original: user.id,
-                immediate: parent || user.id
+                original: broadcaster,
+                immediate: parent || broadcaster
               },
               relayingTo: children
             })
+
             nsp.connected[sid].emit('switchboard', {
               toRelay: {
-                original: user.id,
-                immediate: parent
+                original: broadcaster,
+                immediate: parent || broadcaster
               },
               relayingTo: children
             })
 
-            children.forEach(next => _(current, next, heap))
+            children.forEach(next => _(current, next, heap[current]))
           }
 
-          _(null, user.id, heap)
+          _(null, broadcaster, heap)
         })
+        .on('error', panic)
         .save()
+    }
+
+    socket.on('broadcast-on', user => {
+      room.broadcasting
+        .set(user)
+        .then(ok => nsp.emit('broadcasting', user))
+        .then(ok => configureBroadcast(name))
+        .catch(panic)
+    })
+
+    socket.on('broadcast-off', () =>
+      room.broadcasting
+        .clear()
+        .then(ok => nsp.emit('broadcasting', false))
+        .catch(panic)
     )
 
-    socket.on('broadcast-off', () => nsp.emit('broadcasting', false))
-
     socket.on('my-bandwidth', data => {
-      log('Got bandwidth data %j', data)
-      room.conns.set(uid, data)
+      room.conns
+        .set(uid, data)
+        .then(ok => configureBroadcast(name))
+        .catch(panic)
     })
 
     socket.on('disconnect', () => {

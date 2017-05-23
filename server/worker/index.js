@@ -34,6 +34,6 @@ if (cluster.isMaster) {
   })
 
   queue.process('broadcast-on', 10, (job, done) => {
-    switchboard.calc(job.data).then(tree => done(null, tree)).catch(done)
+    switchboard.calc(job.data).then(result => done(null, result)).catch(done)
   })
 }

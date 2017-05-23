@@ -15,7 +15,8 @@ const heap = (me, children, capacityFn) => {
               child,
               children
                 .slice(numberDirectChildren)
-                .filter((_, idx2) => (idx1 + idx2) % numberDirectChildren == 0)
+                .filter((_, idx2) => (idx1 + idx2) % numberDirectChildren == 0),
+              capacityFn
             )
           ),
         {}
@@ -23,28 +24,45 @@ const heap = (me, children, capacityFn) => {
   }
 }
 
-const calc = (data) =>
+const calc = data =>
   new Promise((resolve, reject) => {
-    const { broadcaster, room } = data
+    const { room } = data
     const client = redis.room(room)
 
-    Promise.all([client.users.getAll(), client.conns.getAll()])
-      .then(([origUsers, conns]) => {
+    Promise.all([
+      client.users.getAll(),
+      client.conns.getAll(),
+      client.broadcasting.get()
+    ])
+      .then(([origUsers, conns, broadcastingUser]) => {
+        if (!broadcastingUser) {
+          return resolve({})
+        }
+
+        const broadcaster = broadcastingUser.id
+
         // TODO – Test different capacity / bandwidth functions
         const capacityFn = uid => {
-          const avg = (conns[uid].download.mean + conns[uid].upload.mean) / 2
+          const avg =
+            (conns[uid].download.average + conns[uid].upload.average) / 2
           return {
             raw: avg,
-            n: Math.floor(avg / 60) // test
+            n: 4 // Math.floor(avg / 60) // test
           }
         }
 
         // Extract the broadcaster, sort the other users by bandwidth
         const users = origUsers
-          .map(u => u.id).filter(id => id != broadcaster)
-          .sort((a,b) => capacityFn(a).raw - capacityFn(b).raw)
+          .map(u => u.id)
+          .filter(id => id != broadcaster)
+          .sort((a, b) => capacityFn(a).raw - capacityFn(b).raw)
 
-        return resolve(heap(broadcaster, users, capacityFn))
+        log('%s is broadcasting to %j', broadcaster, users)
+
+        return resolve({
+          heap: heap(broadcaster, users, capacityFn),
+          broadcaster
+        })
       })
       .catch(reject)
   })

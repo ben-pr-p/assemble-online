@@ -6,21 +6,31 @@ import Operator from '../../operator'
 
 export default class Broadcasting extends Component {
   state = {
-    broadcasting: false,
     hasVideo: false
   }
 
   componentDidMount() {
-    const otherStream = Operator.getOne()
-    this.preview.srcObject = otherStream
-    this.preview.volume = 1
+    this.setStream()
+    Operator.on('update', this.setStream)
+  }
 
-    const hasVideo = otherStream.getVideoTracks().length > 0
-    this.setState({ hasVideo })
+  setStream = () => {
+    const broadcaster = this.props.broadcasting.id
+
+    const otherStream = Operator.stream.getToRelay()
+
+    if (this.preview) {
+      this.preview.srcObject = otherStream
+      this.preview.volume = 1
+
+      const hasVideo = otherStream && otherStream.getVideoTracks().length > 0
+      this.setState({ hasVideo })
+    }
   }
 
   render() {
-    const { broadcasting, hasVideo } = this.state
+    const { broadcasting } = this.props
+    const { hasVideo } = this.state
 
     return (
       <Modal

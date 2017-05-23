@@ -19,7 +19,7 @@ import {
   People,
   Person,
   Settings,
-  Widgets,
+  Widgets
 } from '../../common/icons'
 
 const { SubMenu, MenuItemGroup } = Menu
@@ -28,25 +28,25 @@ export default class MainMenu extends Component {
   config = {
     'File a Bug Report': {
       icon: Bug,
-      Component: BugReport,
+      Component: BugReport
     },
     'New Group': {
       icon: NewCheckpoint,
-      Component: EditCheckpoint,
+      Component: EditCheckpoint
     },
     'Browse Groups': {
       icon: BrowseCheckpoints,
-      Component: CheckpointBrowse,
+      Component: CheckpointBrowse
     },
     'Edit Me': {
       icon: Person,
-      Component: EditUser,
+      Component: EditUser
     },
     'Browse Users': {
       icon: People,
-      Component: UserBrowse,
+      Component: UserBrowse
     },
-    'Broadcast': {
+    Broadcast: {
       icon: Broadcast,
       Component: Broadcasting.Sending
     }
@@ -54,9 +54,18 @@ export default class MainMenu extends Component {
 
   state = {
     selected: null,
+    receivingBroadcast: false
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
+  componentDidMount() {
+    Sock.on(
+      'broadcasting',
+      user =>
+        user.id != Sock.id ? this.setState({ receivingBroadcast: user }) : null
+    )
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
     return shallowCompare(this, nextProps, nextState)
   }
 
@@ -71,7 +80,7 @@ export default class MainMenu extends Component {
 
   render() {
     const { me, users, checkpoints } = this.props
-    const { selected } = this.state
+    const { selected, receivingBroadcast } = this.state
 
     const attrs = { me, users, checkpoints, close: this.close }
 
@@ -98,8 +107,12 @@ export default class MainMenu extends Component {
 
         {!me && <EditUser {...attrs} />}
         {me &&
+          !receivingBroadcast &&
           selected &&
           this.renderComponent(this.config[selected].Component, attrs)}
+
+        {receivingBroadcast &&
+          <Broadcasting.Receiving broadcasting={receivingBroadcast} />}
       </div>
     )
   }
