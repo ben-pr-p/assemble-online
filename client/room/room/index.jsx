@@ -42,6 +42,7 @@ export default class Room extends Component {
     Sock.on('dimensions', this.handleDimensions)
     Updates.on('translate', this.handleTranslate)
     Bus.on('toggle-stream', this.toggleStream)
+    Operator.on('update', this.doForceUpdate)
 
     this.setStream()
   }
@@ -49,12 +50,15 @@ export default class Room extends Component {
   componentWillUnmount() {
     Sock.off('dimensions', this.handleDimensions)
     Updates.off('translate', this.handleTranslate)
+    Operator.off('update', this.doForceUpdate)
     VolumeDetector.detach()
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     return shallowCompare(this, nextProps, nextState)
   }
+
+  doForceUpdate = () => this.forceUpdate()
 
   setStream = () => {
     const { audio, video } = this.state.localMedia

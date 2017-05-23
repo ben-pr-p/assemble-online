@@ -40,7 +40,7 @@ export default class Connection extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.sendingStream != this.props.sendingStream)
+    if (this.isMe && nextProps.sendingStream != this.props.sendingStream)
       this.setLocalVideo(nextProps.sendingStream)
   }
 
@@ -67,10 +67,18 @@ export default class Connection extends Component {
   onError = err => this.props.setStatus('connecting')
 
   onConnect = () => {
-    ToPeers.on(`to-${this.props.partnerId}`, this.sendData)
+    const { partnerId, partnerEnabled } = this.props
+
+    ToPeers.on(`to-${partnerId}`, this.sendData)
     ToPeers.on('to-all', this.sendData)
 
-    ToPeers.emit(`connected-to-${this.props.partnerId}`)
+    ToPeers.emit(`connected-to-${partnerId}`)
+
+    // stream-less connection
+    const { audio, video } = partnerEnabled
+    if ((!audio && !video) || Operator.isSendingTo(partnerId)) {
+      this.props.setStatus('connected')
+    }
   }
 
   onDisconnect = () => {
@@ -133,6 +141,8 @@ export default class Connection extends Component {
 
     const initiator = !this.isMe && this.determineInitiator()
 
+    // console.log(`Sending stream ${sendingStream ? sendingStream.id : null} to ${partnerId}`)
+
     return (
       <div>
         <video
@@ -168,8 +178,6 @@ export default class Connection extends Component {
     if (this.isMe) return false
 
     if (Operator.isRelayMode()) {
-      console.log('operator says it\'s relay mode')
-      console.log(Operator.shouldConnect(this.props.partnerId))
       return Operator.shouldConnect(this.props.partnerId)
     }
 

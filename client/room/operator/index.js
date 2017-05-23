@@ -7,13 +7,13 @@ const initialState = {
     immediate: null,
     stream: null
   },
-  relayingTo: [], // array of uids
-  myStream: null
+  relayingTo: [] // array of uids
 }
 
 const state = Object.assign(
   {
-    userStreams: {}
+    userStreams: {},
+    myStream: null
   },
   initialState
 )
@@ -22,7 +22,11 @@ const operator = new Emitter()
 
 Sock.on('switchboard', data => {
   Object.assign(state, data)
-  state.toRelay.stream = state.userStreams[state.toRelay.immediate]
+
+  state.toRelay.stream = state.toRelay.original == Sock.id
+    ? state.myStream
+    : state.userStreams[state.toRelay.immediate]
+
   operator.emit('update')
 })
 
@@ -34,10 +38,15 @@ Sock.on(
 )
 
 // Should we relay or send our own local stream?
-operator.getFor = uid =>
-  state.toRelay.original
-    ? state.toRelay.relayingTo.includes(uid) ? state.toRelay.stream : null
-    : state.myStream
+operator.getFor = uid => {
+  const s = uid == Sock.id
+    ? state.myStream
+    : state.toRelay.original
+        ? state.relayingTo.includes(uid) ? state.toRelay.stream : null
+        : state.myStream
+
+  return s
+}
 
 operator.shouldConnect = uid =>
   state.toRelay.original
@@ -47,6 +56,7 @@ operator.shouldConnect = uid =>
     : false
 
 operator.isRelayMode = () => state.toRelay.original != null
+operator.isSendingTo = uid => state.relayingTo.includes(uid)
 
 operator.stream = {
   setMine: stream => {

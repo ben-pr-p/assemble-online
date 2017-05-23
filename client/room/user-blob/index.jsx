@@ -67,6 +67,7 @@ export default class UserBlob extends Component {
     })
 
   setStatus = status => this.setState({ status })
+
   toggleControls = () =>
     this.state.tempLoc[1] - this.state.loc[1] < 10 &&
     this.state.tempLoc[0] - this.state.loc[0] < 10 &&
@@ -191,11 +192,7 @@ export default class UserBlob extends Component {
           />
         </div>
 
-        {isMe &&
-          controlsShown &&
-          <Controls
-            {...{ away, audio, video }}
-          />}
+        {isMe && controlsShown && <Controls {...{ away, audio, video }} />}
       </div>
     )
   }

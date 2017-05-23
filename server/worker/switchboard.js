@@ -47,7 +47,7 @@ const calc = data =>
             (conns[uid].download.average + conns[uid].upload.average) / 2
           return {
             raw: avg,
-            n: 4 // Math.floor(avg / 60) // test
+            n: 1 // Math.floor(avg / 60) // test
           }
         }
 
