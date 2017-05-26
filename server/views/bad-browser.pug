@@ -5,11 +5,18 @@ html
     link(rel='stylesheet', type='text/css', href='/room.css')
     title='Unsupported Browser'
 
-  body(style='padding: 20%;text-align: center;')
+  body(style='padding-left: 20%; padding-right: 20%; padding-top: 10%; text-align: center;')
     h1
-      span!= browser
-      span!= " does not support WebRTC, the technology powering Assemble.live."
+      if browser == 'Firefox' || browser == 'Mozilla'
+        span!= browser
+        span!=" supports WebRTC, the technology powering Assemble.live, but "
+        span!="does not support forwarding remote streams."
+        br
+        br
+        span!="This is required for some features on the site."
+      else
+        span!= browser
+        span!= " does not support WebRTC, the technology powering Assemble.live."
       br
       br
-      br
-      span!= "For best results, open this page in the most recent version of Chrome, Firefox, or Microsoft Edge."
+      span!= "For best results, open this page in the most recent version of Chrome, Opera, or Microsoft Edge."

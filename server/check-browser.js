@@ -12,13 +12,10 @@ const parser = require('ua-parser-js')
 const goodBrowsers = [
   'Vivaldi',
   'Yandex',
-  'Mozilla',
-  'Firefox',
   'Blazer',
   'Chrome',
   'Chimera',
   'Chromium',
-  'SeaMonkey',
   'Edge',
   'Opera'
 ]
