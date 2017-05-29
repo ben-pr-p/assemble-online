@@ -167,6 +167,7 @@ export default class Connection extends Component {
             onDisconnect={this.onDisconnect}
             onStream={this.onStream}
             onError={this.onError}
+            verbose={true}
           />}
       </div>
     )
