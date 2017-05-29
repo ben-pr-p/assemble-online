@@ -12,28 +12,56 @@ module.exports = class SimplePeer extends Component {
     this.peer = null
     this.temporaryStream = null
 
+    this.onError = err => {
+      if (this.props.verbose) console.log('Found error: ', err)
+      this.props.onError(err)
+    }
+
+    this.onSignal = signal => {
+      if (this.props.verbose) console.log('Generated signal: ', signal)
+      this.props.onSignal(signal)
+    }
+
+    this.onStream = stream => {
+      if (this.props.verbose) console.log('Got stream: ', stream)
+      this.props.onStream(stream)
+    }
+
+    this.onData = raw => {
+      if (this.props.verbose) console.log('Got data: ', raw)
+      this.props.onData(JSON.parse(raw.toString()))
+    }
+
+    this.onConnect = connection => {
+      if (this.props.verbose) console.log('Connected: ', connection)
+      this.props.onConnect(connection)
+    }
+
+    this.onClose = closing => {
+      if (this.props.verbose) console.log('Closing: ', closing)
+      this.props.onClose(closing)
+    }
+
     this.bindProps = () => {
       this.onClose = () => {
         this.initialize()
         this.props.onDisconnect()
       }
 
-      this.onData = raw => this.props.onData(JSON.stringify(raw.toString()))
-
-      this.peer.on('error', this.props.onError)
-      this.peer.on('signal', this.props.onSignal)
-      this.peer.on('stream', this.props.onStream)
+      this.peer.on('error', this.onError)
+      this.peer.on('signal', this.onSignal)
+      this.peer.on('stream', this.onStream)
       this.peer.on('data', this.onData)
-      this.peer.on('connect', this.props.onConnect)
+      this.peer.on('connect', this.onConnect)
       this.peer.on('close', this.onClose)
     }
 
     this.unbindProps = () => {
-      this.peer.removeListener('error', this.props.onError)
-      this.peer.removeListener('signal', this.props.onSignal)
-      this.peer.removeListener('stream', this.props.onStream)
+      this.peer.removeListener('error', this.onError)
+      this.peer.removeListener('signal', this.onSignal)
+      this.peer.removeListener('stream', this.onStream)
       this.peer.removeListener('data', this.onData)
-      this.peer.removeListener('connect', this.props.onConnect)
+      this.peer.removeListener('connect', this.onConnect)
       this.peer.removeListener('close', this.onClose)
     }
 
