@@ -85,7 +85,7 @@ const PORT = process.env.PORT
 log('Listening on PORT %d', PORT)
 server.listen(PORT)
 
-if (process.env.NODE_ENV != 'production') {
+if (!process.env.DO_NOT_CLEAR) {
   log('NODE_ENV is %s', process.env.NODE_ENV || 'development')
   redis
     .clearAll()
