@@ -17,7 +17,9 @@ const goodBrowsers = [
   'Chimera',
   'Chromium',
   'Edge',
-  'Opera'
+  'Opera',
+  'Firefox',
+  'Mozilla'
 ]
 
 module.exports = (req, res, next) => {
